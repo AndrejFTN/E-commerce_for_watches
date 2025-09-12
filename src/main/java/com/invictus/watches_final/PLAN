@@ -1,0 +1,25 @@
+
+-posto sam dodao addwatchdto treba obratiti paznju na mogucu gresku jer ce se slika posebno prihvatiti u kontroleru, json + slika
+-postavljen localdate tip umesto string za datum za watch, moguci problem, y-m-d je format
+-moguce sve UUID promeniti na int i staviti normalan generator
+-dodati da se moze loginovati i preko username i preko emaila, izmeniti logindto(dodati login polje i posle se proverava da li je email ili username i izmeniti spirng security konfig za to
+-/mogucnost promena maila posebne metode i implemantacija
+-prilikom updeta sata, staviti jos jednu funkciju koja radi kao udpate bez promene slike
+-dodavnje mozda akcijskih cena za cartiem da se posebno racunaju itd i implementacija moguca u servisu tj popuste
+-promeniti cross origin u kontrolerima jer je slab security za to
+-dodati logiku da umesto delete watch, ako ih nema ili ako atribut bude is not available pa se ne prikazuje vise
+-napraviti logiku da prvo treba mail da se verifikuje pa tek onbda mozes uci u nalog
+-forgot/Reset Password Flow
+-implementirati virtuelnu korpu za guest ili anonimus rolu koja ne moze nista vise sem da dodaje i uklanja iteme
+-Search mogucnost
+-u orderu videti i za istoriju ordera i ma promenljivu statusa
+-mozda implementirati snizenja i kdoove??
+-mozda implementirati ocene?
+-implementirati Favorites
+-implementirati za sat i kategoriju tj occasion
+
+--IMPLEMENTIRATI DA USER KOJI NIJE VERIFIKAO MAIL NE MOZE DA IZVRSI ORDER ILI MOZDA JOS NESTO POSLE
+
+--TREBA PROVERITI CELU LOGIKU OKO KORPE JER SE KORPA TEK DODAJE KADA SE REGISTRUEJS ALI TREBA DA IMAS KORPU I KAO GEST
+
+--DODATI NOVE DOZVOLE U SPRING SECURITY
