@@ -9,6 +9,7 @@ import com.invictus.watches_final.exceptions.CustomExceptions.WatchAlreadyExists
 import com.invictus.watches_final.mapper.WatchMapper;
 import com.invictus.watches_final.model.Watch;
 import com.invictus.watches_final.repository.WatchRepo;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -41,10 +42,10 @@ public class WatchServiceImpl implements IWatchService{
         return repo.findById(watchID);
     }
 
-    @Override
-    public boolean existsByBrandAndModelAndMechanism(String brand, String model, String mechanism) {
-        return repo.existsByBrandAndModelAndMechanism(brand, model, mechanism);
-    }
+//    @Override
+//    public boolean existsByBrandAndModelAndMechanism(String brand, String model, String mechanism) {
+//        return repo.existsByBrandAndModelAndMechanism(brand, model, mechanism);
+//    }
 
     @Override
     public WatchDTO editWatch(EditWatchDTO editWatchDTO, MultipartFile image) {
@@ -63,6 +64,12 @@ public class WatchServiceImpl implements IWatchService{
                 throw new ImageProcessingException("Error reading image file");
             }
         }
+
+//        if (existingWatch.getAvailable() != null) {
+//            existingWatch.setActive(existingWatch.getAvailable() > 0);
+//        } else {
+//            existingWatch.setActive(false);
+//        } zato sto se rucno dodaje ili s addmount ili ovako, cim se edituje znaci da je pozitivan
 
         Watch savedWatch = repo.save(existingWatch);
 
@@ -99,6 +106,13 @@ public class WatchServiceImpl implements IWatchService{
                 throw new ImageProcessingException("Error reading image file");
             }
         }
+
+        if (watch.getAvailable() != null && watch.getAvailable() > 0) {
+            watch.setActive(true);
+        } else {
+            watch.setActive(false);
+        }
+
 
         Watch savedWatch = repo.save(watch);
 
@@ -145,6 +159,33 @@ public class WatchServiceImpl implements IWatchService{
 
     }
 
+    @Override
+    public void reduceStock(UUID watchID, int amount) {
+        Watch watch = repo.findByWatchID(watchID)
+                .orElseThrow(() -> new EntityNotFoundException("Watch not found"));
+
+        int newAmount = watch.getAvailable() - amount;
+
+        if(newAmount < 0){
+            throw new IllegalArgumentException("Not enough stock");
+        }
+
+        watch.setAvailable(newAmount);
+        watch.setActive(newAmount > 0);
+
+        repo.save(watch);
+    }
+
+    @Override
+    public String setWatchStatus(UUID watchID, boolean status) {
+        Watch watch = repo.findByWatchID(watchID)
+                .orElseThrow(() -> new EntityNotFoundException("Watch not found"));
+
+        watch.setActive(status);
+        repo.save(watch);
+        return "Watch has been updated";
+    }
+
 //    @Override
 //    public void addAmount(AmountDTO amountDTO) {
 //        Watch watch = repo.findByWatchID(UUID.fromString(amountDTO.getWatchID()));
@@ -168,12 +209,15 @@ public class WatchServiceImpl implements IWatchService{
 
         if (optionalWatch.isPresent()) {
             Watch watch = optionalWatch.get();
-            Integer newAmount = watch.getAvailable() + amountDTO.getAmount();
+            int newAmount = watch.getAvailable() + amountDTO.getAmount();
             watch.setAvailable(newAmount);
+            watch.setActive(newAmount > 0);
             repo.save(watch);
         } else {
-            throw new RuntimeException("Watch not found");
+            throw new EntityNotFoundException("Watch not found");
         }
     }
+
+
 
 }

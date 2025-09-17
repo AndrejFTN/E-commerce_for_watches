@@ -42,6 +42,7 @@ public class Watch {
     private float price;
     private Integer available;
     private GenderType gender;
+    private boolean isActive;
     private byte[] image;
     //ubaciti mozda isAvailable kao boolean ili isActive ako ima na stanju ako nema da se ne pojavljuju.
     //ubaciti i isReserved ili isActive, proveriti ako nigde nije u korpi da se moze izbrisati

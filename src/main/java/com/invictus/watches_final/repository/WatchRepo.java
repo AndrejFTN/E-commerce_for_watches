@@ -35,7 +35,7 @@ public interface WatchRepo extends JpaRepository<Watch, UUID> {
 
     //Uradjena paginacija sa ugradjenom metodom u JPA
 
-    boolean existsByBrandAndModelAndMechanism(String brand, String model, String mechanism);
+    //boolean existsByBrandAndModelAndMechanism(String brand, String model, String mechanism);
 
     @Query("SELECT w FROM Watch  w where w.watchID = :watchID")
     Optional<Watch> findByWatchID(@Param("watchID") UUID watchID); // moze i bez

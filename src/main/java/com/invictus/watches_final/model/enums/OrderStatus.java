@@ -2,7 +2,7 @@ package com.invictus.watches_final.model.enums;
 
 public enum OrderStatus {
         PENDING,
-        CONFIRMED,
+        APPROVED,
         PAID,
         CANCELLED
 }

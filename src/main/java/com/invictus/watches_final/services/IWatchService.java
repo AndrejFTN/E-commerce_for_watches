@@ -22,7 +22,7 @@ public interface IWatchService {
 
     Optional<Watch> getOneWatch(UUID watchID); //mozda dto
 
-    boolean existsByBrandAndModelAndMechanism(String brand,String model,String mechanism);
+    //boolean existsByBrandAndModelAndMechanism(String brand,String model,String mechanism);
 
     WatchDTO editWatch(EditWatchDTO watchDTO, MultipartFile image);
 
@@ -30,10 +30,14 @@ public interface IWatchService {
 
     boolean deleteWatch(UUID watchID);
 
+    void reduceStock(UUID watchID, int amount);
+
+    String setWatchStatus(UUID watchID, boolean status);
+
     Page<WatchDTO> getFilteredWatches(String colorFilter, String brandFilter, String mechanismFilter,Float minPrice,
                                       Float maxPrice,String sortBy, String orderBy, int page, int size);
 
-    //sortiranje
+
 
     void addAmount(AmountDTO amountDTO); //IStraziti da li postoji bolja implementacija ove funkcije
 }

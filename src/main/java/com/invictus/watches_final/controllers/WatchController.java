@@ -123,6 +123,12 @@ public class WatchController {
     }
 
     @PreAuthorize("hasAuthority('ADMIN_ROLE')")
+    @PutMapping(path ="/statusWatch/{watchID}")
+    public ResponseEntity<String> setWatchStatus(@PathVariable UUID watchID, @RequestParam boolean status) {
+        return ResponseEntity.ok(service.setWatchStatus(watchID, status));
+    }
+
+    @PreAuthorize("hasAuthority('ADMIN_ROLE')")
     @PostMapping(path = "/addWatch", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<WatchDTO> addWatch(
             @Valid @ModelAttribute AddWatchDTO addWatchDTO,

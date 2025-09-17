@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
@@ -23,9 +24,9 @@ public class Order {
     private User user;
 
 
-    private String dateOfOrder;
+    private LocalDateTime dateOfOrder;
     private String phoneNumber;
-    private OrderStatus status = OrderStatus.PENDING;
+    private OrderStatus status = OrderStatus.PENDING; //mozda u servisu odraditi
     private String address;
     private String zipCode;
     private String mail;
