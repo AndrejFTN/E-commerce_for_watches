@@ -1,25 +1,125 @@
 
--posto sam dodao addwatchdto treba obratiti paznju na mogucu gresku jer ce se slika posebno prihvatiti u kontroleru, json + slika
--postavljen localdate tip umesto string za datum za watch, moguci problem, y-m-d je format
--moguce sve UUID promeniti na int i staviti normalan generator
+#Dodati
 -dodati da se moze loginovati i preko username i preko emaila, izmeniti logindto(dodati login polje i posle se proverava da li je email ili username i izmeniti spirng security konfig za to
--/mogucnost promena maila posebne metode i implemantacija
--prilikom updeta sata, staviti jos jednu funkciju koja radi kao udpate bez promene slike
+-mogucnost promena maila posebne metode i implemantacija
 -dodavnje mozda akcijskih cena za cartiem da se posebno racunaju itd i implementacija moguca u servisu tj popuste
--promeniti cross origin u kontrolerima jer je slab security za to
--dodati logiku da umesto delete watch, ako ih nema ili ako atribut bude is not available pa se ne prikazuje vise
--napraviti logiku da prvo treba mail da se verifikuje pa tek onbda mozes uci u nalog
--forgot/Reset Password Flow
--implementirati virtuelnu korpu za guest ili anonimus rolu koja ne moze nista vise sem da dodaje i uklanja iteme
+*-promeniti cross origin u kontrolerima jer je slab security za to
+*-dodati logiku da umesto delete watch, ako ih nema ili ako atribut bude is not available pa se ne prikazuje vise
+*-forgot/Reset Password Flow
 -Search mogucnost
--u orderu videti i za istoriju ordera i ma promenljivu statusa
--mozda implementirati snizenja i kdoove??
+*-Token se gubi posle reseta ili promene lozinke zbog sigurnosnih razloga i da ne dodje do preklapanja
+*-Email verifikacija ne blokira login ali blokira order
+-mozda implementirati snizenja i kodove??
 -mozda implementirati ocene?
--implementirati Favorites
+*-implementirati Favorites
 -implementirati za sat i kategoriju tj occasion
+-ispraviti order i orderitem repo ??
+-Rate-limiting od brute-force na /user/login
+*-swagger dokumentacija
+-Više slika po satu (galerija), ne samo jedna
+-Admin dashboard, statistika prodaje (jednostavno)
+-Troškovi dostave, iznad odredjene cene besplatna dostava
+-AI chat assitent(opciono integracija osnovnog api-a)
+-Račun faktura (PDF) po porudžbini (proveri kompleksnost)
+-Email notifikacije o porudzbini
+-Strype
+-Mozda dodati implementaciju za automatski refresh tokena
+-Mozda promeniti cuvanje slike sa BLOB u bazi na disk storage umesto Base64 u JSON odgovoru (ogroman string) vraca se kratak URL putanja
+-DeleteWatch (hard delete) nije zasticen  sat koji je referenciran iz cart item, order item
+ili sada i favorite tabele ce puknuti na FK constraint pri brisanju sa svakim novim featurom
 
---IMPLEMENTIRATI DA USER KOJI NIJE VERIFIKAO MAIL NE MOZE DA IZVRSI ORDER ILI MOZDA JOS NESTO POSLE
 
---TREBA PROVERITI CELU LOGIKU OKO KORPE JER SE KORPA TEK DODAJE KADA SE REGISTRUEJS ALI TREBA DA IMAS KORPU I KAO GEST
 
---DODATI NOVE DOZVOLE U SPRING SECURITY
+
+#VAZNO
+-Nadograditi jjwt sa 0.9.1 na moderniju verziju (0.12.x) stara verzija koristi javax.xml.bind.DatatypeConverter
+koji je uklonjen iz JDK-a od Jave 11 navise, pukne NoClassDefFoundError na login (otkriveno kroz testiranje).
+trenutno zakrpljeno dodavanjem javax.xml.bind:jaxb-api zavisnosti u pom.xml da ne pukne, ali to je privremeno.
+API se dosta promenio izmedju verzija (builder pattern, signing key handling), treba prepisati JwtService.java
+kad budem imao vremena, ne sad usred testiranja
+
+
+
+#Proveriti
+*-Leakovani mail password, JWT secret u application properties
+-Proveriti da se svi erori hendluju u servisima a u kontroler da ide cist kod (kod watcha ima brljotine)
+*-PROVERITI na koji nacin cemo logiku out of stock implementirati, da li ce backend slati sve satove a kada nema stock
+onda ce front do obraditii da pise out of stock i tako nesto ili backend nece slati satove(praviti nove pozive)
+koji imaju stock 0 (filtriranje po isActive)
+
+
+#Napomene
+-postavljen localdate tip umesto string za datum za watch, moguci problem, y-m-d je format
+-posto sam dodao addwatchdto treba obratiti paznju na mogucu gresku jer ce se slika posebno prihvatiti u kontroleru, json + slika
+-Total amount se radi na frontu preko cart itema
+-Slike se čuvaju kao byte[] direktno u bazi (BLOB) obično slike drže na disku/object storage-u (S3, lokalni folder sa URL-om), a baza samo čuva putanju
+-Concurrency na stanju (reduceStock) ako dva korisnika istovremeno kupe poslednji komad, trenutna logika nema zaštitu od race condition-a (npr optimistic locking)
+-Search, kategorije, notifikacije koje se stvarno šalju (trenutno mail samo loguje u konzolu), profili za dev/prod konfiguraciju
+-Watch.available (stock) se nikad ne menja pri kupovini:
+-addItemToCart ne proverava da amount ne prelazi watch.available (trenutno moze da se doda bilo koji broj)
+-createOrder ne poziva reduceStock() uopste stanje se ne umanjuje ni u najprostijem slucaju
+ treba: dodati proveru u addItemToCart (max = available), i pozvati reduceStock
+ za svaki orderItem u createOrder (ubaciti WatchRepo/IWatchService zavisnost u OrderServiceImpl)
+ reduceStock vec sam postavlja isActive=false kad padne na 0, ne treba duplirati tu logiku
+-(opciono, preimenovati available u stockQuantity radi jasnoce, jer se lako meša sa isActive)
+-ako gost ima npr 10 stavki u korpi merge znači 10 sekvencijalnih poziva ka /cart/addItemToCart  mogao bi se dodati bulk endpoint (addItemsToCart sa listom) kao production-polish stavka
+-deleteWatch nije zaštićen može puknuti na FK ako je sat ikad naručen
+-DTOovi record selektivno ne multipart DTO-ovi
+-virtuelna guest korpa se hendluje na frontu
+-Kada stock padne na 0 pokazati i dalje sat al da bude pod rasprodato(opciono implementirati)
+-Admin panel getAllWatches poziv kao i obicni poziv samo sto admin frontend komponenta prikazuje sve (ukljucujuci neaktivne sa opcijom za uredjivanje)
+ dok user frontend komponenta sakriva one gde je isActive = false ili obiljezava da nije dostupno
+-Podseti se detaljnije oko spring security
+-Update user menja samo 2 polja jer su ona manje vazna(posle se mogu lako dodati takva polja za izmenu)
+-Ponoviti veze kljuceva
+
+#Trenutno implementirano stanje projekta
+1. Autentifikacija i korisnici
+Registracija kreira User sa rolom USER_ROLE, lozinka se hešira (BCrypt), generiše se token za verifikaciju mejla (važi 24h),
+ automatski se kreira prazna korpa za novog korisnika, šalje se verifikacioni mejl (trenutno samo loguje u konzolu, stvarno slanje zakomentarisano)
+Login  JWT autentifikacija preko AuthenticationManager, token važi 2h
+Verifikacija mejla  preko tokena poslatog na URL, postavlja isVerified = true
+Ponovno slanje verifikacionog mejla ako korisnik nije verifikovan
+Promena lozinke  proverava staru lozinku, proverava da nova nije ista kao stara, proverava potvrdu nove lozinke, šalje potvrdu na mejl
+Admin funkcije: lista svih korisnika (obična i paginirana), pretraga po username-u, provera da li je korisnik admin, dobijanje ID-a po username-u
+Ažuriranje profila  samo fullName i phone (username/email se ne mogu menjati ovim putem), dostupno i USER-u i ADMIN-u za sopstveni nalog
+Validacije: username 4-20 karaktera, lozinka min. 8 karaktera sa velikim/malim slovom i cifrom, telefon format (+opciono, 6-15 cifara), email format, puno ime samo slova (uključujući ćirilične dijakritike: š đ č ć ž) i razmaci
+Role: ADMIN_ROLE, USER_ROLE  nema samoregistracije za admina, mora se ručno postaviti u bazi
+2. Katalog satova
+Pregled  svi satovi paginirano, jedan sat po ID-u
+Filtriranje/pretraga  po boji, brendu, mehanizmu, rasponu cene, sa sortiranjem, paginacijom (delimično poklapanje preko LIKE)
+Admin: dodavanje sata  multipart (JSON polja + opciona slika), proverava duplikat (brend+model+mehanizam+boja), automatski postavlja isActive na osnovu stanja
+Admin: izmena sata  multipart, slika se menja samo ako je poslata (inače ostaje ista, potvrđeno testirano razumevanje)
+Admin: ručna promena statusa vidljivosti (isActive)
+Admin: dodavanje stanja na lager
+Admin: brisanje sata  pravo brisanje iz baze (nezaštićeno od FK problema ako je sat ikad naručen)
+Stanje na lageru (stock, preimenovano danas sa available) — sad se stvarno umanjuje pri kreiranju porudžbine, automatski postavlja isActive = false kad padne na 0
+Slika se čuva kao byte[] direktno u bazi
+3. Korpa
+Jedna korpa po korisniku, automatski kreirana pri registraciji
+Pregled korpe sa svim stavkama
+Dodavanje stavke  ako sat već postoji u korpi, sabira količine ako ne, pravi novu stavku proverava da ukupna tražena količina (postojeće u korpi + novo) ne prelazi stvarno stanje na lageru
+Brisanje stavke  proverava da stavka pripada baš tom korisniku
+Pražnjenje cele korpe
+4. Porudžbine
+Kreiranje porudžbine iz korpe  proverava da korpa nije prazna, prebacuje stavke korpe u stavke porudžbine (zamrzava cenu i količinu u tom trenutku), računa ukupan iznos, status PENDING, prazni korpu
+stvarno umanjuje stanje sata za svaku stavku, sa jasnom porukom greške (koji sat, koliko ima, koliko je traženo) ako nema dovoljno
+Pregled sopstvene porudžbine  filtrirano i po ID-u i po korisniku (bezbedno, ne otkriva da li tuđ ID postoji)
+Istorija sopstvenih porudžbina  paginirano
+Istorija po statusu  paginirano, prazan rezultat vraća praznu listu (ne grešku)
+Admin: pregled bilo čije porudžbine, sve porudžbine korisnika, porudžbine korisnika po statusu
+Otkazivanje porudžbine  sopstvene ili (za admina) bilo čije; blokirano ako je već PAID ili APPROVED
+Statusi: PENDING, APPROVED, PAID, CANCELLED —trenutno se kodom realno postavljaju samo PENDING i CANCELLED; APPROVED/PAID čekaju buduću Stripe integraciju
+5. Bezbednost
+Stateless JWT autentifikacija (bez server-side sesija)
+Lozinke heširane preko PasswordEncoder (BCrypt)
+Javni endpointi (bez auth): login, registracija, pregled/filter/pojedinačan sat, slanje upita
+Metod-nivo autorizacija (@PreAuthorize) na svakom drugom endpointu, po ulogama
+CORS trenutno otvoren (@CrossOrigin("*")) — poznat, još nerešen problem
+6. Obrada grešaka
+Centralizovan @ControllerAdvice (GlobalExceptionHandler) hvata sve custom i standardne izuzetke i vraća dosledan oblik odgovora (status, poruka, vreme)
+Dodato: pravilno mapiranje neuspešne autorizacije (403 umesto 400) i neuspešne validacije unosa (400 sa čitljivom porukom po polju, umesto 500)
+7. Kontakt
+Endpoint za slanje upita/kontakt forme (ime, mejl, naslov, poruka)
+ postoji i prima zahteve; nisam još detaljno gledao unutrašnju logiku servisa, pa ne mogu sa sigurnošću da kažem šta tačno radi sa primljenim upitom (vredi da to zajedno proverimo ako ti zatreba za odbranu)
+

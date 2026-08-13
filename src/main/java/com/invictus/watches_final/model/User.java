@@ -1,10 +1,7 @@
 package com.invictus.watches_final.model;
 
 import com.invictus.watches_final.security.enums.Roles;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -31,15 +28,20 @@ public class User {
     @Column(unique = true, nullable = false)
     private String userName;
     private String password;
+    @Enumerated(EnumType.STRING)
     private Roles role;
 
     private boolean isVerified = false;
-//    private LocalDateTime passwordChangedAt;
+    private LocalDateTime passwordChangedAt;
     private String verificationToken;
     private LocalDateTime verificationTokenExpiry;
+    private String resetPasswordToken;
+    private LocalDateTime resetPasswordTokenExpiry;
 
     private String phone;
     private String fullName;
     @Column(unique = true, nullable = false)
     private String email;
+
+
 }

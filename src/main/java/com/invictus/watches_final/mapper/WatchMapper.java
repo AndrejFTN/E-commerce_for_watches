@@ -18,8 +18,10 @@ public class WatchMapper {
         watchDTO.setModel(watch.getModel());
         watchDTO.setManufactureDate(watch.getManufactureDate());
         watchDTO.setPrice(watch.getPrice());
-        watchDTO.setAvailable(watch.getAvailable());
+        watchDTO.setStock(watch.getStock());
         watchDTO.setGender(watch.getGender());
+        watchDTO.setActive(watch.isActive());
+        watchDTO.setWatchID(watch.getWatchID());
 
         if (watch.getImage() != null) {
             String base64Image = Base64.getEncoder().encodeToString(watch.getImage());
@@ -38,7 +40,7 @@ public class WatchMapper {
         watch.setModel(watchDTO.getModel());
         watch.setManufactureDate(watchDTO.getManufactureDate());
         watch.setPrice(watchDTO.getPrice());
-        watch.setAvailable(watchDTO.getAvailable());
+        watch.setStock(watchDTO.getStock());
         watch.setGender(watchDTO.getGender());
 
         return watch;
@@ -51,7 +53,7 @@ public class WatchMapper {
         existingWatch.setModel(editDTO.getModel());
         existingWatch.setManufactureDate(editDTO.getManufactureDate());
         existingWatch.setPrice(editDTO.getPrice());
-        existingWatch.setAvailable(editDTO.getAvailable());
+        existingWatch.setStock(editDTO.getStock());
         existingWatch.setGender(editDTO.getGender());
         // slika se postavlja u servisu
         return existingWatch;

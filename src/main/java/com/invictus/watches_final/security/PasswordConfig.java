@@ -1,6 +1,6 @@
 package com.invictus.watches_final.security;
 
-import com.invictus.watches_final.services.CustomCredentialsService;
+import com.invictus.watches_final.services.ServiceImpl.CustomCredentialsService;
 import lombok.AllArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

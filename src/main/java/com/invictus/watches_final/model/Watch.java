@@ -1,10 +1,7 @@
 package com.invictus.watches_final.model;
 
 import com.invictus.watches_final.model.enums.GenderType;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -40,9 +37,10 @@ public class Watch {
     private String mechanism; //moguceo draditi drop meni
     private LocalDate manufactureDate;
     private float price;
-    private Integer available;
+    private Integer stock; // promenjeno ima mozda greske
     private GenderType gender;
     private boolean isActive;
+    @Lob
     private byte[] image;
     //ubaciti mozda isAvailable kao boolean ili isActive ako ima na stanju ako nema da se ne pojavljuju.
     //ubaciti i isReserved ili isActive, proveriti ako nigde nije u korpi da se moze izbrisati

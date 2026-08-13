@@ -5,8 +5,8 @@ import com.invictus.watches_final.dto.CartDTOs.CartDTO;
 import com.invictus.watches_final.dto.CartDTOs.CartItemDTO;
 import com.invictus.watches_final.dto.CartDTOs.CreateCartItemDTO;
 import com.invictus.watches_final.security.JwtService;
-import com.invictus.watches_final.services.ICartService;
-import com.invictus.watches_final.services.IUserService;
+import com.invictus.watches_final.services.IServices.ICartService;
+import com.invictus.watches_final.services.IServices.IUserService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -18,7 +18,6 @@ import java.util.UUID;
 
 @RestController
 @AllArgsConstructor
-@CrossOrigin("*")
 @RequestMapping("/cart")
 public class CartController {
 

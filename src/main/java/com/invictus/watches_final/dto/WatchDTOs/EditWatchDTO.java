@@ -2,6 +2,7 @@ package com.invictus.watches_final.dto.WatchDTOs;
 
 
 import com.invictus.watches_final.model.enums.GenderType;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
@@ -34,9 +35,8 @@ public class EditWatchDTO {
     @Positive
     private float price;
     @NotNull
-    @Positive
-    private Integer available;
+    @Min(value = 0, message = "Number can't be negative")
+    private Integer stock;
     @NotNull
     private GenderType gender;
-    private String image; //da li string ili bytes
 }

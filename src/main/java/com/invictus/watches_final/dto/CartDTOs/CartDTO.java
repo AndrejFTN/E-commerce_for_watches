@@ -17,6 +17,6 @@ public class CartDTO {
     private UUID userID;
 
     private List<CartItemDTO> cartItems;
-
-    //private BigDecimal totalPrice;  racuna se posle u servisu
 }
+
+    //private BigDecimal totalPrice;  racuna se na frontu

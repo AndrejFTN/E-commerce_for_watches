@@ -1,8 +1,6 @@
-package com.invictus.watches_final.services;
+package com.invictus.watches_final.services.IServices;
 
-import com.invictus.watches_final.dto.AccountDTOs.ChangePasswordDTO;
-import com.invictus.watches_final.dto.AccountDTOs.RegisterDTO;
-import com.invictus.watches_final.dto.AccountDTOs.UserInfoDTO;
+import com.invictus.watches_final.dto.AccountDTOs.*;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -23,11 +21,15 @@ public interface IUserService {
 
     boolean checkIfAdmin(String username);
 
-    UserInfoDTO updateUser(UUID userID, UserInfoDTO userDTO);
+    UserInfoDTO updateUser(UUID userID, UpdateProfilDTO userDTO);
 
-    boolean changePassword(String userName, ChangePasswordDTO  changePasswordDTO);
+    void changePassword(String userName, ChangePasswordDTO  changePasswordDTO);
 
     void verifyEmail(String token);
 
     void resendVerificationEmail(String email);
+
+    void forgotPassword(ForgotPasswordDTO forgotPasswordDTO);
+
+    void resetPassword(ResetPasswordWithTokenDTO resetPasswordWithTokenDTO);
 }

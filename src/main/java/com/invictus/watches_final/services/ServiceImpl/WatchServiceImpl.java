@@ -1,4 +1,4 @@
-package com.invictus.watches_final.services;
+package com.invictus.watches_final.services.ServiceImpl;
 
 import com.invictus.watches_final.dto.WatchDTOs.AddWatchDTO;
 import com.invictus.watches_final.dto.WatchDTOs.AmountDTO;
@@ -9,6 +9,7 @@ import com.invictus.watches_final.exceptions.CustomExceptions.WatchAlreadyExists
 import com.invictus.watches_final.mapper.WatchMapper;
 import com.invictus.watches_final.model.Watch;
 import com.invictus.watches_final.repository.WatchRepo;
+import com.invictus.watches_final.services.IServices.IWatchService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -25,7 +26,7 @@ import java.util.UUID;
 
 @AllArgsConstructor
 @Service
-public class WatchServiceImpl implements IWatchService{
+public class WatchServiceImpl implements IWatchService {
 
     private final WatchRepo repo;
 
@@ -65,8 +66,8 @@ public class WatchServiceImpl implements IWatchService{
             }
         }
 
-//        if (existingWatch.getAvailable() != null) {
-//            existingWatch.setActive(existingWatch.getAvailable() > 0);
+//        if (existingWatch.getStock() != null) {
+//            existingWatch.setActive(existingWatch.getStock() > 0);
 //        } else {
 //            existingWatch.setActive(false);
 //        } zato sto se rucno dodaje ili s addmount ili ovako, cim se edituje znaci da je pozitivan
@@ -107,7 +108,7 @@ public class WatchServiceImpl implements IWatchService{
             }
         }
 
-        if (watch.getAvailable() != null && watch.getAvailable() > 0) {
+        if (watch.getStock() != null && watch.getStock() > 0) {
             watch.setActive(true);
         } else {
             watch.setActive(false);
@@ -164,13 +165,16 @@ public class WatchServiceImpl implements IWatchService{
         Watch watch = repo.findByWatchID(watchID)
                 .orElseThrow(() -> new EntityNotFoundException("Watch not found"));
 
-        int newAmount = watch.getAvailable() - amount;
+        int newAmount = watch.getStock() - amount;
 
         if(newAmount < 0){
-            throw new IllegalArgumentException("Not enough stock");
+            throw new IllegalArgumentException(
+                    "Not enough stock for watch: " + watch.getBrand() + " " + watch.getModel() +
+                            " (available: " + watch.getStock() + ", requested: " + amount + ")"
+            );
         }
 
-        watch.setAvailable(newAmount);
+        watch.setStock(newAmount);
         watch.setActive(newAmount > 0);
 
         repo.save(watch);
@@ -190,8 +194,8 @@ public class WatchServiceImpl implements IWatchService{
 //    public void addAmount(AmountDTO amountDTO) {
 //        Watch watch = repo.findByWatchID(UUID.fromString(amountDTO.getWatchID()));
 //        if (watch != null) {
-//            Integer newAmount = watch.getAvailable() + amountDTO.getAmount();
-//            watch.setAvailable(newAmount);
+//            Integer newAmount = watch.getStock() + amountDTO.getAmount();
+//            watch.setStock(newAmount);
 //            repo.save(watch);
 //        }
 //    }
@@ -209,15 +213,13 @@ public class WatchServiceImpl implements IWatchService{
 
         if (optionalWatch.isPresent()) {
             Watch watch = optionalWatch.get();
-            int newAmount = watch.getAvailable() + amountDTO.getAmount();
-            watch.setAvailable(newAmount);
+            int newAmount = watch.getStock() + amountDTO.getAmount();
+            watch.setStock(newAmount);
             watch.setActive(newAmount > 0);
             repo.save(watch);
         } else {
             throw new EntityNotFoundException("Watch not found");
         }
     }
-
-
-
 }
+

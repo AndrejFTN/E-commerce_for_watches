@@ -13,6 +13,7 @@ public class UserInfoMapper {
         userInfoDTO.setFullName(user.getFullName());
         userInfoDTO.setPhone(user.getPhone());
         userInfoDTO.setUserName(user.getUserName());
+        userInfoDTO.setVerified(user.isVerified());
 
         return userInfoDTO;
     }

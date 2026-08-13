@@ -1,8 +1,10 @@
 package com.invictus.watches_final.security;
 
+import com.invictus.watches_final.model.User;
+import com.invictus.watches_final.repository.UserRepo;
 import com.invictus.watches_final.security.exceptions.ExpiredTokenException;
 import com.invictus.watches_final.security.exceptions.InvalidTokenException;
-import com.invictus.watches_final.services.CustomCredentialsService;
+import com.invictus.watches_final.services.ServiceImpl.CustomCredentialsService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -16,6 +18,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.time.ZoneId;
+import java.util.Date;
 import java.util.Set;
 
 
@@ -25,10 +29,13 @@ public class JwtRequestFilter extends OncePerRequestFilter {
     private final JwtService jwtService;
     private final CustomCredentialsService customCredentialsService;
     private final JwtAuthenticationEntryPoint authenticationEntryPoint;
+    private final UserRepo userRepo;
 
     private static final Set<String> PUBLIC_ENDPOINTS = Set.of(
             "/user/login",
             "/user/register",
+            "/user/forgotPassword",
+            "/user/resetPasswordWithToken",
             "/watch/getAll",
             "/watch/filterWatches",
             "/watch/getOneWatch",
@@ -39,10 +46,12 @@ public class JwtRequestFilter extends OncePerRequestFilter {
     @Autowired
     public JwtRequestFilter(JwtService jwtService,
                             CustomCredentialsService customCredentialsService,
-                            JwtAuthenticationEntryPoint authenticationEntryPoint) {
+                            JwtAuthenticationEntryPoint authenticationEntryPoint,
+                            UserRepo userRepo) {
         this.jwtService = jwtService;
         this.customCredentialsService = customCredentialsService;
         this.authenticationEntryPoint = authenticationEntryPoint;
+        this.userRepo = userRepo;
     }
 
     @Override
@@ -52,7 +61,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 
         String servletPath = request.getServletPath();
 
-        if (!PUBLIC_ENDPOINTS.contains(servletPath)) {
+        if (!isPublicEndpoint(servletPath)) {
 
             String authHeader = request.getHeader("Authorization");
 
@@ -65,6 +74,18 @@ public class JwtRequestFilter extends OncePerRequestFilter {
                         UserDetails userDetails = customCredentialsService.loadUserByUsername(username);
 
                         if (!jwtService.isTokenExpired(token) && jwtService.validateToken(token, userDetails)) {
+                            User user = userRepo.findByUserName(username).orElse(null);
+                            if(user!=null && user.getPasswordChangedAt() != null){
+                                Date issuedAt = jwtService.getIssuedAtDateFromToken(token);
+                                Date passwordChangedAt =
+                                        Date.from(user.getPasswordChangedAt().atZone(ZoneId.systemDefault()).toInstant());
+
+                                if (issuedAt.before(passwordChangedAt)) {
+                                    throw new ExpiredTokenException("Password was changed, please login again.");
+                                }
+                            }
+
+
                             UsernamePasswordAuthenticationToken authenticationToken =
                                     new UsernamePasswordAuthenticationToken(
                                             userDetails, null, userDetails.getAuthorities()
@@ -95,6 +116,12 @@ public class JwtRequestFilter extends OncePerRequestFilter {
         }
 
         filterChain.doFilter(request, response);
+    }
+
+    private boolean isPublicEndpoint(String path) {
+        return PUBLIC_ENDPOINTS.contains(path)
+                || path.startsWith("/swagger-ui")
+                || path.startsWith("/v3/api-docs");
     }
 }
 

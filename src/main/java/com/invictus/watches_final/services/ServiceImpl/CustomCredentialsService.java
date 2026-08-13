@@ -1,4 +1,4 @@
-package com.invictus.watches_final.services;
+package com.invictus.watches_final.services.ServiceImpl;
 
 import com.invictus.watches_final.model.User;
 import com.invictus.watches_final.repository.UserRepo;

@@ -20,6 +20,7 @@ public class CartItemMapper {
         cartItemDTO.setModel(cartItem.getWatch().getModel());
         cartItemDTO.setPrice(cartItem.getPrice());
         cartItemDTO.setWatchID(cartItem.getWatch().getWatchID());
+        cartItemDTO.setGender(cartItem.getWatch().getGender());
 
         return cartItemDTO;
     }

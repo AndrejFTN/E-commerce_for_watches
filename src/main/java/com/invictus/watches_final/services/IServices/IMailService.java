@@ -1,4 +1,4 @@
-package com.invictus.watches_final.services;
+package com.invictus.watches_final.services.IServices;
 
 public interface IMailService {
     void sendSimpleMessage(String subject, String text, String... to);

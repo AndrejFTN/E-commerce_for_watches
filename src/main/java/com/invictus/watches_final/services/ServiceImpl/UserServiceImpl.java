@@ -1,8 +1,6 @@
-package com.invictus.watches_final.services;
+package com.invictus.watches_final.services.ServiceImpl;
 
-import com.invictus.watches_final.dto.AccountDTOs.ChangePasswordDTO;
-import com.invictus.watches_final.dto.AccountDTOs.RegisterDTO;
-import com.invictus.watches_final.dto.AccountDTOs.UserInfoDTO;
+import com.invictus.watches_final.dto.AccountDTOs.*;
 import com.invictus.watches_final.exceptions.CustomExceptions.InvalidCurrentPasswordException;
 import com.invictus.watches_final.exceptions.CustomExceptions.NoUsersFoundException;
 import com.invictus.watches_final.exceptions.CustomExceptions.PasswordPolicyException;
@@ -14,6 +12,8 @@ import com.invictus.watches_final.repository.CartRepo;
 import com.invictus.watches_final.repository.UserRepo;
 import com.invictus.watches_final.security.enums.Roles;
 import com.invictus.watches_final.security.exceptions.InvalidTokenException;
+import com.invictus.watches_final.services.IServices.IUserService;
+import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -28,7 +28,7 @@ import java.util.UUID;
 
 @Service
 @AllArgsConstructor
-public class UserServiceImpl implements  IUserService{
+public class UserServiceImpl implements IUserService {
 
     private final UserRepo repo;
     private final CartRepo cartRepo;
@@ -81,7 +81,7 @@ public class UserServiceImpl implements  IUserService{
     }
 
     @Override
-    public UserInfoDTO updateUser(UUID userID, UserInfoDTO userDTO) {
+    public UserInfoDTO updateUser(UUID userID, UpdateProfilDTO userDTO) {
         User user = repo.findById(userID)
                 .orElseThrow(() -> new UserNotFoundException("User not found"));
 //
@@ -98,6 +98,7 @@ public class UserServiceImpl implements  IUserService{
 
     }
 
+    @Transactional
     @Override
     public UserInfoDTO registerUser(RegisterDTO registerDTO) {
         if(repo.findByUserName(registerDTO.getUserName()).isPresent()){
@@ -168,7 +169,46 @@ public class UserServiceImpl implements  IUserService{
     }
 
     @Override
-    public boolean changePassword(String userName, ChangePasswordDTO changePasswordDTO) {
+    public void forgotPassword(ForgotPasswordDTO forgotPasswordDTO) {
+        User user = repo.findByEmail(forgotPasswordDTO.getEmail())
+                .orElseThrow(() -> new UsernameNotFoundException("Email not found"));
+
+        String token = UUID.randomUUID().toString();
+        user.setResetPasswordToken(token);
+        user.setResetPasswordTokenExpiry(LocalDateTime.now().plusHours(1));
+        repo.save(user);
+
+        mailService.sendResetPassword(forgotPasswordDTO.getEmail(), token);
+    }
+
+    @Override
+    public void resetPassword(ResetPasswordWithTokenDTO resetPasswordWithTokenDTO) {
+        User user = repo.findByResetPasswordToken(resetPasswordWithTokenDTO.getToken())
+                .orElseThrow(() -> new InvalidTokenException("Invalid token"));
+
+        if(user.getResetPasswordTokenExpiry() == null
+        && user.getResetPasswordTokenExpiry().isBefore(LocalDateTime.now())){
+            throw new InvalidTokenException("Token has expired");
+        }
+
+        if(!resetPasswordWithTokenDTO.getNewPassword().equals(resetPasswordWithTokenDTO.getConfirmNewPassword())){
+            throw new PasswordPolicyException("Passwords do not match");
+        }
+
+        user.setPassword(passwordEncoder.encode(resetPasswordWithTokenDTO.getNewPassword()));
+        user.setPasswordChangedAt(LocalDateTime.now());
+        user.setResetPasswordToken(null);
+        user.setResetPasswordTokenExpiry(null);
+        repo.save(user);
+
+        String subject = "Password Reset Successfully";
+        String text = "Hello " + user.getFullName() + ",\n\nYour password has been successfully reset.\n";
+        mailService.sendSimpleMessage(subject, text, user.getEmail());
+    }
+
+
+    @Override
+    public void changePassword(String userName, ChangePasswordDTO changePasswordDTO) {
         User user = repo.findByUserName(userName)
                 .orElseThrow(()->new UsernameNotFoundException("Username not found"));
 
@@ -186,7 +226,7 @@ public class UserServiceImpl implements  IUserService{
         }
 
         user.setPassword(passwordEncoder.encode(changePasswordDTO.getNewPassword()));
-      //user.setPasswordChangedAt(LocalDateTime.now());
+        user.setPasswordChangedAt(LocalDateTime.now());
         repo.save(user);
 
         //slanje poruke na mail
@@ -196,7 +236,6 @@ public class UserServiceImpl implements  IUserService{
 
         mailService.sendSimpleMessage(subject, text, user.getEmail());
 
-        return true;
     }
 
     @Override

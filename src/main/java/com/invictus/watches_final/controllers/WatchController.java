@@ -6,12 +6,11 @@ import com.invictus.watches_final.dto.WatchDTOs.EditWatchDTO;
 import com.invictus.watches_final.dto.WatchDTOs.WatchDTO;
 import com.invictus.watches_final.mapper.WatchMapper;
 import com.invictus.watches_final.model.Watch;
-import com.invictus.watches_final.services.IWatchService;
+import com.invictus.watches_final.services.IServices.IWatchService;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -24,7 +23,6 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/watch")
 @AllArgsConstructor
-@CrossOrigin("*")
 public class WatchController {
     private final IWatchService service;
 

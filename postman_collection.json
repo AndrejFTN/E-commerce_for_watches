@@ -1,0 +1,386 @@
+{
+  "info": {
+    "name": "Watches",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:9002", "type": "string" },
+    { "key": "token", "value": "", "type": "string" }
+  ],
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      { "key": "token", "value": "{{token}}", "type": "string" }
+    ]
+  },
+  "item": [
+    {
+      "name": "User",
+      "item": [
+        {
+          "name": "Register",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": { "mode": "raw", "raw": "", "options": { "raw": { "language": "json" } } },
+            "url": { "raw": "{{baseUrl}}/user/register", "host": ["{{baseUrl}}"], "path": ["user", "register"] }
+          }
+        },
+        {
+          "name": "Login",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": { "mode": "raw", "raw": "", "options": { "raw": { "language": "json" } } },
+            "url": { "raw": "{{baseUrl}}/user/login", "host": ["{{baseUrl}}"], "path": ["user", "login"] }
+          }
+        },
+        {
+          "name": "Reset Password",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "body": { "mode": "raw", "raw": "", "options": { "raw": { "language": "json" } } },
+            "url": { "raw": "{{baseUrl}}/user/resetPassword", "host": ["{{baseUrl}}"], "path": ["user", "resetPassword"] }
+          }
+        },
+        {
+          "name": "Verify Email",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/user/verify?token=",
+              "host": ["{{baseUrl}}"], "path": ["user", "verify"],
+              "query": [{ "key": "token", "value": "" }]
+            }
+          }
+        },
+        {
+          "name": "Resend Email",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/user/resendEmail?email=",
+              "host": ["{{baseUrl}}"], "path": ["user", "resendEmail"],
+              "query": [{ "key": "email", "value": "" }]
+            }
+          }
+        },
+        {
+          "name": "Get All (list)",
+          "request": {
+            "method": "GET", "header": [],
+            "url": { "raw": "{{baseUrl}}/user/getAll", "host": ["{{baseUrl}}"], "path": ["user", "getAll"] }
+          }
+        },
+        {
+          "name": "Get All (paginated)",
+          "request": {
+            "method": "GET", "header": [],
+            "url": { "raw": "{{baseUrl}}/user/getAllPage", "host": ["{{baseUrl}}"], "path": ["user", "getAllPage"] }
+          }
+        },
+        {
+          "name": "Get User ID By Username",
+          "request": {
+            "method": "GET", "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/user/getUserId/:userName",
+              "host": ["{{baseUrl}}"], "path": ["user", "getUserId", ":userName"],
+              "variable": [{ "key": "userName", "value": "" }]
+            }
+          }
+        },
+        {
+          "name": "Get User Info By Username",
+          "request": {
+            "method": "GET", "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/user/getUserInfo/:userName",
+              "host": ["{{baseUrl}}"], "path": ["user", "getUserInfo", ":userName"],
+              "variable": [{ "key": "userName", "value": "" }]
+            }
+          }
+        },
+        {
+          "name": "Check If Admin",
+          "request": {
+            "method": "GET", "header": [],
+            "url": { "raw": "{{baseUrl}}/user/checkIfAdmin", "host": ["{{baseUrl}}"], "path": ["user", "checkIfAdmin"] }
+          }
+        },
+        {
+          "name": "Update User",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "body": { "mode": "raw", "raw": "", "options": { "raw": { "language": "json" } } },
+            "url": {
+              "raw": "{{baseUrl}}/user/updateUser/:userID",
+              "host": ["{{baseUrl}}"], "path": ["user", "updateUser", ":userID"],
+              "variable": [{ "key": "userID", "value": "" }]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Watch",
+      "item": [
+        {
+          "name": "Get All",
+          "request": {
+            "method": "GET", "header": [],
+            "url": { "raw": "{{baseUrl}}/watch/getAll", "host": ["{{baseUrl}}"], "path": ["watch", "getAll"] }
+          }
+        },
+        {
+          "name": "Get One Watch",
+          "request": {
+            "method": "GET", "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/watch/getOneWatch/:watchID",
+              "host": ["{{baseUrl}}"], "path": ["watch", "getOneWatch", ":watchID"],
+              "variable": [{ "key": "watchID", "value": "" }]
+            }
+          }
+        },
+        {
+          "name": "Filter Watches",
+          "request": {
+            "method": "GET", "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/watch/filterWatches?color=&brand=&mechanism=&minPriceFilter=&maxPriceFilter=&page=0&size=10&sortBy=&sortDir=asc",
+              "host": ["{{baseUrl}}"], "path": ["watch", "filterWatches"],
+              "query": [
+                { "key": "color", "value": "" },
+                { "key": "brand", "value": "" },
+                { "key": "mechanism", "value": "" },
+                { "key": "minPriceFilter", "value": "" },
+                { "key": "maxPriceFilter", "value": "" },
+                { "key": "page", "value": "0" },
+                { "key": "size", "value": "10" },
+                { "key": "sortBy", "value": "" },
+                { "key": "sortDir", "value": "asc" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Add Watch",
+          "request": {
+            "method": "POST", "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                { "key": "model", "value": "", "type": "text" },
+                { "key": "brand", "value": "", "type": "text" },
+                { "key": "color", "value": "", "type": "text" },
+                { "key": "mechanism", "value": "", "type": "text" },
+                { "key": "manufactureDate", "value": "", "type": "text" },
+                { "key": "price", "value": "", "type": "text" },
+                { "key": "stock", "value": "", "type": "text" },
+                { "key": "gender", "value": "", "type": "text" },
+                { "key": "image", "type": "file", "src": [] }
+              ]
+            },
+            "url": { "raw": "{{baseUrl}}/watch/addWatch", "host": ["{{baseUrl}}"], "path": ["watch", "addWatch"] }
+          }
+        },
+        {
+          "name": "Edit Watch",
+          "request": {
+            "method": "PUT", "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                { "key": "watchID", "value": "", "type": "text" },
+                { "key": "model", "value": "", "type": "text" },
+                { "key": "brand", "value": "", "type": "text" },
+                { "key": "color", "value": "", "type": "text" },
+                { "key": "mechanism", "value": "", "type": "text" },
+                { "key": "manufactureDate", "value": "", "type": "text" },
+                { "key": "price", "value": "", "type": "text" },
+                { "key": "stock", "value": "", "type": "text" },
+                { "key": "gender", "value": "", "type": "text" },
+                { "key": "image", "type": "file", "src": [] }
+              ]
+            },
+            "url": { "raw": "{{baseUrl}}/watch/editWatch", "host": ["{{baseUrl}}"], "path": ["watch", "editWatch"] }
+          }
+        },
+        {
+          "name": "Set Watch Status",
+          "request": {
+            "method": "PUT", "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/watch/statusWatch/:watchID?status=",
+              "host": ["{{baseUrl}}"], "path": ["watch", "statusWatch", ":watchID"],
+              "query": [{ "key": "status", "value": "" }],
+              "variable": [{ "key": "watchID", "value": "" }]
+            }
+          }
+        },
+        {
+          "name": "Add Amount",
+          "request": {
+            "method": "PUT", "header": [],
+            "body": { "mode": "raw", "raw": "", "options": { "raw": { "language": "json" } } },
+            "url": { "raw": "{{baseUrl}}/watch/addAmount", "host": ["{{baseUrl}}"], "path": ["watch", "addAmount"] }
+          }
+        },
+        {
+          "name": "Delete Watch",
+          "request": {
+            "method": "DELETE", "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/watch/deleteWatch/:watchID",
+              "host": ["{{baseUrl}}"], "path": ["watch", "deleteWatch", ":watchID"],
+              "variable": [{ "key": "watchID", "value": "" }]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Cart",
+      "item": [
+        {
+          "name": "Get Shopping Cart",
+          "request": {
+            "method": "GET", "header": [],
+            "url": { "raw": "{{baseUrl}}/cart/getShoppingCart", "host": ["{{baseUrl}}"], "path": ["cart", "getShoppingCart"] }
+          }
+        },
+        {
+          "name": "Add Item To Cart",
+          "request": {
+            "method": "POST", "header": [],
+            "body": { "mode": "raw", "raw": "", "options": { "raw": { "language": "json" } } },
+            "url": { "raw": "{{baseUrl}}/cart/addItemToCart", "host": ["{{baseUrl}}"], "path": ["cart", "addItemToCart"] }
+          }
+        },
+        {
+          "name": "Delete Item From Cart",
+          "request": {
+            "method": "DELETE", "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/cart/deleteItemFromCart/:itemID",
+              "host": ["{{baseUrl}}"], "path": ["cart", "deleteItemFromCart", ":itemID"],
+              "variable": [{ "key": "itemID", "value": "" }]
+            }
+          }
+        },
+        {
+          "name": "Empty Cart",
+          "request": {
+            "method": "POST", "header": [],
+            "url": { "raw": "{{baseUrl}}/cart/emptyCart", "host": ["{{baseUrl}}"], "path": ["cart", "emptyCart"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Order",
+      "item": [
+        {
+          "name": "Create Order",
+          "request": {
+            "method": "POST", "header": [],
+            "body": { "mode": "raw", "raw": "", "options": { "raw": { "language": "json" } } },
+            "url": { "raw": "{{baseUrl}}/order/createOrder", "host": ["{{baseUrl}}"], "path": ["order", "createOrder"] }
+          }
+        },
+        {
+          "name": "Get Order",
+          "request": {
+            "method": "GET", "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/order/getOrder/:orderID",
+              "host": ["{{baseUrl}}"], "path": ["order", "getOrder", ":orderID"],
+              "variable": [{ "key": "orderID", "value": "" }]
+            }
+          }
+        },
+        {
+          "name": "Get All Orders",
+          "request": {
+            "method": "GET", "header": [],
+            "url": { "raw": "{{baseUrl}}/order/getAllOrders", "host": ["{{baseUrl}}"], "path": ["order", "getAllOrders"] }
+          }
+        },
+        {
+          "name": "Get Orders By Status",
+          "request": {
+            "method": "GET", "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/order/getOrdersByStatus?status=",
+              "host": ["{{baseUrl}}"], "path": ["order", "getOrdersByStatus"],
+              "query": [{ "key": "status", "value": "" }]
+            }
+          }
+        },
+        {
+          "name": "Admin - Get Order",
+          "request": {
+            "method": "GET", "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/order/admin/getOrder/:orderID",
+              "host": ["{{baseUrl}}"], "path": ["order", "admin", "getOrder", ":orderID"],
+              "variable": [{ "key": "orderID", "value": "" }]
+            }
+          }
+        },
+        {
+          "name": "Admin - Get All Orders For User",
+          "request": {
+            "method": "GET", "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/order/admin/getAllOrders/:username",
+              "host": ["{{baseUrl}}"], "path": ["order", "admin", "getAllOrders", ":username"],
+              "variable": [{ "key": "username", "value": "" }]
+            }
+          }
+        },
+        {
+          "name": "Admin - Get Orders For User By Status",
+          "request": {
+            "method": "GET", "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/order/admin/getOrdersByStatus/:username?status=",
+              "host": ["{{baseUrl}}"], "path": ["order", "admin", "getOrdersByStatus", ":username"],
+              "query": [{ "key": "status", "value": "" }],
+              "variable": [{ "key": "username", "value": "" }]
+            }
+          }
+        },
+        {
+          "name": "Cancel Order",
+          "request": {
+            "method": "PUT", "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/order/cancelOrder/:orderID",
+              "host": ["{{baseUrl}}"], "path": ["order", "cancelOrder", ":orderID"],
+              "variable": [{ "key": "orderID", "value": "" }]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Request",
+      "item": [
+        {
+          "name": "Send Request",
+          "request": {
+            "method": "POST", "header": [],
+            "body": { "mode": "raw", "raw": "", "options": { "raw": { "language": "json" } } },
+            "url": { "raw": "{{baseUrl}}/request/sendRequest", "host": ["{{baseUrl}}"], "path": ["request", "sendRequest"] }
+          }
+        }
+      ]
+    }
+  ]
+}

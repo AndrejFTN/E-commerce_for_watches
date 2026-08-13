@@ -1,7 +1,7 @@
 package com.invictus.watches_final.controllers;
 
 import com.invictus.watches_final.dto.AccountDTOs.RequestDTO;
-import com.invictus.watches_final.services.IRequestService;
+import com.invictus.watches_final.services.IServices.IRequestService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;

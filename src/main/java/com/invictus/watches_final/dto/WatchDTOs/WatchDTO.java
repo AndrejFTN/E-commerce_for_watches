@@ -32,9 +32,11 @@ public class WatchDTO {
     private float price;
     @NotNull
     @Positive
-    private Integer available;
+    private Integer stock;
     @NotNull
     private GenderType gender;
+    private boolean isActive;
+    private UUID watchID;
     private String image; //da li string ili bytes
 
 }

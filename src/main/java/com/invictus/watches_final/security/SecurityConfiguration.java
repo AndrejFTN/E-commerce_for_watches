@@ -39,11 +39,15 @@ public class SecurityConfiguration {
                         .requestMatchers(
                                 "/user/login",
                                 "/user/register",
+                                "/user/forgotPassword",
+                                "/user/resetPasswordWithToken",
                                 "/watch/getAll",
                                 "/watch/filterWatches",
                                 "/watch/getOneWatch",
                                 "/store/**",
-                                "/request/sendRequest"
+                                "/request/sendRequest",
+                                "/swagger-ui/**",
+                                "/v3/api-docs/**"
                         ).permitAll()
                         // Sve ostalo zahteva autentifikaciju
                         .anyRequest().authenticated()

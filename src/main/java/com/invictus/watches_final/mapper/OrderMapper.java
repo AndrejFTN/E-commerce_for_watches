@@ -1,13 +1,58 @@
 package com.invictus.watches_final.mapper;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import com.invictus.watches_final.dto.OrderDTOs.CreateOrderDTO;
+import com.invictus.watches_final.dto.OrderDTOs.OrderDTO;
+import com.invictus.watches_final.dto.OrderDTOs.OrderItemDTO;
+import com.invictus.watches_final.model.Order;
+import com.invictus.watches_final.model.OrderItem;
 
-@Data
-@AllArgsConstructor
-@NoArgsConstructor
+import java.util.List;
+import java.util.stream.Collectors;
+
 public class OrderMapper {
 
+    public static Order dtoToEntity(CreateOrderDTO createOrderDTO) {
+        Order order = new Order();
 
+        order.setMail(createOrderDTO.getMail());
+        order.setAddress(createOrderDTO.getAddress());
+        order.setZipCode(createOrderDTO.getZipCode());
+        order.setPhoneNumber(createOrderDTO.getPhoneNumber());
+//        List<OrderItem> items = createOrderDTO.getOrderItems()
+//                .stream()
+//                .map(dto -> {
+//                    OrderItem item = new OrderItem();
+//                    item.setAmount(dto.getAmount());
+//                    item.setPrice(dto.getPrice());
+//                    // item.setOrder(order);  //order i sat u servisu
+//                    return item;
+//                })
+//                .collect(Collectors.toList());
+
+//        order.setOrderItems(items);
+
+        return order;
+    }
+
+    public static OrderDTO entityToDTO(Order order) {
+        OrderDTO dto = new OrderDTO();
+
+        dto.setAddress(order.getAddress());
+        dto.setZipCode(order.getZipCode());
+        dto.setMail(order.getMail());
+        dto.setPhoneNumber(order.getPhoneNumber());
+        dto.setDateOfOrder(order.getDateOfOrder());
+        dto.setStatus(order.getStatus());
+        dto.setOrderID(order.getOrderID());
+
+        List<OrderItemDTO> items = order.getOrderItems()
+                .stream()
+                .map(OrderItemMapper::entityToDTO)
+                .collect(Collectors.toList());
+
+        dto.setOrderItems(items);
+        dto.setTotalAmount(order.getTotalAmount());
+
+        return dto;
+    }
 }

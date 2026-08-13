@@ -67,4 +67,9 @@ public class JwtService {
         String username = getUsernameFromToken(token);
         return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
     }
+
+    //Vraca vreme izdavanja tokena
+    public Date getIssuedAtDateFromToken(String token) {
+        return getAllClaimsFromToken(token).getIssuedAt();
+    }
 }

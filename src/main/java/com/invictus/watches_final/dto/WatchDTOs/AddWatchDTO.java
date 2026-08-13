@@ -32,7 +32,7 @@ public class AddWatchDTO {
     private float price;
     @NotNull
     @Min(value = 0, message = "Number can't be negative")
-    private Integer available;
+    private Integer stock;
     @NotNull(message = "Gender is required.")
     private GenderType gender;
 }

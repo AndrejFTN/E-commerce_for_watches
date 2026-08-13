@@ -1,9 +1,9 @@
-package com.invictus.watches_final.services;
+package com.invictus.watches_final.services.ServiceImpl;
 
 
 import com.invictus.watches_final.dto.AccountDTOs.RequestDTO;
+import com.invictus.watches_final.services.IServices.IRequestService;
 import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 @AllArgsConstructor

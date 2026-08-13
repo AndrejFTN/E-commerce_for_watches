@@ -1,12 +1,10 @@
 package com.invictus.watches_final.controllers;
 
 import com.invictus.watches_final.dto.AccountDTOs.*;
-import com.invictus.watches_final.model.User;
 import com.invictus.watches_final.security.JwtService;
-import com.invictus.watches_final.services.IUserService;
+import com.invictus.watches_final.services.IServices.IUserService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -14,19 +12,15 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.data.domain.Pageable;
 
 
-import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
 @RestController
 @RequestMapping("/user")
 @AllArgsConstructor
-@CrossOrigin("*")
 public class UserController {
 
     private final IUserService service;
@@ -57,6 +51,18 @@ public class UserController {
                                                   @Valid @RequestBody ChangePasswordDTO changePasswordDTO) {
         service.changePassword(authentication.getName(), changePasswordDTO);
         return ResponseEntity.ok("Password changed successfully");
+    }
+
+    @PostMapping(path = "/forgotPassword", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<String> forgotPassword (@Valid @RequestBody ForgotPasswordDTO forgotPasswordDTO) {
+        service.forgotPassword(forgotPasswordDTO);
+        return ResponseEntity.ok("Password reset email sent");
+    }
+
+    @PutMapping(path = "/resetPasswordWithToken", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<String> resetPasswordWithtoken(@Valid @RequestBody ResetPasswordWithTokenDTO resetPasswordWithTokenDTO) {
+        service.resetPassword(resetPasswordWithTokenDTO);
+        return ResponseEntity.ok("Password reset successfully");
     }
 
     @GetMapping(path = "/verify")
@@ -108,7 +114,7 @@ public class UserController {
 
     @PreAuthorize("hasAnyAuthority('USER_ROLE','ADMIN_ROLE')")
     @PutMapping(path="/updateUser/{userID}")
-    public ResponseEntity<UserInfoDTO> updateUser(@PathVariable UUID userID, @Valid @RequestBody UserInfoDTO userDTO){
+    public ResponseEntity<UserInfoDTO> updateUser(@PathVariable UUID userID, @Valid @RequestBody UpdateProfilDTO userDTO){
             UserInfoDTO updatedUserDTO = service.updateUser(userID, userDTO);
             return ResponseEntity.ok(updatedUserDTO);
     }

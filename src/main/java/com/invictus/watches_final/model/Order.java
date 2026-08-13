@@ -7,10 +7,13 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Entity
 @Data
+@Table(name = "orders")
 @AllArgsConstructor
 @NoArgsConstructor
 public class Order {
@@ -30,6 +33,11 @@ public class Order {
     private String address;
     private String zipCode;
     private String mail;
+
+    private double totalAmount;
+
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<OrderItem> orderItems = new ArrayList<>();
 
 
 //

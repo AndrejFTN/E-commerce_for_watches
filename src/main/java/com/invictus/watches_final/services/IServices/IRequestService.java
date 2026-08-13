@@ -1,4 +1,4 @@
-package com.invictus.watches_final.services;
+package com.invictus.watches_final.services.IServices;
 
 import com.invictus.watches_final.dto.AccountDTOs.RequestDTO;
 

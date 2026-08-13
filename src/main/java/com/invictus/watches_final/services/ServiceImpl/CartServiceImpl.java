@@ -1,4 +1,4 @@
-package com.invictus.watches_final.services;
+package com.invictus.watches_final.services.ServiceImpl;
 
 import com.invictus.watches_final.dto.CartDTOs.CartDTO;
 import com.invictus.watches_final.dto.CartDTOs.CartItemDTO;
@@ -12,11 +12,14 @@ import com.invictus.watches_final.repository.CartItemRepo;
 import com.invictus.watches_final.repository.CartRepo;
 import com.invictus.watches_final.repository.UserRepo;
 import com.invictus.watches_final.repository.WatchRepo;
+import com.invictus.watches_final.services.IServices.ICartService;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -44,6 +47,7 @@ public class CartServiceImpl implements ICartService {
         return CartMapper.entityToDTO(cart);
     }
 
+    @Transactional
     @Override
     public CartItemDTO addItemToCart(UUID userID, CreateCartItemDTO createCartItemDTO) {
         var user = userRepo.findById(userID)
@@ -56,26 +60,53 @@ public class CartServiceImpl implements ICartService {
                 .orElseThrow(() -> new EntityNotFoundException("Watch not found ID: " + createCartItemDTO.getWatchID()));
 
 
-        CartItem cartItem = cartItemRepo.findByCartAndWatch(cart, watch)
-                .map(existing ->{
+        Optional<CartItem> existingItem = cartItemRepo.findByCartAndWatch(cart, watch);
 
-                    existing.setAmount(existing.getAmount() + createCartItemDTO.getAmount());
+        int currentAmountInCart = existingItem.map(CartItem::getAmount).orElse(0);
+        int totalRequested =  currentAmountInCart + createCartItemDTO.getAmount();
 
+        if(totalRequested > watch.getStock()){
+            throw new IllegalArgumentException(
+                    "Not enough stock for watch: " + watch.getBrand() + " " + watch.getModel() +
+                            " (available: " + watch.getStock() + ", already in cart: " + currentAmountInCart +
+                            ", requested: " + createCartItemDTO.getAmount() + ")"
+            );
+        }
+
+        CartItem cartItem = existingItem
+                .map(existing -> {
+                    existing.setAmount(totalRequested);
                     return cartItemRepo.save(existing);
-                }).orElseGet(()->{
+                }).orElseGet(()-> {
                     CartItem newCartItem = new CartItem();
-
                     newCartItem.setCart(cart);
                     newCartItem.setWatch(watch);
                     newCartItem.setAmount(createCartItemDTO.getAmount());
                     newCartItem.setPrice(watch.getPrice());
-
                     return cartItemRepo.save(newCartItem);
                 });
 
         return CartItemMapper.entityToItemDTO(cartItem);
+
+//        CartItem cartItem = cartItemRepo.findByCartAndWatch(cart, watch)
+//                .map(existing ->{
+//
+//                    existing.setAmount(existing.getAmount() + createCartItemDTO.getAmount());
+//
+//                    return cartItemRepo.save(existing);
+//                }).orElseGet(()->{
+//                    CartItem newCartItem = new CartItem();
+//
+//                    newCartItem.setCart(cart);
+//                    newCartItem.setWatch(watch);
+//                    newCartItem.setAmount(createCartItemDTO.getAmount());
+//                    newCartItem.setPrice(watch.getPrice());
+//
+//                    return cartItemRepo.save(newCartItem);
+//                });
     }
 
+    @Transactional
     @Override
     public boolean deleteItem(UUID userID, UUID cartItemID) {
 
@@ -94,6 +125,7 @@ public class CartServiceImpl implements ICartService {
         return true;
     }
 
+    @Transactional
     @Override
     public boolean emptyCart(UUID userID) {
 
