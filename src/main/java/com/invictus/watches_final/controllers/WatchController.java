@@ -42,53 +42,10 @@ public class WatchController {
         return ResponseEntity.ok(WatchMapper.entityToDTO(watch));
     }
 
-//        try{
-//            Page<WatchDTO> watchesPage = service.getAllWatchesPage(pageable);
-//
-//            if(watchesPage.isEmpty()){
-//                return ResponseEntity.status(HttpStatus.NO_CONTENT).body(Map.of(
-//                        "status", HttpStatus.NO_CONTENT.value(),
-//                        "message", "No watches found"));
-//            }
-//
-//            return ResponseEntity.ok(Map.of(
-//                    "status", HttpStatus.OK.value(),
-//                    "page", watchesPage.getNumber(),
-//                    "totalPages", watchesPage.getTotalPages(),
-//                    "totalElements", watchesPage.getTotalElements(),
-//                    "watches", watchesPage.getContent()
-//            ));
-//        } catch (Exception e) {
-//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-//                    .body(Map.of(
-//                            "status", HttpStatus.INTERNAL_SERVER_ERROR.value(),
-//                            "error", "Error fetching pages",
-//                            "details", e.getMessage()
-//                    ));
-//        }
-
-//    @GetMapping(path = "/getOneWatch/{watchID}")
-//    public ResponseEntity<?> getOneWatch(@PathVariable UUID watchID){
-//        Optional<Watch> watchOptional = service.getOneWatch(watchID);
-//
-//        if(watchOptional.isEmpty()){
-//            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("ID doesn't exist");
-//        }else {
-//         Watch watch = watchOptional.get();
-//         WatchDTO watchDTO = WatchMapper.entityToDTO(watch);
-//         return ResponseEntity.ok(watchDTO);
-//        }
-//    }
-    //@GetMapping(path = "/getOneWatch/{watchID})
-    //public ResponseEntity<?> getOneWatch(@PathVariable UUID watchID){
-    // return service.getOneWatch(watchID)
-    //               .map(watch -> ResponseEntity.ok(WatchMapper.entityToDTO(watchID)))
-    //               .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).body("ID doesn't exist));
-    // --- druga mogucnostu za get one----
-
 
     @GetMapping("/filterWatches")
     public ResponseEntity<Page<WatchDTO>> getFilteredWatches(
+            @RequestParam(required = false) String search,
             @RequestParam(required = false) String color,
             @RequestParam(required = false) String brand,
             @RequestParam(required = false) String mechanism,
@@ -103,7 +60,7 @@ public class WatchController {
             throw new IllegalArgumentException("minPrice cannot be greater than maxPrice");
         }
 
-        Page<WatchDTO> result = service.getFilteredWatches(color, brand, mechanism,
+        Page<WatchDTO> result = service.getFilteredWatches(search, color, brand, mechanism,
                                                             minPriceFilter, maxPriceFilter,
                                                             sortBy, sortDir, page, size);
 

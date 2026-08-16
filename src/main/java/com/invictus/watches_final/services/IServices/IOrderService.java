@@ -12,7 +12,13 @@ public interface IOrderService {
 
     OrderDTO createOrder(CreateOrderDTO orderDTO);
 
+    void markOrderAsPaid(UUID orderId);
+
     OrderDTO getOrderForUser(UUID orderID);
+
+    void cancelExpiredOrders();
+
+    String createCheckoutSession(UUID orderId);
 
     Page<OrderDTO> getAllOrdersForUser(Pageable pageable);
 

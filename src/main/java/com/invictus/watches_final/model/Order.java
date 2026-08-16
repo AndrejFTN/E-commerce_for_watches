@@ -39,16 +39,7 @@ public class Order {
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<OrderItem> orderItems = new ArrayList<>();
 
+    private String stripeSessionId;
 
-//
-//    public void addOrderItem(OrderItem item) {
-//        orderItems.add(item);
-//        item.setOrder(this);
-//    }
-//
-//    public void removeOrderItem(OrderItem item) {
-//        orderItems.remove(item);
-//        item.setOrder(null);
-//    }
 
 }

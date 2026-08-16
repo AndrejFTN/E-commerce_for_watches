@@ -1,6 +1,7 @@
 package com.invictus.watches_final.repository;
 
 import com.invictus.watches_final.model.OrderItem;
+import com.invictus.watches_final.model.Watch;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -14,4 +15,6 @@ public interface OrderItemRepo extends JpaRepository<OrderItem, UUID> {
 
     @Query("SELECT o FROM OrderItem o WHERE o.order.orderID = :orderID")
     List<OrderItem> findByOrderID(@Param("orderID") UUID orderID);
+
+    boolean existsByWatch(Watch watch);
 }

@@ -10,6 +10,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -19,6 +20,8 @@ public interface OrderRepo extends JpaRepository<Order, UUID> {
 
 
     Page<Order> findByUserUserNameAndStatusOrderByDateOfOrderDesc(String username, OrderStatus status, Pageable pageable);
+
+    List<Order> findByStatusAndDateOfOrderBefore(OrderStatus status, LocalDateTime cutoff);
 
     Page<Order> findByUserUserNameOrderByDateOfOrderDesc(String username, Pageable pageable);
 

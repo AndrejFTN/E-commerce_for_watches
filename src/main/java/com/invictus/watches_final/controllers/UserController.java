@@ -2,6 +2,7 @@ package com.invictus.watches_final.controllers;
 
 import com.invictus.watches_final.dto.AccountDTOs.*;
 import com.invictus.watches_final.security.JwtService;
+import com.invictus.watches_final.security.LoginAttemptService;
 import com.invictus.watches_final.services.IServices.IUserService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
@@ -10,8 +11,10 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.LockedException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.data.domain.Pageable;
 
@@ -26,6 +29,7 @@ public class UserController {
     private final IUserService service;
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
+    private final LoginAttemptService loginAttemptService;
 
     @PostMapping(path = "/register", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<UserInfoDTO> register (@Valid @RequestBody RegisterDTO registerDTO) {
@@ -35,9 +39,19 @@ public class UserController {
 
     @PostMapping(path = "/login", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<AuthResponseDTO> login (@Valid @RequestBody LoginDTO loginDTO) {
-        authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(loginDTO.getUserName(), loginDTO.getPassword())
-        );
+        if (loginAttemptService.isBlocked(loginDTO.getUserName())) {
+            throw new LockedException("Too many failed login attempts. Try again in a few minutes.");
+        }
+        try {
+            authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(loginDTO.getUserName(), loginDTO.getPassword())
+            );
+        } catch (AuthenticationException e) {
+            loginAttemptService.loginFailed(loginDTO.getUserName());
+            throw e;
+        }
+
+        loginAttemptService.loginSucceeded(loginDTO.getUserName());
 
         String token =  jwtService.generateToken(loginDTO.getUserName());
 

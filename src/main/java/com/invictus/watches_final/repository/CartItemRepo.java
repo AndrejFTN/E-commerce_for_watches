@@ -16,4 +16,7 @@ public interface CartItemRepo extends JpaRepository<CartItem, UUID> {
     Optional<CartItem> findByCartAndWatch(Cart cart, Watch watch);
 
     List<CartItem> findByCart(Cart cart);
+
+    boolean existsByWatch(Watch watch);
+
 }

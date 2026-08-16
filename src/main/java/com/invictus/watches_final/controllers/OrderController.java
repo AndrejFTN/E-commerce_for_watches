@@ -79,4 +79,11 @@ public class OrderController {
         service.cancelOrder(orderID);
         return ResponseEntity.ok("You cancelled your order");
     }
+
+    @PreAuthorize("hasAnyAuthority('USER_ROLE','ADMIN_ROLE')")
+    @PostMapping("/checkout/{orderID}")
+    public ResponseEntity<String> createCheckoutSession(@PathVariable UUID orderID) {
+        String url = service.createCheckoutSession(orderID);
+        return ResponseEntity.ok(url);
+    }
 }

@@ -47,7 +47,8 @@ public class SecurityConfiguration {
                                 "/store/**",
                                 "/request/sendRequest",
                                 "/swagger-ui/**",
-                                "/v3/api-docs/**"
+                                "/v3/api-docs/**",
+                                "/webhook/stripe"
                         ).permitAll()
                         // Sve ostalo zahteva autentifikaciju
                         .anyRequest().authenticated()

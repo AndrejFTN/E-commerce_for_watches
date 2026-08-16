@@ -17,4 +17,7 @@ public interface FavoriteRepo extends JpaRepository<Favorite, UUID> {
     Page<Favorite> findByUser(User user, Pageable pageable);
 
     Optional<Favorite> findByUserAndWatch(User user, Watch watch);
+
+    boolean existsByWatch(Watch watch);
+
 }

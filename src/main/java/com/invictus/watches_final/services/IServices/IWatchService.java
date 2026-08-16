@@ -27,13 +27,13 @@ public interface IWatchService {
 
     WatchDTO addWatch(AddWatchDTO addWatchDTO, MultipartFile image);
 
-    boolean deleteWatch(UUID watchID);
+    void deleteWatch(UUID watchID);
 
     void reduceStock(UUID watchID, int amount);
 
     String setWatchStatus(UUID watchID, boolean status);
 
-    Page<WatchDTO> getFilteredWatches(String colorFilter, String brandFilter, String mechanismFilter,Float minPrice,
+    Page<WatchDTO> getFilteredWatches(String search, String colorFilter, String brandFilter, String mechanismFilter,Float minPrice,
                                       Float maxPrice,String sortBy, String orderBy, int page, int size);
 
 

@@ -8,7 +8,11 @@ import com.invictus.watches_final.exceptions.CustomExceptions.ImageProcessingExc
 import com.invictus.watches_final.exceptions.CustomExceptions.WatchAlreadyExistsException;
 import com.invictus.watches_final.mapper.WatchMapper;
 import com.invictus.watches_final.model.Watch;
+import com.invictus.watches_final.repository.CartItemRepo;
+import com.invictus.watches_final.repository.FavoriteRepo;
+import com.invictus.watches_final.repository.OrderItemRepo;
 import com.invictus.watches_final.repository.WatchRepo;
+import com.invictus.watches_final.infrastructure.WatchSpecifications;
 import com.invictus.watches_final.services.IServices.IWatchService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
@@ -16,6 +20,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -30,6 +35,10 @@ public class WatchServiceImpl implements IWatchService {
 
     private final WatchRepo repo;
 
+    private final CartItemRepo cartItemRepo;
+    private final OrderItemRepo orderItemRepo;
+    private final FavoriteRepo favoriteRepo;
+
     @Override
     public Page<WatchDTO> getAllWatchesPage(Pageable pageable) {//paginacija za vracanje svih elemenata, moguca greska , ugradjen metoda
         if(pageable.getPageNumber() < 0 || pageable.getPageSize() < 0){
@@ -43,10 +52,6 @@ public class WatchServiceImpl implements IWatchService {
         return repo.findById(watchID);
     }
 
-//    @Override
-//    public boolean existsByBrandAndModelAndMechanism(String brand, String model, String mechanism) {
-//        return repo.existsByBrandAndModelAndMechanism(brand, model, mechanism);
-//    }
 
     @Override
     public WatchDTO editWatch(EditWatchDTO editWatchDTO, MultipartFile image) {
@@ -54,7 +59,6 @@ public class WatchServiceImpl implements IWatchService {
         Watch existingWatch = repo.findById(editWatchDTO.getWatchID())
                 .orElseThrow(() -> new RuntimeException("Watch not found"));
 
-        //Watch updatedWatch = WatchMapper.editDTOToEntity(editWatchDTO, existingWatch); // da li ce ovde primati id u bazi?
 
         WatchMapper.editDTOToEntity(editWatchDTO, existingWatch);
 
@@ -65,12 +69,6 @@ public class WatchServiceImpl implements IWatchService {
                 throw new ImageProcessingException("Error reading image file");
             }
         }
-
-//        if (existingWatch.getStock() != null) {
-//            existingWatch.setActive(existingWatch.getStock() > 0);
-//        } else {
-//            existingWatch.setActive(false);
-//        } zato sto se rucno dodaje ili s addmount ili ovako, cim se edituje znaci da je pozitivan
 
         Watch savedWatch = repo.save(existingWatch);
 
@@ -121,43 +119,49 @@ public class WatchServiceImpl implements IWatchService {
     }
 
 
-    //dodati dodatnih filtera mzoda
-    //implemntirano i sortiranje
+
     @Override
-    public Page<WatchDTO> getFilteredWatches(String colorFilter, String brandFilter, String mechanismFilter,Float minPrice,
+    public Page<WatchDTO> getFilteredWatches(String search, String colorFilter, String brandFilter, String mechanismFilter,Float minPrice,
                                              Float maxPrice, String sortBy, String sortDir, int page, int size) {
 
-        String colorFilterModify = (colorFilter != null && !colorFilter.isEmpty()) ? "%" + colorFilter + "%" : null;
-        String brandFilterModify = (brandFilter != null && !brandFilter.isEmpty()) ? "%" + brandFilter + "%" : null;
-        String mechanismFilterModify = (mechanismFilter != null && !mechanismFilter.isEmpty()) ? "%" + mechanismFilter + "%" : null;
-
+        String colorFilterModify = (colorFilter != null && !colorFilter.isEmpty()) ? colorFilter : null;
+        String brandFilterModify = (brandFilter != null && !brandFilter.isEmpty()) ? brandFilter : null;
+        String mechanismFilterModify = (mechanismFilter != null && !mechanismFilter.isEmpty()) ? mechanismFilter : null;
+        String searchModify = (search != null && !search.isEmpty()) ? search : null;
 
         Sort.Direction direction = "desc".equalsIgnoreCase(sortDir) ? Sort.Direction.DESC : Sort.Direction.ASC;
-
         String sortField = (sortBy != null &&  !sortBy.isEmpty()) ? sortBy : "price";  // pravljenje sortiranja
         Sort sort = Sort.by(direction, sortField);                                      // i onda rucno pravljenje page
-
         Pageable pageable = PageRequest.of(page, size, sort);
 
-        Page<Watch> filteredWatches = repo.filteredWatches
-                (colorFilterModify, brandFilterModify, mechanismFilterModify, minPrice, maxPrice, pageable);
+        Specification<Watch> spec = Specification.allOf(
+                WatchSpecifications.hasBrand(brandFilterModify),
+                WatchSpecifications.hasMechanism(mechanismFilterModify),
+                WatchSpecifications.hasColor(colorFilterModify),
+                WatchSpecifications.priceBetween(minPrice, maxPrice),
+                WatchSpecifications.searchTerm(searchModify)
+        );
+
+
+        Page<Watch> filteredWatches = repo.findAll(spec, pageable);
 
         return filteredWatches.map(WatchMapper::entityToDTO);
     }
 
 
     @Override
-    public boolean deleteWatch(UUID watchID) {
-        if(!repo.existsById(watchID)){
-            return false;
-        }
-        try{
-            repo.deleteById(watchID);
-            return true;
-        }catch(Exception e){
-            return false;
-        }
+    public void deleteWatch(UUID watchID) {
 
+        Watch watch = repo.findByWatchID(watchID)
+                .orElseThrow(() -> new EntityNotFoundException("Watch not found"));
+        if(cartItemRepo.existsByWatch(watch) || orderItemRepo.existsByWatch(watch)
+                || favoriteRepo.existsByWatch(watch)){
+            throw new IllegalStateException(
+                    "Cannot delete watch " + watch.getBrand() + " " + watch.getModel() +
+                            ": it is referenced by an existing cart, order, or favorite"
+            );
+        }
+        repo.delete(watch);
     }
 
     @Override
@@ -190,24 +194,9 @@ public class WatchServiceImpl implements IWatchService {
         return "Watch has been updated";
     }
 
-//    @Override
-//    public void addAmount(AmountDTO amountDTO) {
-//        Watch watch = repo.findByWatchID(UUID.fromString(amountDTO.getWatchID()));
-//        if (watch != null) {
-//            Integer newAmount = watch.getStock() + amountDTO.getAmount();
-//            watch.setStock(newAmount);
-//            repo.save(watch);
-//        }
-//    }
-
-    // ili ovo gore ili ovo dole ispravnije sa Optional
 
     @Override
     public void addAmount(AmountDTO amountDTO) {
-
-//        if(amountDTO.getAmount() == null || amountDTO.getAmount() < 0){
-//            throw new IllegalArgumentException("Amount must be greater than 0");
-//
 
         Optional<Watch> optionalWatch = repo.findByWatchID(UUID.fromString(amountDTO.getWatchID()));
 
