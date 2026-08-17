@@ -75,18 +75,22 @@ public class OrderServiceImpl implements IOrderService {
                         OrderItem orderItem = new OrderItem();
                         orderItem.setOrder(order);
                         orderItem.setWatch(cartItem.getWatch());
-                        orderItem.setPrice(cartItem.getPrice());
+                        orderItem.setPrice(cartItem.getWatch().getEffectivePrice());
                         orderItem.setAmount(cartItem.getAmount());
                         return orderItem;
                 }).collect(Collectors.toList());
 
         order.setOrderItems(orderItems);
 
+        int totalQuantity = orderItems.stream().mapToInt(OrderItem::getAmount).sum();
+        double shippingCost = totalQuantity >=2 ? 0.0 : 20;
+        order.setShippingCost(shippingCost);
+
         for(OrderItem item : orderItems){
             watchService.reduceStock(item.getWatch().getWatchID(), item.getAmount());
         }
 
-        double total = cart.getItems()
+        double total = orderItems
                 .stream().mapToDouble(i -> i.getPrice() * i.getAmount())
                 .sum();  // ubacili smo racunanje konacnog ordera a za cart ce se racunati na frontu on fly
 

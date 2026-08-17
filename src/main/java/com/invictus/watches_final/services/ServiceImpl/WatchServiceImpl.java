@@ -8,6 +8,8 @@ import com.invictus.watches_final.exceptions.CustomExceptions.ImageProcessingExc
 import com.invictus.watches_final.exceptions.CustomExceptions.WatchAlreadyExistsException;
 import com.invictus.watches_final.mapper.WatchMapper;
 import com.invictus.watches_final.model.Watch;
+import com.invictus.watches_final.model.enums.GenderType;
+import com.invictus.watches_final.model.enums.OccasionType;
 import com.invictus.watches_final.repository.CartItemRepo;
 import com.invictus.watches_final.repository.FavoriteRepo;
 import com.invictus.watches_final.repository.OrderItemRepo;
@@ -26,6 +28,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -56,6 +59,8 @@ public class WatchServiceImpl implements IWatchService {
     @Override
     public WatchDTO editWatch(EditWatchDTO editWatchDTO, MultipartFile image) {
 
+        validateSaleDates(editWatchDTO.getSaleStartDate(), editWatchDTO.getSaleEndDate());
+
         Watch existingWatch = repo.findById(editWatchDTO.getWatchID())
                 .orElseThrow(() -> new RuntimeException("Watch not found"));
 
@@ -77,6 +82,8 @@ public class WatchServiceImpl implements IWatchService {
 
     @Override
     public WatchDTO addWatch(AddWatchDTO addWatchDTO, MultipartFile image) { //dosta izmena moguce greske
+
+        validateSaleDates(addWatchDTO.getSaleStartDate(), addWatchDTO.getSaleEndDate());
 
         Optional<Watch> exists = repo.findByBrandAndModelAndMechanismAndColor(
                 addWatchDTO.getBrand(),
@@ -121,13 +128,19 @@ public class WatchServiceImpl implements IWatchService {
 
 
     @Override
-    public Page<WatchDTO> getFilteredWatches(String search, String colorFilter, String brandFilter, String mechanismFilter,Float minPrice,
+    public Page<WatchDTO> getFilteredWatches(String search, String occasion, String gender, String colorFilter, String brandFilter, String mechanismFilter,Float minPrice,
                                              Float maxPrice, String sortBy, String sortDir, int page, int size) {
 
         String colorFilterModify = (colorFilter != null && !colorFilter.isEmpty()) ? colorFilter : null;
         String brandFilterModify = (brandFilter != null && !brandFilter.isEmpty()) ? brandFilter : null;
         String mechanismFilterModify = (mechanismFilter != null && !mechanismFilter.isEmpty()) ? mechanismFilter : null;
         String searchModify = (search != null && !search.isEmpty()) ? search : null;
+        OccasionType occasionFilter = (occasion != null && !occasion.isEmpty())
+                ? OccasionType.fromString(occasion) : null;
+
+        GenderType genderFilter = (gender != null && !gender.isEmpty())
+                ? GenderType.fromString(gender) : null;
+
 
         Sort.Direction direction = "desc".equalsIgnoreCase(sortDir) ? Sort.Direction.DESC : Sort.Direction.ASC;
         String sortField = (sortBy != null &&  !sortBy.isEmpty()) ? sortBy : "price";  // pravljenje sortiranja
@@ -139,7 +152,9 @@ public class WatchServiceImpl implements IWatchService {
                 WatchSpecifications.hasMechanism(mechanismFilterModify),
                 WatchSpecifications.hasColor(colorFilterModify),
                 WatchSpecifications.priceBetween(minPrice, maxPrice),
-                WatchSpecifications.searchTerm(searchModify)
+                WatchSpecifications.searchTerm(searchModify),
+                WatchSpecifications.hasOccasion(occasionFilter),
+                WatchSpecifications.hasGender(genderFilter)
         );
 
 
@@ -208,6 +223,12 @@ public class WatchServiceImpl implements IWatchService {
             repo.save(watch);
         } else {
             throw new EntityNotFoundException("Watch not found");
+        }
+    }
+
+    private void validateSaleDates(LocalDate saleStartDate, LocalDate saleEndDate) {
+        if(saleEndDate != null && saleStartDate != null && saleEndDate.isBefore(saleStartDate)) {
+            throw new IllegalArgumentException("Sale end date cannot be before sale start date");
         }
     }
 }

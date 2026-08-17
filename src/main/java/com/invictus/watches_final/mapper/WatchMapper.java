@@ -20,6 +20,7 @@ public class WatchMapper {
         watchDTO.setPrice(watch.getPrice());
         watchDTO.setStock(watch.getStock());
         watchDTO.setGender(watch.getGender());
+        watchDTO.setOccasion(watch.getOccasion());
         watchDTO.setActive(watch.isActive());
         watchDTO.setWatchID(watch.getWatchID());
 
@@ -27,6 +28,12 @@ public class WatchMapper {
             String base64Image = Base64.getEncoder().encodeToString(watch.getImage());
             watchDTO.setImage(base64Image);
         }
+
+        watchDTO.setDiscountPercentage(watch.getDiscountPercentage());
+        watchDTO.setSaleStartDate(watch.getSaleStartDate());
+        watchDTO.setSaleEndDate(watch.getSaleEndDate());
+        watchDTO.setOnSale(watch.isOnSale());
+        watchDTO.setEffectivePrice(watch.getEffectivePrice());
 
         return watchDTO;
     }
@@ -37,11 +44,16 @@ public class WatchMapper {
         watch.setBrand(watchDTO.getBrand());
         watch.setColor(watchDTO.getColor());
         watch.setMechanism(watchDTO.getMechanism());
+        watch.setOccasion(watchDTO.getOccasion());
         watch.setModel(watchDTO.getModel());
         watch.setManufactureDate(watchDTO.getManufactureDate());
         watch.setPrice(watchDTO.getPrice());
         watch.setStock(watchDTO.getStock());
         watch.setGender(watchDTO.getGender());
+
+        watch.setDiscountPercentage(watchDTO.getDiscountPercentage());
+        watch.setSaleStartDate(watchDTO.getSaleStartDate());
+        watch.setSaleEndDate(watchDTO.getSaleEndDate());
 
         return watch;
     }
@@ -53,9 +65,14 @@ public class WatchMapper {
         existingWatch.setModel(editDTO.getModel());
         existingWatch.setManufactureDate(editDTO.getManufactureDate());
         existingWatch.setPrice(editDTO.getPrice());
+        existingWatch.setOccasion(editDTO.getOccasion());
         existingWatch.setStock(editDTO.getStock());
         existingWatch.setGender(editDTO.getGender());
         // slika se postavlja u servisu
+
+        existingWatch.setDiscountPercentage(editDTO.getDiscountPercentage());
+        existingWatch.setSaleStartDate(editDTO.getSaleStartDate());
+        existingWatch.setSaleEndDate(editDTO.getSaleEndDate());
         return existingWatch;
     }
 

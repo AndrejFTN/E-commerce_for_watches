@@ -1,6 +1,7 @@
 package com.invictus.watches_final.dto.WatchDTOs;
 
 import com.invictus.watches_final.model.enums.GenderType;
+import com.invictus.watches_final.model.enums.OccasionType;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
@@ -35,8 +36,16 @@ public class WatchDTO {
     private Integer stock;
     @NotNull
     private GenderType gender;
+    @NotNull
+    private OccasionType occasion;
     private boolean isActive;
     private UUID watchID;
     private String image; //da li string ili bytes
+
+    private Integer discountPercentage;
+    private LocalDate saleStartDate;
+    private LocalDate saleEndDate;
+    private boolean onSale;
+    private float effectivePrice;
 
 }

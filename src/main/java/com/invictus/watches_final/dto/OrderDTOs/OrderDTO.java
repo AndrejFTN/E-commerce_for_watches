@@ -15,6 +15,7 @@ import java.util.UUID;
 @AllArgsConstructor
 public class OrderDTO {
 
+    private UUID orderID;
     private String address;
     private String zipCode;
     private String mail;
@@ -23,5 +24,6 @@ public class OrderDTO {
     private OrderStatus status;
     private List<OrderItemDTO> orderItems;
     private double totalAmount;
-    private UUID orderID;
+    private double shippingCost;
+    private double grandTotal;
 }

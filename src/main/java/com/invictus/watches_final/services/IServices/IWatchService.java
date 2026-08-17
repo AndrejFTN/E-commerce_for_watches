@@ -33,7 +33,7 @@ public interface IWatchService {
 
     String setWatchStatus(UUID watchID, boolean status);
 
-    Page<WatchDTO> getFilteredWatches(String search, String colorFilter, String brandFilter, String mechanismFilter,Float minPrice,
+    Page<WatchDTO> getFilteredWatches(String search, String occasion, String gender, String colorFilter, String brandFilter, String mechanismFilter,Float minPrice,
                                       Float maxPrice,String sortBy, String orderBy, int page, int size);
 
 

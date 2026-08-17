@@ -1,10 +1,8 @@
 package com.invictus.watches_final.dto.WatchDTOs;
 
 import com.invictus.watches_final.model.enums.GenderType;
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.PastOrPresent;
+import com.invictus.watches_final.model.enums.OccasionType;
+import jakarta.validation.constraints.*;
 import lombok.Data;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
@@ -35,4 +33,13 @@ public class AddWatchDTO {
     private Integer stock;
     @NotNull(message = "Gender is required.")
     private GenderType gender;
+    @NotNull(message = "Occasion is required.")
+    private OccasionType occasion;
+
+    @Min(value = 5, message = "Discount must be at least 5%")
+    @Max(value = 90, message = "Discount cannot exceed 90%")
+    private Integer discountPercentage;
+
+    private LocalDate saleStartDate;
+    private LocalDate saleEndDate;
 }

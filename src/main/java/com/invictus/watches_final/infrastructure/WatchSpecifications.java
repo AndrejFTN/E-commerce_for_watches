@@ -1,6 +1,8 @@
 package com.invictus.watches_final.infrastructure;
 
 import com.invictus.watches_final.model.Watch;
+import com.invictus.watches_final.model.enums.GenderType;
+import com.invictus.watches_final.model.enums.OccasionType;
 import org.springframework.data.jpa.domain.Specification;
 
 public class WatchSpecifications {
@@ -18,6 +20,16 @@ public class WatchSpecifications {
     public static Specification<Watch> hasMechanism(String mechanism){
         return (root, query, cb) -> mechanism == null ? null
                 : cb.like(cb.lower(root.get("mechanism")), "%" + mechanism.toLowerCase() + "%");
+    }
+
+    public static Specification<Watch> hasOccasion(OccasionType  occasion){
+        return (root, query, cb) -> occasion == null ? null
+                : cb.equal(root.get("occasion"), occasion);
+    }
+
+    public static Specification<Watch> hasGender(GenderType gender){
+        return (root, query, cb) -> gender == null ? null
+                : cb.equal(root.get("gender"), gender);
     }
 
     public static Specification<Watch> priceBetween(Float minPrice, Float maxPrice){

@@ -1,6 +1,7 @@
 package com.invictus.watches_final.model;
 
 import com.invictus.watches_final.model.enums.GenderType;
+import com.invictus.watches_final.model.enums.OccasionType;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -19,8 +20,6 @@ import java.util.UUID;
 public class Watch {
 
 
-    //    @GeneratedValue(generator = "uuid2")
-    //    @GenericGenerator(name = "uuid2", strategy = "uuid2")
     @Id
     @GeneratedValue
     @JdbcTypeCode(SqlTypes.CHAR) // Za pretvaranje u 36char umesto 16by kako bi lakse radili upite u bazi)
@@ -38,10 +37,32 @@ public class Watch {
     private LocalDate manufactureDate;
     private float price;
     private Integer stock; // promenjeno ima mozda greske
-    private GenderType gender;
     private boolean isActive;
     @Lob
     private byte[] image;
-    //ubaciti mozda isAvailable kao boolean ili isActive ako ima na stanju ako nema da se ne pojavljuju.
-    //ubaciti i isReserved ili isActive, proveriti ako nigde nije u korpi da se moze izbrisati
+
+    //@Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    private OccasionType occasion;
+
+    @Enumerated(EnumType.STRING)
+    private GenderType gender;
+
+    private Integer discountPercentage;
+    private LocalDate saleStartDate;
+    private LocalDate saleEndDate;
+
+    public boolean isOnSale(){
+        if(discountPercentage == null || saleStartDate == null || saleEndDate == null){
+            return false;
+        }
+
+        LocalDate today = LocalDate.now();
+        return !today.isBefore(saleStartDate) && !today.isAfter(saleEndDate);
+    }
+
+    public float getEffectivePrice(){
+        return isOnSale() ? price * (1 - discountPercentage / 100f) : price;
+    }
+
 }

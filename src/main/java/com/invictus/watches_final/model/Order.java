@@ -35,6 +35,7 @@ public class Order {
     private String mail;
 
     private double totalAmount;
+    private double shippingCost;
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<OrderItem> orderItems = new ArrayList<>();

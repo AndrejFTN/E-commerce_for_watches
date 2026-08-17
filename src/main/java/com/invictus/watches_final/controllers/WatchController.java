@@ -46,6 +46,8 @@ public class WatchController {
     @GetMapping("/filterWatches")
     public ResponseEntity<Page<WatchDTO>> getFilteredWatches(
             @RequestParam(required = false) String search,
+            @RequestParam(required = false) String occasion,
+            @RequestParam(required = false) String gender,
             @RequestParam(required = false) String color,
             @RequestParam(required = false) String brand,
             @RequestParam(required = false) String mechanism,
@@ -60,7 +62,7 @@ public class WatchController {
             throw new IllegalArgumentException("minPrice cannot be greater than maxPrice");
         }
 
-        Page<WatchDTO> result = service.getFilteredWatches(search, color, brand, mechanism,
+        Page<WatchDTO> result = service.getFilteredWatches(search, occasion, gender, color, brand, mechanism,
                                                             minPriceFilter, maxPriceFilter,
                                                             sortBy, sortDir, page, size);
 

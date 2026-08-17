@@ -82,7 +82,7 @@ public class CartServiceImpl implements ICartService {
                     newCartItem.setCart(cart);
                     newCartItem.setWatch(watch);
                     newCartItem.setAmount(createCartItemDTO.getAmount());
-                    newCartItem.setPrice(watch.getPrice());
+                    newCartItem.setPrice(watch.getEffectivePrice());
                     return cartItemRepo.save(newCartItem);
                 });
 

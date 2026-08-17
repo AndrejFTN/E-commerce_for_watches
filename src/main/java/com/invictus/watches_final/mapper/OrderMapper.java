@@ -44,6 +44,9 @@ public class OrderMapper {
         dto.setDateOfOrder(order.getDateOfOrder());
         dto.setStatus(order.getStatus());
         dto.setOrderID(order.getOrderID());
+        dto.setTotalAmount(order.getTotalAmount());
+        dto.setShippingCost(order.getShippingCost());
+        dto.setGrandTotal(order.getTotalAmount() + order.getShippingCost());
 
         List<OrderItemDTO> items = order.getOrderItems()
                 .stream()
@@ -51,8 +54,6 @@ public class OrderMapper {
                 .collect(Collectors.toList());
 
         dto.setOrderItems(items);
-        dto.setTotalAmount(order.getTotalAmount());
-
         return dto;
     }
 }

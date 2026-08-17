@@ -38,6 +38,10 @@ public class StripeServiceImpl implements IStripeService {
                 .map(this::toLineItem)
                 .collect(Collectors.toList());
 
+        if(order.getShippingCost() > 0){
+            lineItems.add(toShippingLineItem(order.getShippingCost()));
+        }
+
 
         SessionCreateParams params = SessionCreateParams.builder()
                 .setMode(SessionCreateParams.Mode.PAYMENT)
@@ -57,9 +61,15 @@ public class StripeServiceImpl implements IStripeService {
     private SessionCreateParams.LineItem toLineItem(OrderItem item) {
         long unitAmountInCents = Math.round(item.getPrice() * 100);
 
+        String name = item.getWatch().getBrand() + " " + item.getWatch().getModel()
+                + " - " + item.getWatch().getColor()
+                + (item.getWatch().getOccasion() != null ? " - " +
+                item.getWatch().getOccasion().toValue() : "");
+
+
         SessionCreateParams.LineItem.PriceData.ProductData productData =
                 SessionCreateParams.LineItem.PriceData.ProductData.builder()
-                        .setName(item.getWatch().getBrand() + " " + item.getWatch().getModel())
+                        .setName(name)
                         .build();
 
         SessionCreateParams.LineItem.PriceData priceData =
@@ -71,6 +81,29 @@ public class StripeServiceImpl implements IStripeService {
 
         return SessionCreateParams.LineItem.builder()
                 .setQuantity((long) item.getAmount())
+                .setPriceData(priceData)
+                .build();
+    }
+
+    private SessionCreateParams.LineItem toShippingLineItem(double shippingCost){
+        long unitAmountInCents = Math.round(shippingCost * 100);
+
+        SessionCreateParams.LineItem.PriceData.ProductData productData =
+                SessionCreateParams.LineItem.PriceData.ProductData.builder()
+                        .setName("Shipping")
+                        .build();
+
+
+        SessionCreateParams.LineItem.PriceData priceData =
+                SessionCreateParams.LineItem.PriceData.builder()
+                        .setCurrency("eur")
+                        .setUnitAmount(unitAmountInCents)
+                        .setProductData(productData)
+                        .build();
+
+
+        return SessionCreateParams.LineItem.builder()
+                .setQuantity(1L)
                 .setPriceData(priceData)
                 .build();
     }

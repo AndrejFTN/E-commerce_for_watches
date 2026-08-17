@@ -9,22 +9,22 @@
 *-Search mogucnost
 *-Token se gubi posle reseta ili promene lozinke zbog sigurnosnih razloga i da ne dodje do preklapanja
 *-Email verifikacija ne blokira login ali blokira order
--mozda implementirati snizenja i kodove??
--mozda implementirati ocene?
+*-implementirati snizenja
+(mozda)- implementirati ocene
 *-implementirati Favorites
--implementirati za sat i kategoriju tj occasion
+*-implementirati za sat i kategoriju tj occasion
 *-Rate-limiting od brute-force na /user/login
 *-swagger dokumentacija
 -Više slika po satu (galerija), ne samo jedna
 -Admin dashboard, statistika prodaje (jednostavno)
--Troškovi dostave, iznad odredjene cene besplatna dostava
+*-Troškovi dostave, iznad odredjene cene besplatna dostava
 (mozda)-AI chat assitent(opciono integracija osnovnog api-a)
 -Račun faktura (PDF) po porudžbini (proveri kompleksnost)
 -Email notifikacije o porudzbini
 *-Strype
 -Mozda dodati implementaciju za automatski refresh tokena
 -Mozda promeniti cuvanje slike sa BLOB u bazi na disk storage umesto Base64 u JSON odgovoru (ogroman string) vraca se kratak URL putanja
--DeleteWatch (hard delete) nije zasticen  sat koji je referenciran iz cart item, order item
+*-DeleteWatch (hard delete) nije zasticen  sat koji je referenciran iz cart item, order item
 ili sada i favorite tabele ce puknuti na FK constraint pri brisanju sa svakim novim featurom
 *-Order koji ne bude placen posle 30 min (pending) se otkazuje i vraca stock nazad
 
