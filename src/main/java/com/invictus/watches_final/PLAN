@@ -77,48 +77,70 @@ koji imaju stock 0 (filtriranje po isActive)
 Registracija kreira User sa rolom USER_ROLE, lozinka se hešira (BCrypt), generiše se token za verifikaciju mejla (važi 24h),
  automatski se kreira prazna korpa za novog korisnika, šalje se verifikacioni mejl (trenutno samo loguje u konzolu, stvarno slanje zakomentarisano)
 Login  JWT autentifikacija preko AuthenticationManager, token važi 2h
+Rate limiting na login  nalog se privremeno blokira na 15 min posle 5 uzastopnih pogrešnih pokušaja
 Verifikacija mejla  preko tokena poslatog na URL, postavlja isVerified = true
 Ponovno slanje verifikacionog mejla ako korisnik nije verifikovan
 Promena lozinke  proverava staru lozinku, proverava da nova nije ista kao stara, proverava potvrdu nove lozinke, šalje potvrdu na mejl
+Forgot/Reset Password flow  poseban token sa rokom važenja (1h), kraćim i strožim od verifikacionog
+Stari JWT tokeni automatski postaju nevažeći posle promene ili reseta lozinke (sprečava preklapanje starih sesija)
 Admin funkcije: lista svih korisnika (obična i paginirana), pretraga po username-u, provera da li je korisnik admin, dobijanje ID-a po username-u
 Ažuriranje profila  samo fullName i phone (username/email se ne mogu menjati ovim putem), dostupno i USER-u i ADMIN-u za sopstveni nalog
-Validacije: username 4-20 karaktera, lozinka min. 8 karaktera sa velikim/malim slovom i cifrom, telefon format (+opciono, 6-15 cifara), email format, puno ime samo slova (uključujući ćirilične dijakritike: š đ č ć ž) i razmaci
+Validacije: username 4-20 karaktera, lozinka min. 8 karaktera sa velikim/malim slovom i cifrom, telefon format (+opciono, 6-15 cifara),
+ email format, puno ime samo slova (uključujući ćirilične dijakritike: š đ č ć ž) i razmaci
 Role: ADMIN_ROLE, USER_ROLE  nema samoregistracije za admina, mora se ručno postaviti u bazi
 2. Katalog satova
 Pregled  svi satovi paginirano, jedan sat po ID-u
-Filtriranje/pretraga  po boji, brendu, mehanizmu, rasponu cene, sa sortiranjem, paginacijom (delimično poklapanje preko LIKE)
+Filtriranje/pretraga  migrirano sa ručnog @Query na Spring Data Specification API, checkbox filteri po boji, brendu, mehanizmu, occasion, gender i rasponu cene (tačno poklapanje kod occasion/gender, delimično LIKE kod ostalih),
+slobodna tekstualna pretraga (search) po brendu i modelu koja se kombinuje sa ostalim filterima, sortiranje i paginacija
+Occasion  novo polje na satu (sportski/elegantni/svakodnevni/poslovni), opciono, ista JSON konvencija malih slova kao gender
+Gender  ispravljen da se čuva kao tekst u bazi (ranije se čuvao kao redni broj, ista greška kao ranije na User.role)
+Sniženja  admin postavlja procenat popusta i period važenja (datum od-do) direktno na satu, bez kupona; efektivna cena se računa u letu na osnovu trenutnog datuma, nije zasebno sačuvana
 Admin: dodavanje sata  multipart (JSON polja + opciona slika), proverava duplikat (brend+model+mehanizam+boja), automatski postavlja isActive na osnovu stanja
 Admin: izmena sata  multipart, slika se menja samo ako je poslata (inače ostaje ista, potvrđeno testirano razumevanje)
 Admin: ručna promena statusa vidljivosti (isActive)
 Admin: dodavanje stanja na lager
-Admin: brisanje sata  pravo brisanje iz baze (nezaštićeno od FK problema ako je sat ikad naručen)
-Stanje na lageru (stock, preimenovano danas sa available) — sad se stvarno umanjuje pri kreiranju porudžbine, automatski postavlja isActive = false kad padne na 0
-Slika se čuva kao byte[] direktno u bazi
+Admin: brisanje sata  zaštićeno od FK grešaka, proverava se da sat nije referenciran u korpi, porudžbini ili favoritima pre brisanja, jasna poruka umesto pada na SQL grešci
+Stanje na lageru (stock, preimenovano ranije sa available)  sad se stvarno umanjuje pri kreiranju porudžbine, automatski postavlja isActive = false kad padne na 0
+Slika se čuva kao byte[] direktno u bazi,
+isActive se šalje u WatchDTO (nema server-side filtriranja neaktivnih satova) front odlučuje da li/kako da ih prikaže
 3. Korpa
 Jedna korpa po korisniku, automatski kreirana pri registraciji
 Pregled korpe sa svim stavkama
-Dodavanje stavke  ako sat već postoji u korpi, sabira količine ako ne, pravi novu stavku proverava da ukupna tražena količina (postojeće u korpi + novo) ne prelazi stvarno stanje na lageru
+Dodavanje stavke  ako sat već postoji u korpi, sabira količine ako ne, pravi novu stavku, proverava da ukupna tražena količina (postojeće u korpi + novo)
+ne prelazi stvarno stanje na lageru, koristi efektivnu (moguće diskontovanu) cenu sata, ne punu cenu
 Brisanje stavke  proverava da stavka pripada baš tom korisniku
 Pražnjenje cele korpe
 4. Porudžbine
-Kreiranje porudžbine iz korpe  proverava da korpa nije prazna, prebacuje stavke korpe u stavke porudžbine (zamrzava cenu i količinu u tom trenutku), računa ukupan iznos, status PENDING, prazni korpu
+Kreiranje porudžbine iz korpe  proverava da korpa nije prazna, prebacuje stavke korpe u stavke porudžbine,
+cena se ponovo proverava sa satom uživo u trenutku kreiranja (ne prenosi zastarelu cenu iz korpe ako je sniženje u međuvremenu isteklo), računa ukupan iznos i troškove dostave, status PENDING, prazni korpu
 stvarno umanjuje stanje sata za svaku stavku, sa jasnom porukom greške (koji sat, koliko ima, koliko je traženo) ako nema dovoljno
+Kreiranje porudžbine blokirano ako korisnik nije verifikovao email (login ostaje nezavisan, nije blokiran)
+Troškovi dostave  fiksno 20€, besplatno pri porudžbini od 2 ili više komada
+Plaćanje  Stripe Checkout Session (hostovana Stripe stranica), webhook potpisan i verifikovan prima potvrdu uspešnog plaćanja i automatski postavlja status na PAID
+Scheduled zadatak (na svakih 5 min) automatski otkazuje PENDING porudžbine starije od 30 minuta i vraća stanje na lager
 Pregled sopstvene porudžbine  filtrirano i po ID-u i po korisniku (bezbedno, ne otkriva da li tuđ ID postoji)
 Istorija sopstvenih porudžbina  paginirano
 Istorija po statusu  paginirano, prazan rezultat vraća praznu listu (ne grešku)
 Admin: pregled bilo čije porudžbine, sve porudžbine korisnika, porudžbine korisnika po statusu
 Otkazivanje porudžbine  sopstvene ili (za admina) bilo čije; blokirano ako je već PAID ili APPROVED
-Statusi: PENDING, APPROVED, PAID, CANCELLED —trenutno se kodom realno postavljaju samo PENDING i CANCELLED; APPROVED/PAID čekaju buduću Stripe integraciju
+Statusi: PENDING, PAID, CANCELLED se stvarno postavljaju kodom (PAID preko Stripe webhook-a); APPROVED trenutno nigde nije u upotrebi
 5. Bezbednost
 Stateless JWT autentifikacija (bez server-side sesija)
 Lozinke heširane preko PasswordEncoder (BCrypt)
-Javni endpointi (bez auth): login, registracija, pregled/filter/pojedinačan sat, slanje upita
+Javni endpointi (bez auth): login, registracija, pregled/filter/pojedinačan sat, slanje upita, forgot/reset password, Stripe webhook
 Metod-nivo autorizacija (@PreAuthorize) na svakom drugom endpointu, po ulogama
-CORS trenutno otvoren (@CrossOrigin("*")) — poznat, još nerešen problem
+CORS  uklonjeni redundantni @CrossOrigin("*") sa pojedinačnih kontrolera, ostaje samo centralna, restriktivna konfiguracija
+Rate limiting na /user/login protiv brute-force pogađanja lozinke
+Svi tajni ključevi (JWT secret, mail password, Stripe ključevi) premešteni iz application.properties u environment varijable
 6. Obrada grešaka
 Centralizovan @ControllerAdvice (GlobalExceptionHandler) hvata sve custom i standardne izuzetke i vraća dosledan oblik odgovora (status, poruka, vreme)
 Dodato: pravilno mapiranje neuspešne autorizacije (403 umesto 400) i neuspešne validacije unosa (400 sa čitljivom porukom po polju, umesto 500)
 7. Kontakt
 Endpoint za slanje upita/kontakt forme (ime, mejl, naslov, poruka)
- postoji i prima zahteve; nisam još detaljno gledao unutrašnju logiku servisa, pa ne mogu sa sigurnošću da kažem šta tačno radi sa primljenim upitom (vredi da to zajedno proverimo ako ti zatreba za odbranu)
-
+postoji i prima zahteve; nisam još detaljno gledao unutrašnju logiku servisa, pa ne mogu sa sigurnošću da kažem šta tačno radi sa primljenim upitom
+8. Favorites
+Dodavanje/uklanjanje omiljenog sata, provera duplikata pre dodavanja (isti sat se ne može favorizovati dvaput)
+Paginirana lista sopstvenih favorita
+Samo za ulogovane korisnike (USER/ADMIN), gosti nemaju pristup
+9. Dokumentacija
+Swagger/OpenAPI dokumentacija dostupna za sve endpointe
