@@ -83,13 +83,9 @@ public class WatchController {
         return ResponseEntity.ok(service.setWatchStatus(watchID, status));
     }
 
-    @PreAuthorize("hasAuthority('ADMIN_ROLE')")
-    @PostMapping(path = "/addWatch", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<WatchDTO> addWatch(
-            @Valid @ModelAttribute AddWatchDTO addWatchDTO,
-            @RequestPart(value = "images", required = false) List<MultipartFile> images){
-
-        WatchDTO watchDTO = service.addWatch(addWatchDTO, images);
+    @PostMapping(path = "/addWatch")
+    public ResponseEntity<WatchDTO> addWatch(@Valid @RequestBody AddWatchDTO addWatchDTO){
+        WatchDTO watchDTO = service.addWatch(addWatchDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body(watchDTO);
     }
 

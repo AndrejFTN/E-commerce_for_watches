@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 public class OrderExpirationScheduler {
     private final IOrderService  orderService;
 
-    @Scheduled(fixedRate = 300000)
+    @Scheduled(fixedRate = 1500000)
     public void cancelExpiredOrders() {
         orderService.cancelExpiredOrders();
     }

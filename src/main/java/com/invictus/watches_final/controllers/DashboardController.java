@@ -16,7 +16,7 @@ public class DashboardController {
 
     private final IDashboardService dashboradService;
 
-    @PreAuthorize("hasAthority('ADMIN_ROLE')")
+    @PreAuthorize("hasAuthority('ADMIN_ROLE')")
     @GetMapping
     public ResponseEntity<AdminDashboardDTO> getDashboard() {
         AdminDashboardDTO stats = dashboradService.getDashboardStats();

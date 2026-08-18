@@ -36,7 +36,25 @@
           }
         },
         {
-          "name": "Reset Password",
+          "name": "Forgot Password",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": { "mode": "raw", "raw": "", "options": { "raw": { "language": "json" } } },
+            "url": { "raw": "{{baseUrl}}/user/forgotPassword", "host": ["{{baseUrl}}"], "path": ["user", "forgotPassword"] }
+          }
+        },
+        {
+          "name": "Reset Password With Token",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "body": { "mode": "raw", "raw": "", "options": { "raw": { "language": "json" } } },
+            "url": { "raw": "{{baseUrl}}/user/resetPasswordWithToken", "host": ["{{baseUrl}}"], "path": ["user", "resetPasswordWithToken"] }
+          }
+        },
+        {
+          "name": "Change Password",
           "request": {
             "method": "PUT",
             "header": [],
@@ -152,9 +170,12 @@
           "request": {
             "method": "GET", "header": [],
             "url": {
-              "raw": "{{baseUrl}}/watch/filterWatches?color=&brand=&mechanism=&minPriceFilter=&maxPriceFilter=&page=0&size=10&sortBy=&sortDir=asc",
+              "raw": "{{baseUrl}}/watch/filterWatches?search=&occasion=&gender=&color=&brand=&mechanism=&minPriceFilter=&maxPriceFilter=&page=0&size=10&sortBy=&sortDir=asc",
               "host": ["{{baseUrl}}"], "path": ["watch", "filterWatches"],
               "query": [
+                { "key": "search", "value": "" },
+                { "key": "occasion", "value": "" },
+                { "key": "gender", "value": "" },
                 { "key": "color", "value": "" },
                 { "key": "brand", "value": "" },
                 { "key": "mechanism", "value": "" },
@@ -183,7 +204,12 @@
                 { "key": "price", "value": "", "type": "text" },
                 { "key": "stock", "value": "", "type": "text" },
                 { "key": "gender", "value": "", "type": "text" },
-                { "key": "image", "type": "file", "src": [] }
+                { "key": "occasion", "value": "", "type": "text" },
+                { "key": "discountPercentage", "value": "", "type": "text" },
+                { "key": "saleStartDate", "value": "", "type": "text" },
+                { "key": "saleEndDate", "value": "", "type": "text" },
+                { "key": "images", "type": "file", "src": [] },
+                { "key": "images", "type": "file", "src": [] }
               ]
             },
             "url": { "raw": "{{baseUrl}}/watch/addWatch", "host": ["{{baseUrl}}"], "path": ["watch", "addWatch"] }
@@ -205,7 +231,10 @@
                 { "key": "price", "value": "", "type": "text" },
                 { "key": "stock", "value": "", "type": "text" },
                 { "key": "gender", "value": "", "type": "text" },
-                { "key": "image", "type": "file", "src": [] }
+                { "key": "occasion", "value": "", "type": "text" },
+                { "key": "discountPercentage", "value": "", "type": "text" },
+                { "key": "saleStartDate", "value": "", "type": "text" },
+                { "key": "saleEndDate", "value": "", "type": "text" }
               ]
             },
             "url": { "raw": "{{baseUrl}}/watch/editWatch", "host": ["{{baseUrl}}"], "path": ["watch", "editWatch"] }
@@ -239,6 +268,51 @@
               "raw": "{{baseUrl}}/watch/deleteWatch/:watchID",
               "host": ["{{baseUrl}}"], "path": ["watch", "deleteWatch", ":watchID"],
               "variable": [{ "key": "watchID", "value": "" }]
+            }
+          }
+        },
+        {
+          "name": "Add Image",
+          "request": {
+            "method": "POST", "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                { "key": "image", "type": "file", "src": [] }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/watch/:watchID/addImage",
+              "host": ["{{baseUrl}}"], "path": ["watch", ":watchID", "addImage"],
+              "variable": [{ "key": "watchID", "value": "" }]
+            }
+          }
+        },
+        {
+          "name": "Delete Image",
+          "request": {
+            "method": "DELETE", "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/watch/:watchID/deleteImage/:imageID",
+              "host": ["{{baseUrl}}"], "path": ["watch", ":watchID", "deleteImage", ":imageID"],
+              "variable": [
+                { "key": "watchID", "value": "" },
+                { "key": "imageID", "value": "" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Set Primary Image",
+          "request": {
+            "method": "PUT", "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/watch/:watchID/setPrimaryImage/:imageID",
+              "host": ["{{baseUrl}}"], "path": ["watch", ":watchID", "setPrimaryImage", ":imageID"],
+              "variable": [
+                { "key": "watchID", "value": "" },
+                { "key": "imageID", "value": "" }
+              ]
             }
           }
         }
@@ -365,6 +439,70 @@
               "host": ["{{baseUrl}}"], "path": ["order", "cancelOrder", ":orderID"],
               "variable": [{ "key": "orderID", "value": "" }]
             }
+          }
+        },
+        {
+          "name": "Stripe Checkout",
+          "request": {
+            "method": "POST", "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/order/checkout/:orderID",
+              "host": ["{{baseUrl}}"], "path": ["order", "checkout", ":orderID"],
+              "variable": [{ "key": "orderID", "value": "" }]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Favorite",
+      "item": [
+        {
+          "name": "Add Favorite",
+          "request": {
+            "method": "POST", "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/favorite/addFavorite/:watchID",
+              "host": ["{{baseUrl}}"], "path": ["favorite", "addFavorite", ":watchID"],
+              "variable": [{ "key": "watchID", "value": "" }]
+            }
+          }
+        },
+        {
+          "name": "Remove Favorite",
+          "request": {
+            "method": "DELETE", "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/favorite/removeFavorite/:watchID",
+              "host": ["{{baseUrl}}"], "path": ["favorite", "removeFavorite", ":watchID"],
+              "variable": [{ "key": "watchID", "value": "" }]
+            }
+          }
+        },
+        {
+          "name": "Get My Favorites",
+          "request": {
+            "method": "GET", "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/favorite/getMyFavorites?page=0&size=10",
+              "host": ["{{baseUrl}}"], "path": ["favorite", "getMyFavorites"],
+              "query": [
+                { "key": "page", "value": "0" },
+                { "key": "size", "value": "10" }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Admin Dashboard",
+      "item": [
+        {
+          "name": "Get Dashboard",
+          "request": {
+            "method": "GET", "header": [],
+            "url": { "raw": "{{baseUrl}}/admin/dashboard", "host": ["{{baseUrl}}"], "path": ["admin", "dashboard"] }
           }
         }
       ]

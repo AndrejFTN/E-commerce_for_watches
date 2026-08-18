@@ -19,7 +19,7 @@ public interface IWatchService {
 
     WatchDTO editWatch(EditWatchDTO watchDTO);
 
-    WatchDTO addWatch(AddWatchDTO addWatchDTO, List<MultipartFile> image);
+    WatchDTO addWatch(AddWatchDTO addWatchDTO);
 
     void deleteWatch(UUID watchID);
 

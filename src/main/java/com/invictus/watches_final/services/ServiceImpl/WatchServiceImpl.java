@@ -74,13 +74,10 @@ public class WatchServiceImpl implements IWatchService {
     }
 
     @Override
-    public WatchDTO addWatch(AddWatchDTO addWatchDTO,  List<MultipartFile> images) { //dosta izmena moguce greske
+    public WatchDTO addWatch(AddWatchDTO addWatchDTO) { //dosta izmena moguce greske
 
         validateSaleDates(addWatchDTO.getSaleStartDate(), addWatchDTO.getSaleEndDate());
 
-        if (images != null && images.size() > MAX_IMAGES_PER_WATCH) {
-            throw new IllegalArgumentException("Cannot add more than " + MAX_IMAGES_PER_WATCH + " images per watch");
-        }
 
         Optional<Watch> exists = repo.findByBrandAndModelAndMechanismAndColor(
                 addWatchDTO.getBrand(),
@@ -109,23 +106,6 @@ public class WatchServiceImpl implements IWatchService {
 
         Watch savedWatch = repo.save(watch);
 
-        if (images != null) {
-            for (int i = 0; i < images.size(); i++) {
-                MultipartFile file = images.get(i);
-                if (file != null && !file.isEmpty()) {
-                    try {
-                        WatchImage watchImage = new WatchImage();
-                        watchImage.setWatch(savedWatch);
-                        watchImage.setImage(file.getBytes());
-                        watchImage.setPrimary(i == 0);
-                        watchImageRepo.save(watchImage);
-                        savedWatch.getImages().add(watchImage);
-                    } catch (IOException e) {
-                        throw new ImageProcessingException("Error reading image file");
-                    }
-                }
-            }
-        }
         return WatchMapper.entityToDTO(savedWatch);
     }
 
