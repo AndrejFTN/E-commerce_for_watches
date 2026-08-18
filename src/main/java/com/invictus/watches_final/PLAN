@@ -1,8 +1,12 @@
 
 #Dodati
 (mozda)-dodati da se moze loginovati i preko username i preko emaila, izmeniti logindto(dodati login polje i posle se proverava da li je email ili username i izmeniti spirng security konfig za to
--mogucnost promena maila posebne metode i implemantacija
--dodavnje mozda akcijskih cena za cartiem da se posebno racunaju itd i implementacija moguca u servisu tj popuste
+(mozda)-implementirati ocene
+(mozda)-AI chat assitent(opciono integracija osnovnog api-a)
+(mozda)-Račun faktura (PDF) po porudžbini (proveri kompleksnost)
+(mozda)-dodati implementaciju za automatski refresh tokena
+(mozda)-promeniti cuvanje slike sa BLOB u bazi na disk storage umesto Base64 u JSON odgovoru (ogroman string) vraca se kratak URL putanja
+*-dodavnje mozda akcijskih cena za cartiem da se posebno racunaju itd i implementacija moguca u servisu tj popuste
 *-promeniti cross origin u kontrolerima jer je slab security za to
 *-dodati logiku da umesto delete watch, ako ih nema ili ako atribut bude is not available pa se ne prikazuje vise
 *-forgot/Reset Password Flow
@@ -10,20 +14,15 @@
 *-Token se gubi posle reseta ili promene lozinke zbog sigurnosnih razloga i da ne dodje do preklapanja
 *-Email verifikacija ne blokira login ali blokira order
 *-implementirati snizenja
-(mozda)- implementirati ocene
 *-implementirati Favorites
 *-implementirati za sat i kategoriju tj occasion
 *-Rate-limiting od brute-force na /user/login
 *-swagger dokumentacija
--Više slika po satu (galerija), ne samo jedna
--Admin dashboard, statistika prodaje (jednostavno)
+*-Više slika po satu (galerija), ne samo jedna
+*-Admin dashboard, statistika prodaje (jednostavno)
 *-Troškovi dostave, iznad odredjene cene besplatna dostava
-(mozda)-AI chat assitent(opciono integracija osnovnog api-a)
--Račun faktura (PDF) po porudžbini (proveri kompleksnost)
--Email notifikacije o porudzbini
+*-Email notifikacije o porudzbini
 *-Strype
--Mozda dodati implementaciju za automatski refresh tokena
--Mozda promeniti cuvanje slike sa BLOB u bazi na disk storage umesto Base64 u JSON odgovoru (ogroman string) vraca se kratak URL putanja
 *-DeleteWatch (hard delete) nije zasticen  sat koji je referenciran iz cart item, order item
 ili sada i favorite tabele ce puknuti na FK constraint pri brisanju sa svakim novim featurom
 *-Order koji ne bude placen posle 30 min (pending) se otkazuje i vraca stock nazad

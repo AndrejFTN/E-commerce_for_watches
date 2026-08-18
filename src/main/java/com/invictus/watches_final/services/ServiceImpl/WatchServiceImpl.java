@@ -1,19 +1,14 @@
 package com.invictus.watches_final.services.ServiceImpl;
 
-import com.invictus.watches_final.dto.WatchDTOs.AddWatchDTO;
-import com.invictus.watches_final.dto.WatchDTOs.AmountDTO;
-import com.invictus.watches_final.dto.WatchDTOs.EditWatchDTO;
-import com.invictus.watches_final.dto.WatchDTOs.WatchDTO;
+import com.invictus.watches_final.dto.WatchDTOs.*;
 import com.invictus.watches_final.exceptions.CustomExceptions.ImageProcessingException;
 import com.invictus.watches_final.exceptions.CustomExceptions.WatchAlreadyExistsException;
 import com.invictus.watches_final.mapper.WatchMapper;
 import com.invictus.watches_final.model.Watch;
+import com.invictus.watches_final.model.WatchImage;
 import com.invictus.watches_final.model.enums.GenderType;
 import com.invictus.watches_final.model.enums.OccasionType;
-import com.invictus.watches_final.repository.CartItemRepo;
-import com.invictus.watches_final.repository.FavoriteRepo;
-import com.invictus.watches_final.repository.OrderItemRepo;
-import com.invictus.watches_final.repository.WatchRepo;
+import com.invictus.watches_final.repository.*;
 import com.invictus.watches_final.infrastructure.WatchSpecifications;
 import com.invictus.watches_final.services.IServices.IWatchService;
 import jakarta.persistence.EntityNotFoundException;
@@ -29,6 +24,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.time.LocalDate;
+import java.util.Base64;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -41,6 +38,10 @@ public class WatchServiceImpl implements IWatchService {
     private final CartItemRepo cartItemRepo;
     private final OrderItemRepo orderItemRepo;
     private final FavoriteRepo favoriteRepo;
+
+    private static final int MAX_IMAGES_PER_WATCH = 5;
+    private final WatchImageRepo watchImageRepo;
+
 
     @Override
     public Page<WatchDTO> getAllWatchesPage(Pageable pageable) {//paginacija za vracanje svih elemenata, moguca greska , ugradjen metoda
@@ -57,7 +58,7 @@ public class WatchServiceImpl implements IWatchService {
 
 
     @Override
-    public WatchDTO editWatch(EditWatchDTO editWatchDTO, MultipartFile image) {
+    public WatchDTO editWatch(EditWatchDTO editWatchDTO) {
 
         validateSaleDates(editWatchDTO.getSaleStartDate(), editWatchDTO.getSaleEndDate());
 
@@ -67,23 +68,19 @@ public class WatchServiceImpl implements IWatchService {
 
         WatchMapper.editDTOToEntity(editWatchDTO, existingWatch);
 
-        if (image != null && !image.isEmpty()) {
-            try {
-                existingWatch.setImage(image.getBytes());
-            } catch (IOException e) {
-                throw new ImageProcessingException("Error reading image file");
-            }
-        }
-
         Watch savedWatch = repo.save(existingWatch);
 
         return WatchMapper.entityToDTO(savedWatch);
     }
 
     @Override
-    public WatchDTO addWatch(AddWatchDTO addWatchDTO, MultipartFile image) { //dosta izmena moguce greske
+    public WatchDTO addWatch(AddWatchDTO addWatchDTO,  List<MultipartFile> images) { //dosta izmena moguce greske
 
         validateSaleDates(addWatchDTO.getSaleStartDate(), addWatchDTO.getSaleEndDate());
+
+        if (images != null && images.size() > MAX_IMAGES_PER_WATCH) {
+            throw new IllegalArgumentException("Cannot add more than " + MAX_IMAGES_PER_WATCH + " images per watch");
+        }
 
         Optional<Watch> exists = repo.findByBrandAndModelAndMechanismAndColor(
                 addWatchDTO.getBrand(),
@@ -102,16 +99,7 @@ public class WatchServiceImpl implements IWatchService {
             );
         }
 
-
         Watch watch = WatchMapper.addDtoToEntity(addWatchDTO);
-
-        if(image != null && !image.isEmpty()) {
-            try {
-                watch.setImage(image.getBytes());
-            } catch (IOException e) {
-                throw new ImageProcessingException("Error reading image file");
-            }
-        }
 
         if (watch.getStock() != null && watch.getStock() > 0) {
             watch.setActive(true);
@@ -119,9 +107,25 @@ public class WatchServiceImpl implements IWatchService {
             watch.setActive(false);
         }
 
-
         Watch savedWatch = repo.save(watch);
 
+        if (images != null) {
+            for (int i = 0; i < images.size(); i++) {
+                MultipartFile file = images.get(i);
+                if (file != null && !file.isEmpty()) {
+                    try {
+                        WatchImage watchImage = new WatchImage();
+                        watchImage.setWatch(savedWatch);
+                        watchImage.setImage(file.getBytes());
+                        watchImage.setPrimary(i == 0);
+                        watchImageRepo.save(watchImage);
+                        savedWatch.getImages().add(watchImage);
+                    } catch (IOException e) {
+                        throw new ImageProcessingException("Error reading image file");
+                    }
+                }
+            }
+        }
         return WatchMapper.entityToDTO(savedWatch);
     }
 
@@ -224,6 +228,72 @@ public class WatchServiceImpl implements IWatchService {
         } else {
             throw new EntityNotFoundException("Watch not found");
         }
+    }
+
+    @Override
+    public WatchImageDTO addImage(UUID watchID, MultipartFile image) {
+        Watch watch = repo.findByWatchID(watchID)
+                .orElseThrow(() -> new EntityNotFoundException("Watch not found"));
+
+        long currentCount = watchImageRepo.countByWatch(watch);
+        if(currentCount >= MAX_IMAGES_PER_WATCH){
+           throw new IllegalStateException("Watch already has the maximum of " + MAX_IMAGES_PER_WATCH);
+        }
+
+        WatchImage watchImage = new WatchImage();
+        watchImage.setWatch(watch);
+        try{
+            watchImage.setImage(image.getBytes());
+        }catch (IOException e){
+            throw new ImageProcessingException("Error reading image file");
+        }
+        watchImage.setPrimary(currentCount == 0);
+
+        WatchImage saved = watchImageRepo.save(watchImage);
+
+        return new WatchImageDTO(saved.getImageID(),
+            Base64.getEncoder().encodeToString(saved.getImage()), saved.isPrimary());
+    }
+
+    @Override
+    public void deleteImage(UUID watchID, UUID imageID) {
+        WatchImage image = watchImageRepo.findById(imageID)
+                .orElseThrow(() -> new EntityNotFoundException("Image not found"));
+
+        if (!image.getWatch().getWatchID().equals(watchID)) {
+            throw new IllegalArgumentException("Image does not belong to this watch");
+        }
+
+        boolean wasPrimary = image.isPrimary();
+        watchImageRepo.delete(image);
+
+        if(wasPrimary){
+            List<WatchImage> remaining = watchImageRepo.findByWatch(image.getWatch());
+            if (!remaining.isEmpty()) {
+                WatchImage newPrimary = remaining.get(0);
+                newPrimary.setPrimary(true);
+                watchImageRepo.save(newPrimary);
+            }
+        }
+
+    }
+
+    @Override
+    public void setPrimaryImage(UUID watchID, UUID imageID) {
+        Watch watch = repo.findById(watchID)
+                .orElseThrow(() -> new EntityNotFoundException("Watch not found"));
+
+        List<WatchImage> images = watchImageRepo.findByWatch(watch);
+
+        boolean found = images.stream().anyMatch(image -> image.getImageID().equals(imageID));
+        if(!found){
+            throw new EntityNotFoundException("Image not found for this watch");
+        }
+
+        for(WatchImage img  : images){
+            img.setPrimary(img.getImageID().equals(imageID));
+        }
+        watchImageRepo.saveAll(images);
     }
 
     private void validateSaleDates(LocalDate saleStartDate, LocalDate saleEndDate) {

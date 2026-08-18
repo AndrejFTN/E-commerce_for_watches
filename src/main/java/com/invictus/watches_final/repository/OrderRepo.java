@@ -32,4 +32,12 @@ public interface OrderRepo extends JpaRepository<Order, UUID> {
     Page<Order> findByUserOrderByDateOfOrderDesc(User user, Pageable pageable);
 
     Page<Order> findByStatusAndUserOrderByDateOfOrderDesc(OrderStatus status, User user, Pageable pageable);
+
+    @Query("SELECT COALESCE(SUM(o.totalAmount + o.shippingCost), 0) FROM Order o WHERE o.status = :status")
+    double getTotalRevenue(@Param("status") OrderStatus status);
+
+    @Query("SELECT COALESCE(SUM(o.totalAmount + o.shippingCost), 0) FROM Order o WHERE o.status = :status AND o.dateOfOrder >= :start")
+    double getRevenueSince(@Param("status") OrderStatus status, @Param("start") LocalDateTime start);
+
+    long countByStatus(OrderStatus status);
 }

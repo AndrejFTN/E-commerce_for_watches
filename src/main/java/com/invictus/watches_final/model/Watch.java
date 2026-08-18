@@ -10,6 +10,7 @@ import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -38,8 +39,12 @@ public class Watch {
     private float price;
     private Integer stock; // promenjeno ima mozda greske
     private boolean isActive;
-    @Lob
-    private byte[] image;
+
+    @OneToMany(mappedBy = "watch", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<WatchImage> images = new ArrayList<>();
+
+    @Version
+    private Long version;
 
     //@Column(nullable = false)
     @Enumerated(EnumType.STRING)

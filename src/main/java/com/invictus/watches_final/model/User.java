@@ -17,9 +17,6 @@ import java.util.UUID;
 @Entity
 public class User {
 
-
-//    @GeneratedValue(generator = "uuid2")
-//    @GenericGenerator(name = "uuid2", strategy = "uuid2")
     @Id
     @GeneratedValue
     @JdbcTypeCode(SqlTypes.CHAR)
@@ -30,6 +27,7 @@ public class User {
     private String password;
     @Enumerated(EnumType.STRING)
     private Roles role;
+    private LocalDateTime registrationDate;
 
     private boolean isVerified = false;
     private LocalDateTime passwordChangedAt;

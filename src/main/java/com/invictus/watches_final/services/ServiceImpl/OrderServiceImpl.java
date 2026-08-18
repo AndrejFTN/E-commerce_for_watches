@@ -43,6 +43,7 @@ public class OrderServiceImpl implements IOrderService {
     private final CartRepo cartRepo;
     private final IWatchService watchService;
     private final IStripeService stripeService;
+    private final MailServiceImpl mailService;
 
     @Transactional// ako nesto ne uspe u ovoj metodi onda se nece odraditi odraditi ostale promene ako negde zpane
     @Override
@@ -97,6 +98,8 @@ public class OrderServiceImpl implements IOrderService {
         order.setTotalAmount(total);
 
         repo.save(order);
+
+        mailService.sendOrderConfirmationEmail(order.getMail(), order);
 
         //brisemo cart posle izvrsenog ordera
         cart.getItems().clear();

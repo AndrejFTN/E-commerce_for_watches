@@ -3,9 +3,12 @@ package com.invictus.watches_final.mapper;
 import com.invictus.watches_final.dto.WatchDTOs.AddWatchDTO;
 import com.invictus.watches_final.dto.WatchDTOs.EditWatchDTO;
 import com.invictus.watches_final.dto.WatchDTOs.WatchDTO;
+import com.invictus.watches_final.dto.WatchDTOs.WatchImageDTO;
 import com.invictus.watches_final.model.Watch;
 
 import java.util.Base64;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class WatchMapper {
 
@@ -24,10 +27,14 @@ public class WatchMapper {
         watchDTO.setActive(watch.isActive());
         watchDTO.setWatchID(watch.getWatchID());
 
-        if (watch.getImage() != null) {
-            String base64Image = Base64.getEncoder().encodeToString(watch.getImage());
-            watchDTO.setImage(base64Image);
-        }
+        List<WatchImageDTO> imageDTOs = watch.getImages().stream()
+                .map(img -> new WatchImageDTO(
+                        img.getImageID(),
+                        Base64.getEncoder().encodeToString(img.getImage()),
+                        img.isPrimary()
+                ))
+                .collect(Collectors.toList());
+        watchDTO.setImages(imageDTOs);
 
         watchDTO.setDiscountPercentage(watch.getDiscountPercentage());
         watchDTO.setSaleStartDate(watch.getSaleStartDate());

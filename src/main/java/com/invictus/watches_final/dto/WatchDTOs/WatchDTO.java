@@ -10,6 +10,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.UUID;
 
 @AllArgsConstructor
@@ -40,7 +41,7 @@ public class WatchDTO {
     private OccasionType occasion;
     private boolean isActive;
     private UUID watchID;
-    private String image; //da li string ili bytes
+    private List<WatchImageDTO> images; //da li string ili bytes
 
     private Integer discountPercentage;
     private LocalDate saleStartDate;

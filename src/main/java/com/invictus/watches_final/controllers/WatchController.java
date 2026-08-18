@@ -1,9 +1,6 @@
 package com.invictus.watches_final.controllers;
 
-import com.invictus.watches_final.dto.WatchDTOs.AddWatchDTO;
-import com.invictus.watches_final.dto.WatchDTOs.AmountDTO;
-import com.invictus.watches_final.dto.WatchDTOs.EditWatchDTO;
-import com.invictus.watches_final.dto.WatchDTOs.WatchDTO;
+import com.invictus.watches_final.dto.WatchDTOs.*;
 import com.invictus.watches_final.mapper.WatchMapper;
 import com.invictus.watches_final.model.Watch;
 import com.invictus.watches_final.services.IServices.IWatchService;
@@ -18,6 +15,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -72,10 +71,9 @@ public class WatchController {
     @PreAuthorize("hasAuthority('ADMIN_ROLE')")
     @PutMapping(path = "/editWatch", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<WatchDTO> editWatch(
-            @Valid @ModelAttribute EditWatchDTO editWatchDTO,
-            @RequestPart(value = "image", required = false) MultipartFile image) {
+            @Valid @ModelAttribute EditWatchDTO editWatchDTO) {
 
-        WatchDTO newWatch = service.editWatch(editWatchDTO, image);
+        WatchDTO newWatch = service.editWatch(editWatchDTO);
         return ResponseEntity.ok(newWatch);
     }
 
@@ -89,9 +87,9 @@ public class WatchController {
     @PostMapping(path = "/addWatch", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<WatchDTO> addWatch(
             @Valid @ModelAttribute AddWatchDTO addWatchDTO,
-            @RequestPart(value = "image", required = false) MultipartFile image){
+            @RequestPart(value = "images", required = false) List<MultipartFile> images){
 
-        WatchDTO watchDTO = service.addWatch(addWatchDTO, image);
+        WatchDTO watchDTO = service.addWatch(addWatchDTO, images);
         return ResponseEntity.status(HttpStatus.CREATED).body(watchDTO);
     }
 
@@ -107,5 +105,28 @@ public class WatchController {
     public ResponseEntity<String> deleteWatch(@PathVariable UUID watchID){
         service.deleteWatch(watchID); // baca EntityNotFoundException ako ne postoji
         return ResponseEntity.ok("Watch deleted successfully");
+    }
+
+    @PreAuthorize("hasAuthority('ADMIN_ROLE')")
+    @PostMapping(path="/{watchID}/addImage", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<WatchImageDTO> addImage(@PathVariable UUID watchID,
+                                                  @RequestPart("image") MultipartFile image){
+
+        WatchImageDTO imageDTO = service.addImage(watchID, image);
+        return ResponseEntity.status(HttpStatus.CREATED).body(imageDTO);
+    }
+
+    @PreAuthorize("hasAuthority('ADMIN_ROLE')")
+    @DeleteMapping("/{watchID}/deleteImage/{imageID}")
+    public ResponseEntity<String> deleteImage(@PathVariable UUID watchID, @PathVariable UUID imageID) {
+        service.deleteImage(watchID, imageID);
+        return ResponseEntity.ok("Image deleted successfully");
+    }
+
+    @PreAuthorize("hasAuthority('ADMIN_ROLE')")
+    @PutMapping("/{watchID}/setPrimaryImage/{imageID}")
+    public ResponseEntity<String> setPrimaryImage(@PathVariable UUID watchID, @PathVariable UUID imageID) {
+        service.setPrimaryImage(watchID, imageID);
+        return ResponseEntity.ok("Primary image updated");
     }
 }

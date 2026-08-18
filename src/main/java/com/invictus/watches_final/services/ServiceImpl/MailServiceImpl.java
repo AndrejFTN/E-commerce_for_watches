@@ -1,5 +1,7 @@
 package com.invictus.watches_final.services.ServiceImpl;
 
+import com.invictus.watches_final.model.Order;
+import com.invictus.watches_final.model.OrderItem;
 import com.invictus.watches_final.services.IServices.IMailService;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.stereotype.Service;
@@ -57,6 +59,28 @@ public class MailServiceImpl implements IMailService {
         String subject = "Verify your account";
         String text = "Please click the link to verify your account:\n" + link;
         sendSimpleMessage(subject, text, to);
+    }
+
+    @Override
+    public void sendOrderConfirmationEmail(String to, Order order) {
+        String subject = "Potvrda porudžbine #" + order.getOrderID();
+
+        StringBuilder text = new StringBuilder();
+        text.append("Hvala na porudžbini!\n\n");
+        text.append("Broj porudžbine: ").append(order.getOrderID()).append("\n\n");
+        text.append("Stavke:\n");
+
+        for (OrderItem item : order.getOrderItems()) {
+            text.append("- ").append(item.getWatch().getBrand()).append(" ").append(item.getWatch().getModel())
+                    .append(" x").append(item.getAmount())
+                    .append(" - ").append(item.getPrice()).append("€\n");
+        }
+
+        text.append("\nCena proizvoda: ").append(order.getTotalAmount()).append("€\n");
+        text.append("Troškovi dostave: ").append(order.getShippingCost()).append("€\n");
+        text.append("Ukupno: ").append(order.getTotalAmount() + order.getShippingCost()).append("€\n");
+
+        sendSimpleMessage(subject, text.toString(), to);
     }
 
     // Za pravu verziju , stavlja se pravi domain:

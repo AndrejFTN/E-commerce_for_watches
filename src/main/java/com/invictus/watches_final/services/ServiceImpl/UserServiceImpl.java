@@ -116,6 +116,7 @@ public class UserServiceImpl implements IUserService {
         user.setPassword(passwordEncoder.encode(registerDTO.getPassword()));
         user.setEmail(registerDTO.getEmail());
         user.setRole(Roles.USER_ROLE);
+        user.setRegistrationDate(LocalDateTime.now());
 
         //generisanje tokena za verifikaciju mail-a
         String token = UUID.randomUUID().toString();

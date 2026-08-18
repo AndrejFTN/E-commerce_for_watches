@@ -32,18 +32,12 @@ public interface WatchRepo extends JpaRepository<Watch, UUID>, JpaSpecificationE
 //                                Pageable pageable);
 
 
-
-
-    //Uradjena paginacija sa ugradjenom metodom u JPA
-
-    //boolean existsByBrandAndModelAndMechanism(String brand, String model, String mechanism);
-
     @Query("SELECT w FROM Watch  w where w.watchID = :watchID")
     Optional<Watch> findByWatchID(@Param("watchID") UUID watchID); // moze i bez
 
-
-//    Optional<Watch> findByBrandAndModelAndMechanism(String brand, String model, String mechanism);
-
     Optional<Watch> findByBrandAndModelAndMechanismAndColor(@NotBlank String brand, @NotBlank String model, @NotBlank String mechanism, @NotBlank String color);
+
+    long countByStockLessThan(int threshold);
+
 }
 
