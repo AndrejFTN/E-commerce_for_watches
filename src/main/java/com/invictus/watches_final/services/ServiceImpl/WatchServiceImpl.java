@@ -24,10 +24,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.time.LocalDate;
-import java.util.Base64;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @AllArgsConstructor
 @Service
@@ -40,15 +38,18 @@ public class WatchServiceImpl implements IWatchService {
     private final FavoriteRepo favoriteRepo;
 
     private static final int MAX_IMAGES_PER_WATCH = 5;
+    private static final List<String> ALLOWED_IMAGE_TYPES =
+            List.of("image/jpeg", "image/png", "image/webp");
     private final WatchImageRepo watchImageRepo;
 
 
     @Override
-    public Page<WatchDTO> getAllWatchesPage(Pageable pageable) {//paginacija za vracanje svih elemenata, moguca greska , ugradjen metoda
+    public Page<WatchListDTO> getAllWatchesPage(Pageable pageable) {
         if(pageable.getPageNumber() < 0 || pageable.getPageSize() < 0){
             throw new IllegalArgumentException("Invalid page number or page size value");
         }
-        return repo.findAll(pageable).map(WatchMapper::entityToDTO);
+        return toListPage(repo.findAll(pageable));
+
     }
 
     @Override
@@ -74,10 +75,9 @@ public class WatchServiceImpl implements IWatchService {
     }
 
     @Override
-    public WatchDTO addWatch(AddWatchDTO addWatchDTO) { //dosta izmena moguce greske
+    public WatchDTO addWatch(AddWatchDTO addWatchDTO) {
 
         validateSaleDates(addWatchDTO.getSaleStartDate(), addWatchDTO.getSaleEndDate());
-
 
         Optional<Watch> exists = repo.findByBrandAndModelAndMechanismAndColor(
                 addWatchDTO.getBrand(),
@@ -109,44 +109,64 @@ public class WatchServiceImpl implements IWatchService {
         return WatchMapper.entityToDTO(savedWatch);
     }
 
+    @Override
+    public FilterOptionsDTO getFilterOptions(){
+        FilterOptionsDTO filterOptionsDTO = new FilterOptionsDTO();
 
+        filterOptionsDTO.setBrands(repo.findDistinctBrands());
+        filterOptionsDTO.setColors(repo.findDistinctColors());
+        filterOptionsDTO.setMechanisms(repo.findDistinctMechanisms());
+
+        filterOptionsDTO.setGenders(repo.findDistinctGenders()
+                .stream()
+                .map(GenderType::toValue)
+                .sorted()
+                .toList());
+
+        filterOptionsDTO.setOccasions(repo.findDistinctOccasions()
+                .stream()
+                .map(OccasionType::toValue)
+                .sorted()
+                .toList());
+
+        Float min = repo.findMinPrice();
+        Float max = repo.findMaxPrice();
+        filterOptionsDTO.setMinPrice(min != null ? min : 0f);
+        filterOptionsDTO.setMaxPrice(max != null ? max : 0f);
+
+        return filterOptionsDTO;
+    }
 
     @Override
-    public Page<WatchDTO> getFilteredWatches(String search, String occasion, String gender, String colorFilter, String brandFilter, String mechanismFilter,Float minPrice,
-                                             Float maxPrice, String sortBy, String sortDir, int page, int size) {
+    public Page<WatchListDTO> getFilteredWatches(String search, List<String> occasions, List<String> genders,
+                                                 List<String> colors, List<String> brands, List<String> mechanisms,
+                                                 Float minPrice, Float maxPrice,
+                                                 String sortBy, String sortDir, int page, int size) {
 
-        String colorFilterModify = (colorFilter != null && !colorFilter.isEmpty()) ? colorFilter : null;
-        String brandFilterModify = (brandFilter != null && !brandFilter.isEmpty()) ? brandFilter : null;
-        String mechanismFilterModify = (mechanismFilter != null && !mechanismFilter.isEmpty()) ? mechanismFilter : null;
         String searchModify = (search != null && !search.isEmpty()) ? search : null;
-        OccasionType occasionFilter = (occasion != null && !occasion.isEmpty())
-                ? OccasionType.fromString(occasion) : null;
 
-        GenderType genderFilter = (gender != null && !gender.isEmpty())
-                ? GenderType.fromString(gender) : null;
+        List<OccasionType> occasionFilter = (occasions == null || occasions.isEmpty()) ? null
+                : occasions.stream().map(OccasionType::fromString).toList();   // baca 400 ako je vrednost pogrešna
 
+        List<GenderType> genderFilter = (genders == null || genders.isEmpty()) ? null
+                : genders.stream().map(GenderType::fromString).toList();
 
         Sort.Direction direction = "desc".equalsIgnoreCase(sortDir) ? Sort.Direction.DESC : Sort.Direction.ASC;
-        String sortField = (sortBy != null &&  !sortBy.isEmpty()) ? sortBy : "price";  // pravljenje sortiranja
-        Sort sort = Sort.by(direction, sortField);                                      // i onda rucno pravljenje page
-        Pageable pageable = PageRequest.of(page, size, sort);
+        String sortField = (sortBy != null && !sortBy.isEmpty()) ? sortBy : "price";
+        Pageable pageable = PageRequest.of(page, size, Sort.by(direction, sortField));
 
         Specification<Watch> spec = Specification.allOf(
-                WatchSpecifications.hasBrand(brandFilterModify),
-                WatchSpecifications.hasMechanism(mechanismFilterModify),
-                WatchSpecifications.hasColor(colorFilterModify),
+                WatchSpecifications.hasBrand(brands),
+                WatchSpecifications.hasMechanism(mechanisms),
+                WatchSpecifications.hasColor(colors),
                 WatchSpecifications.priceBetween(minPrice, maxPrice),
                 WatchSpecifications.searchTerm(searchModify),
                 WatchSpecifications.hasOccasion(occasionFilter),
                 WatchSpecifications.hasGender(genderFilter)
         );
 
-
-        Page<Watch> filteredWatches = repo.findAll(spec, pageable);
-
-        return filteredWatches.map(WatchMapper::entityToDTO);
+        return toListPage(repo.findAll(spec, pageable));
     }
-
 
     @Override
     public void deleteWatch(UUID watchID) {
@@ -212,27 +232,40 @@ public class WatchServiceImpl implements IWatchService {
 
     @Override
     public WatchImageDTO addImage(UUID watchID, MultipartFile image) {
+
+        if (image == null || image.isEmpty()) {
+            throw new IllegalArgumentException("Image file is empty");
+        }
+
+        String type = image.getContentType();
+        if (type == null || !ALLOWED_IMAGE_TYPES.contains(type.toLowerCase())) {
+            throw new IllegalArgumentException("Only JPEG, PNG and WebP images are allowed");
+        }
+
         Watch watch = repo.findByWatchID(watchID)
                 .orElseThrow(() -> new EntityNotFoundException("Watch not found"));
 
         long currentCount = watchImageRepo.countByWatch(watch);
-        if(currentCount >= MAX_IMAGES_PER_WATCH){
-           throw new IllegalStateException("Watch already has the maximum of " + MAX_IMAGES_PER_WATCH);
+        if (currentCount >= MAX_IMAGES_PER_WATCH) {
+            throw new IllegalStateException(
+                    "Watch already has the maximum of " + MAX_IMAGES_PER_WATCH + " images");
         }
 
         WatchImage watchImage = new WatchImage();
         watchImage.setWatch(watch);
-        try{
+        watchImage.setContentType(type);
+        watchImage.setPrimary(currentCount == 0);
+
+        try {
             watchImage.setImage(image.getBytes());
-        }catch (IOException e){
+        } catch (IOException e) {
             throw new ImageProcessingException("Error reading image file");
         }
-        watchImage.setPrimary(currentCount == 0);
 
         WatchImage saved = watchImageRepo.save(watchImage);
 
         return new WatchImageDTO(saved.getImageID(),
-            Base64.getEncoder().encodeToString(saved.getImage()), saved.isPrimary());
+                Base64.getEncoder().encodeToString(saved.getImage()), saved.isPrimary());
     }
 
     @Override
@@ -259,6 +292,12 @@ public class WatchServiceImpl implements IWatchService {
     }
 
     @Override
+    public WatchImage getImage(UUID imageID) {
+        return watchImageRepo.findById(imageID)
+                .orElseThrow(() -> new EntityNotFoundException("Image not found"));
+    }
+
+    @Override
     public void setPrimaryImage(UUID watchID, UUID imageID) {
         Watch watch = repo.findById(watchID)
                 .orElseThrow(() -> new EntityNotFoundException("Watch not found"));
@@ -280,6 +319,22 @@ public class WatchServiceImpl implements IWatchService {
         if(saleEndDate != null && saleStartDate != null && saleEndDate.isBefore(saleStartDate)) {
             throw new IllegalArgumentException("Sale end date cannot be before sale start date");
         }
+    }
+
+    private Page<WatchListDTO> toListPage(Page<Watch> watches) {
+        List<UUID> ids = watches.getContent().stream()
+                .map(Watch::getWatchID)
+                .toList();
+
+        Map<UUID, UUID> primaryByWatch = ids.isEmpty()
+                ? Map.of()
+                : watchImageRepo.findPrimaryImageIDs(ids).stream()
+                .collect(Collectors.toMap(
+                        r -> (UUID) r[0],
+                        r -> (UUID) r[1],
+                        (a, b) -> a));      // zastita ako sat greskom ima 2 primarne
+
+        return watches.map(w -> WatchMapper.entityToListDTO(w, primaryByWatch.get(w.getWatchID())));
     }
 }
 

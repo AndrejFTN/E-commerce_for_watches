@@ -16,11 +16,14 @@ public class MailServiceImpl implements IMailService {
 
     private final JavaMailSender mailSender;
     private final String mailFrom;
+    private final String frontendUrl;
 
     public MailServiceImpl(JavaMailSender  mailSender,
-                           @Value("${spring.mail.username}") String mailFrom) {
+                           @Value("${spring.mail.username}") String mailFrom,
+                            @Value("${app.frontend-url}") String frontendUrl){
         this.mailSender = mailSender;
         this.mailFrom = mailFrom;
+        this.frontendUrl = frontendUrl;
     }
 
     // slanje prostog maila tj slanje maila podrsci
@@ -46,7 +49,7 @@ public class MailServiceImpl implements IMailService {
     }
 
     public void sendResetPassword(String to, String token){
-        String link = "http://localhost:9002/reset-password?token=" + token;
+        String link = frontendUrl + "/reset-password?token=" + token;
         String subject = "Reset your password";
         String text = "Click the link to reset your password:\n" + link;
         sendSimpleMessage(subject, text, to);

@@ -43,7 +43,7 @@ public class UserServiceImpl implements IUserService {
             throw new IllegalArgumentException("Username must not be empty");
         }
 
-        return repo.findByUserName(userName).map(User::getUserID)//videti da li je dobra metoda getUSetID
+        return repo.findByUserName(userName).map(User::getUserID)
                 .orElseThrow(()->new UsernameNotFoundException("Username" + userName + "not found"));
     }
 
@@ -84,10 +84,6 @@ public class UserServiceImpl implements IUserService {
     public UserInfoDTO updateUser(UUID userID, UpdateProfilDTO userDTO) {
         User user = repo.findById(userID)
                 .orElseThrow(() -> new UserNotFoundException("User not found"));
-//
-//        if (userDTO.getFullName() == null || userDTO.getFullName().isBlank()) {
-//            throw new IllegalArgumentException("Full name must not be empty");  IMAMO PROVERU U DTO
-//        }
 
         user.setFullName(userDTO.getFullName());
         user.setPhone(userDTO.getPhone());
@@ -188,7 +184,7 @@ public class UserServiceImpl implements IUserService {
                 .orElseThrow(() -> new InvalidTokenException("Invalid token"));
 
         if(user.getResetPasswordTokenExpiry() == null
-        && user.getResetPasswordTokenExpiry().isBefore(LocalDateTime.now())){
+        || user.getResetPasswordTokenExpiry().isBefore(LocalDateTime.now())){
             throw new InvalidTokenException("Token has expired");
         }
 

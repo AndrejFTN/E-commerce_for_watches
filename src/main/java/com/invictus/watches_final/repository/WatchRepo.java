@@ -1,6 +1,8 @@
 package com.invictus.watches_final.repository;
 
 import com.invictus.watches_final.model.Watch;
+import com.invictus.watches_final.model.enums.GenderType;
+import com.invictus.watches_final.model.enums.OccasionType;
 import jakarta.validation.constraints.NotBlank;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -38,6 +40,27 @@ public interface WatchRepo extends JpaRepository<Watch, UUID>, JpaSpecificationE
     Optional<Watch> findByBrandAndModelAndMechanismAndColor(@NotBlank String brand, @NotBlank String model, @NotBlank String mechanism, @NotBlank String color);
 
     long countByStockLessThan(int threshold);
+
+    @Query("SELECT DISTINCT w.brand FROM Watch w WHERE w.brand IS NOT NULL ORDER BY w.brand")
+    List<String> findDistinctBrands();
+
+    @Query("SELECT DISTINCT w.color FROM Watch w WHERE w.color IS NOT NULL ORDER BY w.color")
+    List<String> findDistinctColors();
+
+    @Query("SELECT DISTINCT w.mechanism FROM Watch w WHERE w.mechanism IS NOT NULL ORDER BY w.mechanism")
+    List<String> findDistinctMechanisms();
+
+    @Query("SELECT DISTINCT w.gender FROM Watch w WHERE w.gender IS NOT NULL")
+    List<GenderType> findDistinctGenders();
+
+    @Query("SELECT DISTINCT w.occasion FROM Watch w WHERE w.occasion IS NOT NULL")
+    List<OccasionType> findDistinctOccasions();
+
+    @Query("SELECT MIN(w.price) FROM Watch w")
+    Float findMinPrice();
+
+    @Query("SELECT MAX(w.price) FROM Watch w")
+    Float findMaxPrice();
 
 }
 

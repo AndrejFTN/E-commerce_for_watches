@@ -5,31 +5,33 @@ import com.invictus.watches_final.model.enums.GenderType;
 import com.invictus.watches_final.model.enums.OccasionType;
 import org.springframework.data.jpa.domain.Specification;
 
+import java.util.List;
+
 public class WatchSpecifications {
 
-    public static Specification<Watch> hasColor(String color){
-        return(root, query, cb) -> color == null ? null
-                : cb.like(cb.lower(root.get("color")), "%" + color.toLowerCase() + "%");
+    public static Specification<Watch> hasColor(List<String> colors){
+        return(root, query, cb) -> (colors == null || colors.isEmpty()) ? null
+                : root.get("color").in(colors);
     }
 
-    public static Specification<Watch> hasBrand(String brand){
-        return (root, query, cb) -> brand == null ? null
-                : cb.like(cb.lower(root.get("brand")), "%" + brand.toLowerCase() + "%");
+    public static Specification<Watch> hasBrand(List<String> brands){
+        return (root, query, cb) -> (brands == null || brands.isEmpty()) ? null
+                : root.get("brand").in(brands);
     }
 
-    public static Specification<Watch> hasMechanism(String mechanism){
-        return (root, query, cb) -> mechanism == null ? null
-                : cb.like(cb.lower(root.get("mechanism")), "%" + mechanism.toLowerCase() + "%");
+    public static Specification<Watch> hasMechanism(List<String> mechanisms){
+        return (root, query, cb) -> (mechanisms == null || mechanisms.isEmpty()) ? null
+                : root.get("mechanism").in(mechanisms);
     }
 
-    public static Specification<Watch> hasOccasion(OccasionType  occasion){
-        return (root, query, cb) -> occasion == null ? null
-                : cb.equal(root.get("occasion"), occasion);
+    public static Specification<Watch> hasOccasion(List<OccasionType>  occasions){
+        return (root, query, cb) -> (occasions == null || occasions.isEmpty()) ? null
+                : root.get("occasion").in(occasions);
     }
 
-    public static Specification<Watch> hasGender(GenderType gender){
-        return (root, query, cb) -> gender == null ? null
-                : cb.equal(root.get("gender"), gender);
+    public static Specification<Watch> hasGender(List<GenderType> genders){
+        return (root, query, cb) -> (genders == null || genders.isEmpty()) ? null
+                : root.get("gender").in(genders);
     }
 
     public static Specification<Watch> priceBetween(Float minPrice, Float maxPrice){

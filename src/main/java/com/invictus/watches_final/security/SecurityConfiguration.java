@@ -43,9 +43,11 @@ public class SecurityConfiguration {
                                 "/user/resetPasswordWithToken",
                                 "/watch/getAll",
                                 "/watch/filterWatches",
-                                "/watch/getOneWatch",
+                                "/watch/getOneWatch/**",
+                                "/watch/image/**",
                                 "/store/**",
                                 "/request/sendRequest",
+                                "/watch/filterOptions",
                                 "/swagger-ui/**",
                                 "/v3/api-docs/**",
                                 "/webhook/stripe"
@@ -67,7 +69,7 @@ public class SecurityConfiguration {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("http://localhost:4200"));  // proveri prema frontendu
+        configuration.setAllowedOrigins(List.of("http://localhost:5173")); // proveri prema frontendu
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("Authorization", "Content-Type"));
         configuration.setAllowCredentials(true);

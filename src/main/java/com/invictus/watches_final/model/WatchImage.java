@@ -28,6 +28,8 @@ public class WatchImage {
     @Lob
     private byte[] image;
 
+    private String contentType;
+
     private boolean isPrimary;
 
 }

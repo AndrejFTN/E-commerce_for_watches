@@ -3,12 +3,14 @@ package com.invictus.watches_final.controllers;
 import com.invictus.watches_final.dto.WatchDTOs.*;
 import com.invictus.watches_final.mapper.WatchMapper;
 import com.invictus.watches_final.model.Watch;
+import com.invictus.watches_final.model.WatchImage;
 import com.invictus.watches_final.services.IServices.IWatchService;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.CacheControl;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -18,6 +20,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 @RestController
 @RequestMapping("/watch")
@@ -26,12 +29,8 @@ public class WatchController {
     private final IWatchService service;
 
     @GetMapping("/getAll")
-    public ResponseEntity<Page<WatchDTO>> getAllWatches(Pageable pageable){
-        Page<WatchDTO> watchesPage = service.getAllWatchesPage(pageable);
-        if (watchesPage.isEmpty()) {
-            return ResponseEntity.noContent().build();
-        }
-        return ResponseEntity.ok(watchesPage);
+    public ResponseEntity<Page<WatchListDTO>> getAllWatches(Pageable pageable){
+        return ResponseEntity.ok(service.getAllWatchesPage(pageable));
     }
 
     @GetMapping("/getOneWatch/{watchID}")
@@ -41,15 +40,19 @@ public class WatchController {
         return ResponseEntity.ok(WatchMapper.entityToDTO(watch));
     }
 
+    @GetMapping("/filterOptions")
+    public ResponseEntity<FilterOptionsDTO> getFilterOptions(){
+        return ResponseEntity.ok(service.getFilterOptions());
+    }
 
     @GetMapping("/filterWatches")
-    public ResponseEntity<Page<WatchDTO>> getFilteredWatches(
+    public ResponseEntity<Page<WatchListDTO>> getFilteredWatches(
             @RequestParam(required = false) String search,
-            @RequestParam(required = false) String occasion,
-            @RequestParam(required = false) String gender,
-            @RequestParam(required = false) String color,
-            @RequestParam(required = false) String brand,
-            @RequestParam(required = false) String mechanism,
+            @RequestParam(required = false) List<String> occasion,
+            @RequestParam(required = false) List<String> gender,
+            @RequestParam(required = false) List<String> color,
+            @RequestParam(required = false) List<String> brand,
+            @RequestParam(required = false) List<String> mechanism,
             @RequestParam(required = false) Float minPriceFilter,
             @RequestParam(required = false) Float maxPriceFilter,
             @RequestParam(defaultValue = "0") int page,  // u servisu se pravi page a ovde se se proseldjuej svaki parametar
@@ -61,7 +64,7 @@ public class WatchController {
             throw new IllegalArgumentException("minPrice cannot be greater than maxPrice");
         }
 
-        Page<WatchDTO> result = service.getFilteredWatches(search, occasion, gender, color, brand, mechanism,
+        Page<WatchListDTO> result = service.getFilteredWatches(search, occasion, gender, color, brand, mechanism,
                                                             minPriceFilter, maxPriceFilter,
                                                             sortBy, sortDir, page, size);
 
@@ -117,6 +120,20 @@ public class WatchController {
     public ResponseEntity<String> deleteImage(@PathVariable UUID watchID, @PathVariable UUID imageID) {
         service.deleteImage(watchID, imageID);
         return ResponseEntity.ok("Image deleted successfully");
+    }
+
+    @GetMapping("/image/{imageID}")
+    public ResponseEntity<byte[]> getImage(@PathVariable UUID imageID) {
+        WatchImage img = service.getImage(imageID);
+
+        String type = (img.getContentType() != null)
+                ? img.getContentType()
+                : MediaType.APPLICATION_OCTET_STREAM_VALUE;
+
+        return ResponseEntity.ok()
+                .contentType(MediaType.parseMediaType(type))
+                .cacheControl(CacheControl.maxAge(30, TimeUnit.DAYS).cachePublic())
+                .body(img.getImage());
     }
 
     @PreAuthorize("hasAuthority('ADMIN_ROLE')")

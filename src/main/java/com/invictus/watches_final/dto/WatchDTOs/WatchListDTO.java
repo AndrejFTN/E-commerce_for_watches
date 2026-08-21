@@ -2,39 +2,33 @@ package com.invictus.watches_final.dto.WatchDTOs;
 
 import com.invictus.watches_final.model.enums.GenderType;
 import com.invictus.watches_final.model.enums.OccasionType;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Positive;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
-import java.util.List;
 import java.util.UUID;
 
+@Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Data
-public class WatchDTO {
+public class WatchListDTO {
 
+    private UUID watchID;
+    private String brand;
     private String model;
     private String color;
-    private String brand;
-    private LocalDate manufactureDate;
     private String mechanism;
-    private float price;
+    private LocalDate manufactureDate;
     private Integer stock;
+    private boolean isActive;
     private GenderType gender;
     private OccasionType occasion;
-    private boolean isActive;
-    private UUID watchID;
-    private List<WatchImageDTO> images;
 
-    private Integer discountPercentage;
-    private LocalDate saleStartDate;
-    private LocalDate saleEndDate;
-    private boolean onSale;
+    private float price;
     private float effectivePrice;
+    private boolean onSale;
+    private Integer discountPercentage;
 
+    private UUID primaryImageID;
 }

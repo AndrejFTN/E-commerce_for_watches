@@ -38,7 +38,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
             "/user/resetPasswordWithToken",
             "/watch/getAll",
             "/watch/filterWatches",
-            "/watch/getOneWatch",
+            "/watch/filterOptions",
             "/store",
             "/request/sendRequest",
             "/webhook/stripe"
@@ -121,6 +121,8 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 
     private boolean isPublicEndpoint(String path) {
         return PUBLIC_ENDPOINTS.contains(path)
+                || path.startsWith("/watch/getOneWatch/")
+                || path.startsWith("/watch/image/")
                 || path.startsWith("/swagger-ui")
                 || path.startsWith("/v3/api-docs");
     }

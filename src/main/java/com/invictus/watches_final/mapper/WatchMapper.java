@@ -1,13 +1,11 @@
 package com.invictus.watches_final.mapper;
 
-import com.invictus.watches_final.dto.WatchDTOs.AddWatchDTO;
-import com.invictus.watches_final.dto.WatchDTOs.EditWatchDTO;
-import com.invictus.watches_final.dto.WatchDTOs.WatchDTO;
-import com.invictus.watches_final.dto.WatchDTOs.WatchImageDTO;
+import com.invictus.watches_final.dto.WatchDTOs.*;
 import com.invictus.watches_final.model.Watch;
 
 import java.util.Base64;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 public class WatchMapper {
@@ -81,6 +79,30 @@ public class WatchMapper {
         existingWatch.setSaleStartDate(editDTO.getSaleStartDate());
         existingWatch.setSaleEndDate(editDTO.getSaleEndDate());
         return existingWatch;
+    }
+
+    public static WatchListDTO entityToListDTO(Watch watch, UUID primaryImageID) {
+        WatchListDTO dto = new WatchListDTO();
+
+        dto.setWatchID(watch.getWatchID());
+        dto.setBrand(watch.getBrand());
+        dto.setModel(watch.getModel());
+        dto.setColor(watch.getColor());
+        dto.setMechanism(watch.getMechanism());
+        dto.setManufactureDate(watch.getManufactureDate());
+        dto.setStock(watch.getStock());
+        dto.setActive(watch.isActive());
+        dto.setGender(watch.getGender());
+        dto.setOccasion(watch.getOccasion());
+
+        dto.setPrice(watch.getPrice());
+        dto.setEffectivePrice(watch.getEffectivePrice());
+        dto.setOnSale(watch.isOnSale());
+        dto.setDiscountPercentage(watch.getDiscountPercentage());
+
+        dto.setPrimaryImageID(primaryImageID);
+
+        return dto;
     }
 
 }

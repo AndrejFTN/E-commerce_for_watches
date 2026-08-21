@@ -1,0 +1,16 @@
+import api from './axios'
+
+export const login = (data) =>
+    api.post('/user/login', data)
+
+export const register = (data) =>
+    api.post('/user/register', data)
+
+export const forgotPassword = (data) => api.post('/user/forgotPassword', data)
+export const resetPasswordWithToken = (data) => api.put('/user/resetPasswordWithToken', data)
+export const resetPassword = (data) => api.put('/user/resetPassword', data)   // promena lozinke ulogovanog
+export const resendEmail = (data) => api.post('/user/resendEmail', data)
+
+export const getUserInfo = (userName) => api.get(`/user/getUserInfo/${userName}`)
+export const updateUser = (userID, data) => api.put(`/user/updateUser/${userID}`, data)
+export const checkIfAdmin = () => api.get('/user/checkIfAdmin')

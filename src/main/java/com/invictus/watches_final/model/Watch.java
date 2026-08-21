@@ -46,7 +46,7 @@ public class Watch {
     @Version
     private Long version;
 
-    //@Column(nullable = false)
+    @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private OccasionType occasion;
 
