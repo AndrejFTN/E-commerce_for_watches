@@ -30,5 +30,7 @@ public class WatchListDTO {
     private boolean onSale;
     private Integer discountPercentage;
 
+    private boolean newArrival;
+
     private UUID primaryImageID;
 }

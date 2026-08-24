@@ -6,16 +6,19 @@ import CssBaseline from '@mui/material/CssBaseline'   // reset browser stilova +
 import theme from './theme'
 import { CartProvider } from './context/CartContext'
 import App from './App.jsx'
+import { ToastProvider } from './context/ToastContext'
 
 createRoot(document.getElementById('root')).render(
     <StrictMode>
         <ThemeProvider theme={theme}>
             <CssBaseline />
-            <CartProvider>
-                <BrowserRouter>
-                    <App />
-                </BrowserRouter>
-            </CartProvider>
+            <ToastProvider>                            {/* mora unutar ThemeProvider-a */}
+                <CartProvider>
+                    <BrowserRouter>
+                        <App />
+                    </BrowserRouter>
+                </CartProvider>
+            </ToastProvider>
         </ThemeProvider>
     </StrictMode>,
 )

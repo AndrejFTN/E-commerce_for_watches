@@ -2,7 +2,7 @@ import axios from 'axios'
 
 const api = axios.create({
     baseURL: '/api',
-    paramsSerializer: { indexes: null },   a
+    paramsSerializer: { indexes: null },
 })
 
 api.interceptors.request.use((config) => {

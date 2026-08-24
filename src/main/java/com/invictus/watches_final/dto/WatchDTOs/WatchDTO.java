@@ -37,4 +37,7 @@ public class WatchDTO {
     private boolean onSale;
     private float effectivePrice;
 
+    private String description;
+    private boolean newArrival;
+
 }

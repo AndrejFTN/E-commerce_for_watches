@@ -50,6 +50,7 @@ public class SecurityConfiguration {
                                 "/watch/filterOptions",
                                 "/swagger-ui/**",
                                 "/v3/api-docs/**",
+                                "/watch/activeSales",
                                 "/webhook/stripe"
                         ).permitAll()
                         // Sve ostalo zahteva autentifikaciju

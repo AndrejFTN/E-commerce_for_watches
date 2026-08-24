@@ -55,6 +55,7 @@ public class WatchController {
             @RequestParam(required = false) List<String> mechanism,
             @RequestParam(required = false) Float minPriceFilter,
             @RequestParam(required = false) Float maxPriceFilter,
+            @RequestParam(required = false) Boolean onSale,
             @RequestParam(defaultValue = "0") int page,  // u servisu se pravi page a ovde se se proseldjuej svaki parametar
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(required = false) String sortBy,
@@ -66,7 +67,7 @@ public class WatchController {
 
         Page<WatchListDTO> result = service.getFilteredWatches(search, occasion, gender, color, brand, mechanism,
                                                             minPriceFilter, maxPriceFilter,
-                                                            sortBy, sortDir, page, size);
+                                                            sortBy, sortDir, page, size, onSale);
 
         return ResponseEntity.ok(result);
     }
@@ -86,6 +87,7 @@ public class WatchController {
         return ResponseEntity.ok(service.setWatchStatus(watchID, status));
     }
 
+    @PreAuthorize("hasAuthority('ADMIN_ROLE')")
     @PostMapping(path = "/addWatch")
     public ResponseEntity<WatchDTO> addWatch(@Valid @RequestBody AddWatchDTO addWatchDTO){
         WatchDTO watchDTO = service.addWatch(addWatchDTO);
@@ -142,4 +144,10 @@ public class WatchController {
         service.setPrimaryImage(watchID, imageID);
         return ResponseEntity.ok("Primary image updated");
     }
+
+    @GetMapping("/activeSales")
+    public ResponseEntity<List<ActiveSaleDTO>> getActiveSales(){
+        return ResponseEntity.ok(service.getActiveSales());
+    }
+
 }

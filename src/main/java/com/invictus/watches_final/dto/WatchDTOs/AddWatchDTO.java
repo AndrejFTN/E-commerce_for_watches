@@ -36,6 +36,9 @@ public class AddWatchDTO {
     @NotNull(message = "Occasion is required.")
     private OccasionType occasion;
 
+    @Size(max = 2000, message = "Opis može imati najviše 2000 karaktera")
+    private String description;
+
     @Min(value = 5, message = "Discount must be at least 5%")
     @Max(value = 90, message = "Discount cannot exceed 90%")
     private Integer discountPercentage;

@@ -40,6 +40,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
             "/watch/filterWatches",
             "/watch/filterOptions",
             "/store",
+            "/watch/activeSales",
             "/request/sendRequest",
             "/webhook/stripe"
     ); //mora se dodati ostale funkcionalnosti

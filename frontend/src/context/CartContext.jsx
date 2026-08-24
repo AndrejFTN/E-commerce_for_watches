@@ -13,15 +13,14 @@ export function CartProvider({ children }) {
         localStorage.setItem(STORAGE_KEY, JSON.stringify(items))
     }, [items])
 
-    const addToCart = (watchID, quantity = 1) => {
+    const addToCart = (watchID, quantity = 1, maxStock = Infinity) => {
         setItems(prev => {
             const found = prev.find(i => i.watchID === watchID)
             if (found) {
-                return prev.map(i => i.watchID === watchID
-                    ? { ...i, quantity: i.quantity + quantity }
-                    : i)
+                const next = Math.min(found.quantity + quantity, maxStock)   // nikad preko stanja
+                return prev.map(i => i.watchID === watchID ? { ...i, quantity: next } : i)
             }
-            return [...prev, { watchID, quantity }]
+            return [...prev, { watchID, quantity: Math.min(quantity, maxStock) }]
         })
     }
 

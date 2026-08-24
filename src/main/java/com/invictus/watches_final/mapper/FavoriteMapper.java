@@ -2,9 +2,6 @@ package com.invictus.watches_final.mapper;
 
 import com.invictus.watches_final.dto.FavoriteDTOs.FavoriteDTO;
 import com.invictus.watches_final.model.Favorite;
-import com.invictus.watches_final.model.WatchImage;
-
-import java.util.Base64;
 
 public class FavoriteMapper {
 
@@ -22,11 +19,6 @@ public class FavoriteMapper {
         dto.setStock(favorite.getWatch().getStock());
         dto.setActive(favorite.getWatch().isActive());
         dto.setDateAdded(favorite.getDateAdded());
-
-        favorite.getWatch().getImages().stream()
-                .filter(WatchImage::isPrimary)
-                .findFirst()
-                .ifPresent(img -> dto.setImage(Base64.getEncoder().encodeToString(img.getImage())));
 
         return dto;
     }

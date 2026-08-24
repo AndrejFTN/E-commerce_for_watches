@@ -5,6 +5,7 @@ import com.invictus.watches_final.model.enums.GenderType;
 import com.invictus.watches_final.model.enums.OccasionType;
 import org.springframework.data.jpa.domain.Specification;
 
+import java.time.LocalDate;
 import java.util.List;
 
 public class WatchSpecifications {
@@ -59,7 +60,18 @@ public class WatchSpecifications {
                     cb.like(cb.lower(root.get("model")), pattern)
             );
         };
+    }
 
+    public static Specification<Watch> onSaleOnly(Boolean onSale) {
+        return (root, query, cb) -> {
+            if (onSale == null || !onSale) return null;    // filter se preskače kad nije tražen
+            LocalDate today = LocalDate.now();
+            return cb.and(
+                    cb.isNotNull(root.get("discountPercentage")),
+                    cb.lessThanOrEqualTo(root.get("saleStartDate"), today),
+                    cb.greaterThanOrEqualTo(root.get("saleEndDate"), today)
+            );
+        };
     }
 
 }

@@ -23,6 +23,9 @@ export const addWatchImage = (watchID, file) => {
     return api.post(`/watch/${watchID}/addImage`, form)
 }
 
+export const getActiveSales = () =>
+    api.get('/watch/activeSales')
+
 export const setPrimaryImage = (watchID, imageID) =>
     api.put(`/watch/${watchID}/setPrimaryImage/${imageID}`)
 

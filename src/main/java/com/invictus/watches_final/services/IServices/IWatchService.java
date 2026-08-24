@@ -31,7 +31,7 @@ public interface IWatchService {
     Page<WatchListDTO> getFilteredWatches(String search, List<String> occasions, List<String> genders,
                                           List<String> colors, List<String> brands, List<String> mechanisms,
                                           Float minPrice, Float maxPrice,
-                                          String sortBy, String sortDir, int page, int size);
+                                          String sortBy, String sortDir, int page, int size,  Boolean onSale);
 
 
 
@@ -44,6 +44,5 @@ public interface IWatchService {
     void setPrimaryImage(UUID watchID, UUID imageID);
     WatchImage getImage(UUID imageID);
 
-
-
+    List<ActiveSaleDTO> getActiveSales();
 }

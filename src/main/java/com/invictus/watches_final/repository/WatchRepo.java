@@ -62,5 +62,12 @@ public interface WatchRepo extends JpaRepository<Watch, UUID>, JpaSpecificationE
     @Query("SELECT MAX(w.price) FROM Watch w")
     Float findMaxPrice();
 
+    @Query("SELECT w.watchID, w.brand, w.model, w.discountPercentage, w.saleEndDate FROM Watch w " +
+            "WHERE w.discountPercentage IS NOT NULL " +
+            "AND w.saleStartDate <= CURRENT_DATE " +
+            "AND w.saleEndDate >= CURRENT_DATE " +
+            "ORDER BY w.discountPercentage DESC")
+    List<Object[]> findActiveSales(Pageable pageable);
+
 }
 

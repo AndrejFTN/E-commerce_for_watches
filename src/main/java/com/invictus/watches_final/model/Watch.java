@@ -10,6 +10,7 @@ import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -53,6 +54,11 @@ public class Watch {
     @Enumerated(EnumType.STRING)
     private GenderType gender;
 
+    private static final int NEW_FOR_DAYS = 10;
+    private LocalDateTime createdAt;
+    @Column(length = 2000)
+    private String description;
+
     private Integer discountPercentage;
     private LocalDate saleStartDate;
     private LocalDate saleEndDate;
@@ -70,4 +76,8 @@ public class Watch {
         return isOnSale() ? price * (1 - discountPercentage / 100f) : price;
     }
 
+    public boolean isNewArrival() {
+        return createdAt != null
+                && createdAt.isAfter(LocalDateTime.now().minusDays(NEW_FOR_DAYS));
+    }
 }

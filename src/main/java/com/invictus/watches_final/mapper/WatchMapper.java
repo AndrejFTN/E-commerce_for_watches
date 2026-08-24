@@ -3,7 +3,6 @@ package com.invictus.watches_final.mapper;
 import com.invictus.watches_final.dto.WatchDTOs.*;
 import com.invictus.watches_final.model.Watch;
 
-import java.util.Base64;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -25,14 +24,15 @@ public class WatchMapper {
         watchDTO.setActive(watch.isActive());
         watchDTO.setWatchID(watch.getWatchID());
 
+        watchDTO.setDescription(watch.getDescription());
+        watchDTO.setNewArrival(watch.isNewArrival());
+
+
         List<WatchImageDTO> imageDTOs = watch.getImages().stream()
-                .map(img -> new WatchImageDTO(
-                        img.getImageID(),
-                        Base64.getEncoder().encodeToString(img.getImage()),
-                        img.isPrimary()
-                ))
+                .map(img -> new WatchImageDTO(img.getImageID(), img.isPrimary()))
                 .collect(Collectors.toList());
         watchDTO.setImages(imageDTOs);
+
 
         watchDTO.setDiscountPercentage(watch.getDiscountPercentage());
         watchDTO.setSaleStartDate(watch.getSaleStartDate());
@@ -56,6 +56,8 @@ public class WatchMapper {
         watch.setStock(watchDTO.getStock());
         watch.setGender(watchDTO.getGender());
 
+        watch.setDescription(watchDTO.getDescription());
+
         watch.setDiscountPercentage(watchDTO.getDiscountPercentage());
         watch.setSaleStartDate(watchDTO.getSaleStartDate());
         watch.setSaleEndDate(watchDTO.getSaleEndDate());
@@ -74,6 +76,8 @@ public class WatchMapper {
         existingWatch.setStock(editDTO.getStock());
         existingWatch.setGender(editDTO.getGender());
         // slika se postavlja u servisu
+
+        existingWatch.setDescription(editDTO.getDescription());
 
         existingWatch.setDiscountPercentage(editDTO.getDiscountPercentage());
         existingWatch.setSaleStartDate(editDTO.getSaleStartDate());
@@ -94,6 +98,8 @@ public class WatchMapper {
         dto.setActive(watch.isActive());
         dto.setGender(watch.getGender());
         dto.setOccasion(watch.getOccasion());
+
+        dto.setNewArrival(watch.isNewArrival());
 
         dto.setPrice(watch.getPrice());
         dto.setEffectivePrice(watch.getEffectivePrice());

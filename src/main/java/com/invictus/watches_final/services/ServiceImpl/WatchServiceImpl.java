@@ -24,6 +24,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -98,6 +99,8 @@ public class WatchServiceImpl implements IWatchService {
 
         Watch watch = WatchMapper.addDtoToEntity(addWatchDTO);
 
+        watch.setCreatedAt(LocalDateTime.now());
+
         if (watch.getStock() != null && watch.getStock() > 0) {
             watch.setActive(true);
         } else {
@@ -141,7 +144,7 @@ public class WatchServiceImpl implements IWatchService {
     public Page<WatchListDTO> getFilteredWatches(String search, List<String> occasions, List<String> genders,
                                                  List<String> colors, List<String> brands, List<String> mechanisms,
                                                  Float minPrice, Float maxPrice,
-                                                 String sortBy, String sortDir, int page, int size) {
+                                                 String sortBy, String sortDir, int page, int size, Boolean onSale) {
 
         String searchModify = (search != null && !search.isEmpty()) ? search : null;
 
@@ -162,7 +165,8 @@ public class WatchServiceImpl implements IWatchService {
                 WatchSpecifications.priceBetween(minPrice, maxPrice),
                 WatchSpecifications.searchTerm(searchModify),
                 WatchSpecifications.hasOccasion(occasionFilter),
-                WatchSpecifications.hasGender(genderFilter)
+                WatchSpecifications.hasGender(genderFilter),
+                WatchSpecifications.onSaleOnly(onSale)
         );
 
         return toListPage(repo.findAll(spec, pageable));
@@ -264,8 +268,7 @@ public class WatchServiceImpl implements IWatchService {
 
         WatchImage saved = watchImageRepo.save(watchImage);
 
-        return new WatchImageDTO(saved.getImageID(),
-                Base64.getEncoder().encodeToString(saved.getImage()), saved.isPrimary());
+        return new WatchImageDTO(saved.getImageID(), saved.isPrimary());
     }
 
     @Override
@@ -313,6 +316,19 @@ public class WatchServiceImpl implements IWatchService {
             img.setPrimary(img.getImageID().equals(imageID));
         }
         watchImageRepo.saveAll(images);
+    }
+
+    @Override
+    public List<ActiveSaleDTO> getActiveSales() {
+        return repo.findActiveSales(PageRequest.of(0, 6))
+                .stream()
+                .map(r -> new ActiveSaleDTO(
+                        (UUID)      r[0],
+                        (String)    r[1],
+                        (String)    r[2],
+                        (Integer)   r[3],
+                        (LocalDate) r[4]))
+                .toList();
     }
 
     private void validateSaleDates(LocalDate saleStartDate, LocalDate saleEndDate) {

@@ -1,6 +1,8 @@
 
 #Dodati
 -Logovanje
+(mozda)-kod banera implementirati druge putanje zbog navigaconog bara
+(mozda)-banere slike implenetirati (povezati sa novom kolekcijom ili vrstom satova konkretno)
 (mozda)-dodati status porudzbine posle PAID (poslato/u dostavi/isporuceno) sa admin akcijom za promenu statusa, i logiku za  refundaciju porudzbine
 (mozda)-dodati posebnu metodu da se salje poseban mejl kad se placanje stvarno potvrdi (ne samo pri kreiranju porudžbine)
 (mozda)-dodati da se moze loginovati i preko username i preko emaila, izmeniti logindto(dodati login polje i posle se proverava da li je email ili username i izmeniti spirng security konfig za to

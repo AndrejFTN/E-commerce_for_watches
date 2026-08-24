@@ -44,6 +44,9 @@ public class EditWatchDTO {
     @Max(value = 90, message = "Discount cannot exceed 90%")
     private Integer discountPercentage;
 
+    @Size(max = 2000, message = "Opis može imati najviše 2000 karaktera")
+    private String description;
+
     private LocalDate saleStartDate;
     private LocalDate saleEndDate;
 }

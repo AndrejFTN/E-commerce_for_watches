@@ -22,7 +22,6 @@ public class FavoriteDTO {
     private String mechanism;
     private float price;
     private GenderType gender;
-    private String image;
 
     private Integer stock;
     private boolean isActive;
