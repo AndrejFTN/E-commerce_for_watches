@@ -58,6 +58,17 @@ public class CartController {
         return ResponseEntity.ok(result);
     }
 
+
+    @PreAuthorize("hasAnyAuthority('USER_ROLE','ADMIN_ROLE')")
+    @PutMapping(path = "/updateItemAmount/{itemID}")
+    public ResponseEntity<CartItemDTO> updateItemAmount(@PathVariable UUID itemID,
+                                                        @RequestParam int amount,
+                                                        Authentication authentication) {
+        String username = authentication.getName();
+        UUID userID = userService.getUserIDByUserName(username);
+        return ResponseEntity.ok(cartService.updateItemAmount(userID, itemID, amount));
+    }
+
     @PreAuthorize("hasAnyAuthority('USER_ROLE','ADMIN_ROLE')")
     @PostMapping(path="/emptyCart")
     public ResponseEntity<Boolean> emptyCart(Authentication authentication) {

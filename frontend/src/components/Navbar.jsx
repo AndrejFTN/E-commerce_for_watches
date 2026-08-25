@@ -9,33 +9,38 @@ import ShoppingBagOutlinedIcon from '@mui/icons-material/ShoppingBagOutlined'
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder'
 import PersonOutlineIcon from '@mui/icons-material/PersonOutlined'
 import { useCart } from '../context/CartContext'
+import { useAuth } from '../context/AuthContext'
+import { useToast } from '../context/ToastContext'
 
-function Navbar({ onCartClick }) {
+
+function Navbar() {
     const { count } = useCart()                                   // broj stavki iz konteksta
     const navigate = useNavigate()
     const [params] = useSearchParams()                            // trenutna pretraga iz URL-a
     const [term, setTerm] = useState(params.get('search') ?? '')
     const [anchor, setAnchor] = useState(null)
 
-    useEffect(() => {                                             // URL se promenio (čip obrisan, "Poništi sve")
-        setTerm(params.get('search') ?? '')                       // → polje se samo uskladi
+    useEffect(() => {
+        setTerm(params.get('search') ?? '')
     }, [params])
+
+    const { showToast } = useToast()
 
     const submitSearch = (e) => {
         e.preventDefault()
         const q = term.trim()
-        navigate(q ? `/?search=${encodeURIComponent(q)}` : '/')   // prazno polje → vrati sve satove
+        navigate(q ? `/?search=${encodeURIComponent(q)}` : '/')
     }
 
-    useLocation()                                             // privremeno: da se traka osveži posle
-    const isLoggedIn = Boolean(localStorage.getItem('token')) // prijave/odjave; zameniće AuthContext
+    useLocation()
+    const { isLoggedIn, username, isAdmin, logout } = useAuth()
 
     const handleLogout = () => {
-        localStorage.removeItem('token')
+        logout()
         setAnchor(null)
+        showToast('Uspešno ste se odjavili', 'info')
         navigate('/')
     }
-
     return (
         <AppBar position="sticky" color="transparent"
                 sx={{ bgcolor: 'rgba(255,255,255,0.85)',
@@ -63,7 +68,7 @@ function Navbar({ onCartClick }) {
 
                 <IconButton component={RouterLink} to="/favorites"><FavoriteBorderIcon /></IconButton>
 
-                <IconButton onClick={onCartClick}>
+                <IconButton component={RouterLink} to="/cart">
                     <Badge badgeContent={count} color="primary">
                         <ShoppingBagOutlinedIcon />
                     </Badge>
@@ -83,10 +88,18 @@ function Navbar({ onCartClick }) {
                         </IconButton>
                         <Menu anchorEl={anchor} open={Boolean(anchor)} onClose={() => setAnchor(null)}
                               slotProps={{ paper: { sx: { borderRadius: 2, mt: 1,
-                                          border: 1, borderColor: 'divider' } } }}>
+                                          border: 1, borderColor: 'divider', minWidth: 200 } } }}>
+                            <Typography variant="caption" sx={{ px: 2, py: 1, display: 'block',
+                                color: 'text.secondary' }}>
+                                {username}
+                            </Typography>
+                            <Divider />
                             <MenuItem component={RouterLink} to="/profile" onClick={() => setAnchor(null)}>Profil</MenuItem>
                             <MenuItem component={RouterLink} to="/orders" onClick={() => setAnchor(null)}>Moje porudžbine</MenuItem>
-                            <MenuItem component={RouterLink} to="/favorites" onClick={() => setAnchor(null)}>Favoriti</MenuItem>
+                            <MenuItem component={RouterLink} to="/favorites" onClick={() => setAnchor(null)}>Omiljeno</MenuItem>
+                            {isAdmin && (
+                                <MenuItem component={RouterLink} to="/admin" onClick={() => setAnchor(null)}>Admin panel</MenuItem>
+                            )}
                             <Divider />
                             <MenuItem onClick={handleLogout}>Odjava</MenuItem>
                         </Menu>

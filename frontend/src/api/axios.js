@@ -13,4 +13,16 @@ api.interceptors.request.use((config) => {
     return config                                 // vrati izmenjen zahtev da se pošalje dalje
 })
 
+api.interceptors.response.use(                          // presreće SVAKI odgovor
+    (res) => res,
+    (err) => {
+        if (err.response?.status === 401 && localStorage.getItem('token')) {
+            localStorage.removeItem('token')            // token istekao ili poništen promenom lozinke
+            localStorage.removeItem('username')
+            window.location.href = '/login'
+        }
+        return Promise.reject(err)                      // greška ide dalje, da je komponenta vidi
+    }
+)
+
 export default api

@@ -17,7 +17,7 @@ public class RequestController {
 
     private final IRequestService requestService;
 
-    @PostMapping
+    @PostMapping("/sendRequest")
     public ResponseEntity<String> sendRequest(@Valid @RequestBody RequestDTO requestDTO){
         return ResponseEntity.ok(requestService.sendRequest(requestDTO));
     }

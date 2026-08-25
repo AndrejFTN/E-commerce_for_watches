@@ -28,17 +28,9 @@ public class CreateOrderDTO {
     @Email(message = "Email format is not valid")
     private String mail;
 
-//    @NotNull(message = "Date of order is required")
-//    private LocalDateTime dateOfOrder;
 
     @NotBlank(message = "Phone number cannot be empty")
     @Pattern(regexp = "^\\+?\\d{6,15}$", message = "Phone must be digits, optionally starting with +, and 6–15 characters long")
     private String phoneNumber;
 
-//    @NotNull(message = "Status cannot be null")
-//    private OrderStatus status;
-
-    @NotNull(message = "Order must contain items")
-    @Size(min = 1, message = "Order must contain at least one item")
-    private List<OrderItemDTO> orderItems;
 }

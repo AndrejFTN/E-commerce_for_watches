@@ -87,23 +87,6 @@ public class CartServiceImpl implements ICartService {
                 });
 
         return CartItemMapper.entityToItemDTO(cartItem);
-
-//        CartItem cartItem = cartItemRepo.findByCartAndWatch(cart, watch)
-//                .map(existing ->{
-//
-//                    existing.setAmount(existing.getAmount() + createCartItemDTO.getAmount());
-//
-//                    return cartItemRepo.save(existing);
-//                }).orElseGet(()->{
-//                    CartItem newCartItem = new CartItem();
-//
-//                    newCartItem.setCart(cart);
-//                    newCartItem.setWatch(watch);
-//                    newCartItem.setAmount(createCartItemDTO.getAmount());
-//                    newCartItem.setPrice(watch.getPrice());
-//
-//                    return cartItemRepo.save(newCartItem);
-//                });
     }
 
     @Transactional
@@ -123,6 +106,37 @@ public class CartServiceImpl implements ICartService {
 
         cartItemRepo.delete(cartItem);
         return true;
+    }
+
+    @Transactional
+    @Override
+    public CartItemDTO updateItemAmount(UUID userID, UUID cartItemID, int amount) {
+
+        if (amount < 1) {
+            throw new IllegalArgumentException("Amount must be at least 1");
+        }
+
+        Cart cart = cartRepo.findByUser(userRepo.findById(userID)
+                        .orElseThrow(() -> new EntityNotFoundException("User not found ID: " + userID)))
+                .orElseThrow(() -> new EntityNotFoundException("Cart not found for user ID: " + userID));
+
+        CartItem cartItem = cartItemRepo.findById(cartItemID)
+                .orElseThrow(() -> new EntityNotFoundException("Cart item not found ID: " + cartItemID));
+
+        if (!cartItem.getCart().equals(cart)) {
+            throw new EntityNotFoundException("Cart item does not belong to this user");
+        }
+
+        var watch = cartItem.getWatch();
+        if (amount > watch.getStock()) {
+            throw new IllegalArgumentException(
+                    "Not enough stock for watch: " + watch.getBrand() + " " + watch.getModel() +
+                            " (available: " + watch.getStock() + ", requested: " + amount + ")"
+            );
+        }
+
+        cartItem.setAmount(amount);
+        return CartItemMapper.entityToItemDTO(cartItemRepo.save(cartItem));
     }
 
     @Transactional

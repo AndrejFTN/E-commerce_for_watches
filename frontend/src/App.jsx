@@ -20,23 +20,23 @@ import OrderDetails from './pages/OrderDetails'
 import AdminWatches from './pages/AdminWatches'
 import AdminOrders from './pages/AdminOrders'
 import AdminUsers from './pages/AdminUsers'
+import Info from './pages/Info'
 
 function App() {
         return (
             <Routes>
                     <Route element={<Layout />}>
 
-                            {/* --- javno --- */}
                             <Route path="/" element={<Home />} />
                             <Route path="/watch/:watchID" element={<WatchDetails />} />
                             <Route path="/cart" element={<Cart />} />
                             <Route path="/login" element={<Login />} />
+                            <Route path="/informacije" element={<Info />} />
                             <Route path="/register" element={<Register />} />
                             <Route path="/forgot-password" element={<ForgotPassword />} />
                             <Route path="/reset-password" element={<ResetPassword />} />
                             <Route path="/contact" element={<Contact />} />
 
-                            {/* --- ulogovan korisnik --- */}
                             <Route path="/checkout" element={<Checkout />} />
                             <Route path="/order/success" element={<OrderSuccess />} />
                             <Route path="/order/cancel" element={<OrderCancel />} />
@@ -45,7 +45,6 @@ function App() {
                             <Route path="/favorites" element={<Favorites />} />
                             <Route path="/profile" element={<Profile />} />
 
-                            {/* --- admin --- */}
                             <Route path="/admin" element={<AdminDashboard />} />
                             <Route path="/admin/watches" element={<AdminWatches />} />
                             <Route path="/admin/orders" element={<AdminOrders />} />

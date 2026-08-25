@@ -5,7 +5,7 @@ import { getActiveSales } from '../api/watchApi'
 
 const INTERVAL = 5000
 
-const fmtDate = (d) =>                                 // "2026-08-25" → "25.08."
+const fmtDate = (d) =>
     new Date(d).toLocaleDateString('sr-RS', { day: '2-digit', month: '2-digit' })
 
 function AnnouncementBar() {
@@ -27,18 +27,18 @@ function AnnouncementBar() {
                 }))
                 setMessages([...base, ...sales])
             })
-            .catch(() => setMessages(base))            // backend pao → bar ostane poruka o dostavi
+            .catch(() => setMessages(base))            // backend pao  bar ostane poruka o dostavi
     }, [])
 
     useEffect(() => {
-        if (messages.length <= 1) return                // jedna poruka → nema šta da se smenjuje
+        if (messages.length <= 1) return
         const id = setInterval(() => {
             setIndex(i => (i + 1) % messages.length)
         }, INTERVAL)
         return () => clearInterval(id)
     }, [messages])
 
-    if (messages.length === 0) return null              // dok se učitava, trake nema
+    if (messages.length === 0) return null              // dok se ucitava, trake nema
 
     const current = messages[index]
 

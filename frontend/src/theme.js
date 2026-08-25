@@ -24,6 +24,7 @@ const theme = createTheme({
         fontFamily: '"Inter", system-ui, sans-serif',
         h1: { fontFamily: '"Cormorant Garamond", serif', fontWeight: 300, letterSpacing: '0.02em' },
         h2: { fontFamily: '"Cormorant Garamond", serif', fontWeight: 300, letterSpacing: '0.02em' },
+        h4: { fontFamily: '"Cormorant Garamond", serif', fontWeight: 400, letterSpacing: '0.01em' },
         h5: { fontFamily: '"Cormorant Garamond", serif', fontWeight: 400 },
         h6: { fontWeight: 500, letterSpacing: '0.04em' },
         button: { textTransform: 'uppercase', letterSpacing: '0.12em', fontWeight: 500 },

@@ -19,6 +19,10 @@ public class FavoriteMapper {
         dto.setStock(favorite.getWatch().getStock());
         dto.setActive(favorite.getWatch().isActive());
         dto.setDateAdded(favorite.getDateAdded());
+        dto.setOccasion(favorite.getWatch().getOccasion());
+        dto.setDiscountPercentage(favorite.getWatch().getDiscountPercentage());
+        dto.setOnSale(favorite.getWatch().isOnSale());
+        dto.setEffectivePrice(favorite.getWatch().getEffectivePrice());
 
         return dto;
     }

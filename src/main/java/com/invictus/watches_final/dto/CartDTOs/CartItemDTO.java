@@ -31,5 +31,10 @@ public class CartItemDTO {
     private String color;
     private GenderType gender;
 
+    private UUID primaryImageID;
+    private Integer stock;
+    private float effectivePrice;
+    private boolean onSale;
+
     //dodavanje moguce akcijskih cena
 }

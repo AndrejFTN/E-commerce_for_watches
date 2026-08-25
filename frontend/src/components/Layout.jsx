@@ -6,21 +6,23 @@ import Footer from './Footer'
 import AnnouncementBar from './AnnouncementBar'
 import CartDrawer from './CartDrawer'
 import CartTab from './CartTab'
+import ScrollToTop from './ScrollToTop'
+import { useCart } from '../context/CartContext'
 
 function Layout() {
-    const [cartOpen, setCartOpen] = useState(false)               // drawer korpe dolazi kasnije
-
+    const { drawerOpen, closeDrawer, toggleDrawer } = useCart()
     return (
         <Box sx={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
-            <Navbar onCartClick={() => setCartOpen(o => !o)} />
+            <ScrollToTop />
+            <Navbar/>
                 <AnnouncementBar />
             <Box component="main" sx={{ flexGrow: 1 }}>
                 <Outlet />
             </Box>
 
             <Footer />
-            <CartDrawer open={cartOpen} onClose={() => setCartOpen(false)} />
-            <CartTab open={cartOpen} onToggle={() => setCartOpen(o => !o)} />
+            <CartDrawer open={drawerOpen} onClose={closeDrawer} />
+            <CartTab open={drawerOpen} onToggle={toggleDrawer} />
         </Box>
     )
 }

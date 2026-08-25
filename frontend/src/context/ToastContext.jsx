@@ -5,7 +5,7 @@ import CloseIcon from '@mui/icons-material/Close'
 
 const ToastContext = createContext(null)
 
-function SlideDown(props) {                            // poruka „pada" odozgo umesto da se uveća
+function SlideDown(props) {
     return <Slide {...props} direction="down" />
 }
 
@@ -32,13 +32,13 @@ export function ToastProvider({ children }) {
                 onClose={() => setOpen(false)}
                 anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
                 slots={{ transition: SlideDown }}
-                sx={{ mt: 5 }}                             // odmah ispod trake
+                sx={{ mt: 5 }}
             >
                 <Box sx={{
                     display: 'flex', alignItems: 'center', gap: 1.5,
                     bgcolor: 'background.paper',
                     border: 1, borderColor: 'divider',
-                    borderRadius: '999px',                 // pilula, kao čipovi i sort
+                    borderRadius: '999px',
                     boxShadow: '0 6px 24px rgba(0,0,0,0.12)',
                     px: 2.5, py: 1.25,
                     maxWidth: 420,

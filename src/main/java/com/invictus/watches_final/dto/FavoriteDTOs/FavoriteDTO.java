@@ -1,6 +1,7 @@
 package com.invictus.watches_final.dto.FavoriteDTOs;
 
 import com.invictus.watches_final.model.enums.GenderType;
+import com.invictus.watches_final.model.enums.OccasionType;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -25,6 +26,11 @@ public class FavoriteDTO {
 
     private Integer stock;
     private boolean isActive;
+
+    private OccasionType occasion;
+    private Integer discountPercentage;
+    private boolean onSale;
+    private float effectivePrice;
 
     private LocalDateTime dateAdded;
 }

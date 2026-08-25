@@ -16,12 +16,12 @@ function ActiveFilters({ params, onToggle, onRemove, onClear }) {
         })
     }
 
-    for (const key of LIST_KEYS) {                 // svaka čekirana vrednost dobija svoj čip
+    for (const key of LIST_KEYS) {
         for (const value of params.getAll(key)) {
             chips.push({
                 id: `${key}-${value}`,
                 label: LABELS[value] ?? value,
-                onDelete: () => onToggle(key, value),   // isti toggle kao checkbox → skida ga
+                onDelete: () => onToggle(key, value),   // isti toggle kao checkbox  skida ga
             })
         }
     }

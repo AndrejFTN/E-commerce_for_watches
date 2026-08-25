@@ -68,7 +68,7 @@ function Footer() {
                     <Box>
                         <ColumnTitle>Kupovina</ColumnTitle>
                         <FooterLink to="/">Katalog</FooterLink>
-                        <FooterLink to="/favorites">Favoriti</FooterLink>
+                        <FooterLink to="/favorites">Omiljeno</FooterLink>
                         <FooterLink to="/orders">Moje porudžbine</FooterLink>
                     </Box>
 

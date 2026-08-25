@@ -15,7 +15,7 @@ const LINKS = [
 
 function NavLinks() {
     const { pathname, search } = useLocation()
-    const current = pathname + search                  // npr. "/?gender=muski"
+    const current = pathname + search
     const [brands, setBrands] = useState([])
     const [anchor, setAnchor] = useState(null)
 
@@ -25,8 +25,8 @@ function NavLinks() {
 
 
     const scrollToCatalog = (to) => {
-        if (!to.startsWith('/?')) return                // "Početna" i "Kontakt" se ne spuštaju
-        setTimeout(() => {                              // sačekaj da se lista prerenderuje
+        if (!to.startsWith('/?')) return
+        setTimeout(() => {
             document.getElementById('katalog')
                 ?.scrollIntoView({ behavior: 'smooth', block: 'start' })
         }, 100)
@@ -40,7 +40,7 @@ function NavLinks() {
         cursor: 'pointer',
         whiteSpace: 'nowrap',
         pb: 0.5,
-        borderBottom: 2,                               // podvlačenje označava gde si
+        borderBottom: 2,
         borderColor: active ? 'secondary.main' : 'transparent',//borderColor: active ? 'text.primary' : 'transparent',
         '&:hover': { color: 'text.primary' },
     })

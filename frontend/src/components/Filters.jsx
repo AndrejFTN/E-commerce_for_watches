@@ -18,7 +18,7 @@ function Section({ title, values, selected, onToggle, paramKey, defaultOpen = fa
             sx={{
                 bgcolor: 'transparent',
                 borderBottom: 1, borderColor: 'divider',
-                '&:before': { display: 'none' },                   // MUI podrazumevano crta liniju iznad
+                '&:before': { display: 'none' },
             }}
         >
             <AccordionSummary expandIcon={<ExpandMoreIcon fontSize="small" />}
@@ -61,17 +61,17 @@ function Filters({ options, params, onToggle, onPrice }) {
             Number(params.get('minPrice') ?? options.minPrice),
             Number(params.get('maxPrice') ?? options.maxPrice),
         ])
-    }, [options])                                          // eslint-disable-line
+    }, [options])
 
     if (!options) return null
 
     return (
         <Box sx={{
-            position: 'sticky',                            // filteri ostaju dok skroluješ satove
-            top: 130,                                      // zaglavlje je sada dva reda
+            position: 'sticky',                            // filteri ostaju
+            top: 130,
             maxHeight: 'calc(100vh - 150px)',
             overflowX: 'hidden',
-            overflowY: 'auto',                             // …dobijaju SVOJ skrol
+            overflowY: 'auto',
             pr: 1.5,
             '&::-webkit-scrollbar': { width: 4 },
             '&::-webkit-scrollbar-thumb': { bgcolor: 'divider', borderRadius: 2 },

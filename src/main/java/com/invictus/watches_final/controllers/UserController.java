@@ -117,7 +117,7 @@ public class UserController {
             return ResponseEntity.ok(userInfoDTO);
             }
 
-    @PreAuthorize("hasAuthority('ADMIN_ROLE')")
+    @PreAuthorize("hasAnyAuthority('USER_ROLE','ADMIN_ROLE')")
     @GetMapping("/checkIfAdmin")
     public ResponseEntity<Boolean> checkIfAdmin(Authentication authentication){
         String username = authentication.getName(); // iz security context-a
@@ -126,11 +126,25 @@ public class UserController {
     }
 
 
-    @PreAuthorize("hasAnyAuthority('USER_ROLE','ADMIN_ROLE')")
+    @PreAuthorize("hasAnyAuthority('ADMIN_ROLE')")
     @PutMapping(path="/updateUser/{userID}")
     public ResponseEntity<UserInfoDTO> updateUser(@PathVariable UUID userID, @Valid @RequestBody UpdateProfilDTO userDTO){
             UserInfoDTO updatedUserDTO = service.updateUser(userID, userDTO);
             return ResponseEntity.ok(updatedUserDTO);
+    }
+
+    @PreAuthorize("hasAnyAuthority('USER_ROLE','ADMIN_ROLE')")
+    @GetMapping("/me")
+    public ResponseEntity<UserInfoDTO> getMyInfo(Authentication authentication){
+        return ResponseEntity.ok(service.getUserInfoByUserName(authentication.getName()));
+    }
+
+    @PreAuthorize("hasAnyAuthority('USER_ROLE','ADMIN_ROLE')")
+    @PutMapping("/updateProfile")
+    public ResponseEntity<UserInfoDTO> updateMyProfile(Authentication authentication,
+                                                       @Valid @RequestBody UpdateProfilDTO dto){
+        UUID userID = service.getUserIDByUserName(authentication.getName());
+        return ResponseEntity.ok(service.updateUser(userID, dto));
     }
 
 }

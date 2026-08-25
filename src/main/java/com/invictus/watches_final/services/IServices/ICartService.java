@@ -16,6 +16,8 @@ public interface ICartService {
 
     boolean emptyCart(UUID userID);
 
+    CartItemDTO updateItemAmount(UUID userID, UUID cartItemID, int amount);
+
 
 
 }

@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom'
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft'
 import ChevronRightIcon from '@mui/icons-material/ChevronRight'
 
-const SLIDES = [                                       // menjaš ovde kad hoćeš drugu poruku
+const SLIDES = [
     {
         image: '/banners/1.jpg',
         title: 'Nova kolekcija',
@@ -36,11 +36,11 @@ function HeroSlider() {
     const [paused, setPaused] = useState(false)
 
     useEffect(() => {                                  // automatsko smenjivanje
-        if (paused) return                             // stoji dok je miš na baneru
+        if (paused) return                             // stoji dok je mis na baneru
         const id = setInterval(() => {
             setIndex(i => (i + 1) % SLIDES.length)     // posle poslednjeg ide na prvi
         }, INTERVAL)
-        return () => clearInterval(id)                 // OBAVEZNO — inače tajmeri ostaju da rade
+        return () => clearInterval(id)
     }, [paused])
 
     const go = (dir) => setIndex(i => (i + dir + SLIDES.length) % SLIDES.length)
@@ -59,8 +59,8 @@ function HeroSlider() {
 
         navigate(link)
 
-        if (link.startsWith('/?')) {                    // ostajemo na katalogu, samo sa filterom
-            setTimeout(scrollToCatalog, 100)            // sačekaj da se lista prerenderuje
+        if (link.startsWith('/?')) {                    // ostajem na katalogu, samo sa filterom
+            setTimeout(scrollToCatalog, 100)
         }
     }
 
@@ -82,7 +82,7 @@ function HeroSlider() {
                     backgroundSize: 'cover',
                     backgroundPosition: 'center',
                 }}>
-                    <Box sx={{                             // zatamnjenje da se tekst čita
+                    <Box sx={{
                         position: 'absolute', inset: 0,
                         background: 'linear-gradient(90deg, rgba(0,0,0,0.65) 0%, rgba(0,0,0,0.25) 60%, rgba(0,0,0,0) 100%)',
                     }} />

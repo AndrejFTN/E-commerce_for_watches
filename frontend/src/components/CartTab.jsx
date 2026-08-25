@@ -11,7 +11,7 @@ function CartTab({ open, onToggle }) {
              sx={{
                  position: 'fixed',
                  right: open ? DRAWER_WIDTH : 0,
-                 top: '50%', transform: 'translateY(-50%)',
+                 bottom: 120,
                  zIndex: 1300,
                  bgcolor: 'background.paper',
                  color: 'text.primary',

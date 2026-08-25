@@ -8,20 +8,20 @@ import ActiveFilters from '../components/ActiveFilters'
 import HeroSlider from '../components/HeroSlider'
 
 
-const PAGE_SIZE = 9                                      // 3 × 3 — mreža je uvek puna
+const PAGE_SIZE = 9
 
 function Home() {
-    const [params, setParams] = useSearchParams()          // SVI filteri žive u URL-u
+    const [params, setParams] = useSearchParams()
     const [options, setOptions] = useState(null)
     const [data, setData] = useState({ content: [], totalPages: 0, number: 0, totalElements: 0 })
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState(null)
 
-    useEffect(() => {                                      // opcije za checkboxove — jednom
+    useEffect(() => {
         getFilterOptions().then(r => setOptions(r.data)).catch(() => {})
     }, [])
 
-    useEffect(() => {                                      // satovi — na svaku promenu URL-a
+    useEffect(() => {
         setLoading(true)
         setError(null)
 
@@ -41,7 +41,7 @@ function Home() {
 
         for (const key of ['brand', 'color', 'mechanism', 'gender', 'occasion']) {
             const values = params.getAll(key)
-            if (values.length) query[key] = values          // prazne ne šaljemo — čistiji URL
+            if (values.length) query[key] = values
         }
 
         getWatches(query)
@@ -50,15 +50,15 @@ function Home() {
             .finally(() => setLoading(false))
     }, [params])
 
-    const toggle = (key, value) => {                       // čekiranje/otčekiranje jedne vrednosti
+    const toggle = (key, value) => {
         const next = new URLSearchParams(params)
         const current = next.getAll(key)
         next.delete(key)
         const updated = current.includes(value)
-            ? current.filter(v => v !== value)             // bilo čekirano → skloni
-            : [...current, value]                          // nije → dodaj
+            ? current.filter(v => v !== value)
+            : [...current, value]
         updated.forEach(v => next.append(key, v))
-        next.set('page', '0')                              // promena filtera → nazad na prvu stranu
+        next.set('page', '0')
         setParams(next)
     }
 
@@ -70,9 +70,9 @@ function Home() {
         setParams(next)
     }
 
-    const onClear = () => setParams(new URLSearchParams())  // briše sve, uključujući pretragu
+    const onClear = () => setParams(new URLSearchParams())
 
-    const onRemove = (key) => {                    // skida pretragu ili raspon cene
+    const onRemove = (key) => {
         const next = new URLSearchParams(params)
         if (key === 'price') {
             next.delete('minPrice')
@@ -96,7 +96,7 @@ function Home() {
 
     const onPage = (e, page) => {
         const next = new URLSearchParams(params)
-        next.set('page', page - 1)                         // MUI broji od 1, Spring od 0
+        next.set('page', page - 1)
         setParams(next)
         window.scrollTo({ top: 0, behavior: 'smooth' })
     }
@@ -108,10 +108,10 @@ function Home() {
             <Container id="katalog" sx={{ py: 6, scrollMarginTop: '130px' }}>
             <Box sx={{ display: 'grid',
                 gridTemplateColumns: { xs: '1fr', md: '240px 1fr' },
-                columnGap: 4, rowGap: 0 }}>                    {/* rowGap 0 → traka i filteri nisu razmaknuti */}
+                columnGap: 4, rowGap: 0 }}>
 
                 <Box sx={{ display: { xs: 'none', md: 'block' } }} />
-                {/* prazna ćelija: drži gornji levi ugao mreže */}
+
 
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
                     <Typography variant="caption" color="text.secondary">

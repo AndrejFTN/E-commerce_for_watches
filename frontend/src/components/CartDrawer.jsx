@@ -1,60 +1,54 @@
-import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Drawer, Box, Typography, IconButton, Button, Divider, CircularProgress } from '@mui/material'
 import CloseIcon from '@mui/icons-material/Close'
 import AddIcon from '@mui/icons-material/Add'
 import RemoveIcon from '@mui/icons-material/Remove'
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutlined'
-import { getOneWatch, imageUrl } from '../api/watchApi'
+import { imageUrl } from '../api/watchApi'
 import { useCart } from '../context/CartContext'
+import { useAuth } from '../context/AuthContext'
+import { useToast } from '../context/ToastContext'
 
 const fmt = (n) => new Intl.NumberFormat('sr-RS', { maximumFractionDigits: 2 }).format(n)
 
-const SHIPPING_COST = 20                               // ista pravila kao na backendu
+const SHIPPING_COST = 20
 const FREE_FROM_QTY = 2
 
-export const DRAWER_WIDTH = 400                        // deli se sa jezičkom sa strane
-
-const primaryId = (w) =>                               // Jackson šalje "primary", ne "isPrimary"
-    (w.images ?? []).find(i => i.primary)?.imageID ?? w.images?.[0]?.imageID
+export const DRAWER_WIDTH = 340
 
 function CartDrawer({ open, onClose }) {
     const navigate = useNavigate()
-    const { items, count, setQuantity, removeFromCart } = useCart()
-    const [watches, setWatches] = useState({})
-    const [loading, setLoading] = useState(false)
+    const { isLoggedIn } = useAuth()
+    const { showToast } = useToast()
+    const { lines, count, loading, setQuantity, removeItem, clearCart } = useCart()
 
-    const ids = items.map(i => i.watchID).join(',')     // menja se samo kad se doda/ukloni sat
-
-    useEffect(() => {
-        if (!open || items.length === 0) return
-        setLoading(true)
-        Promise.all(items.map(i => getOneWatch(i.watchID)))   // jedan poziv po stavci
-            .then(res => {
-                const map = {}
-                res.forEach(r => { map[r.data.watchID] = r.data })
-                setWatches(map)                          // podaci se čitaju SVEŽI, ne iz localStorage
-            })
-            .catch(() => {})
-            .finally(() => setLoading(false))
-    }, [open, ids])                                      // eslint-disable-line
-
-    const lines = items
-        .map(i => ({ ...i, watch: watches[i.watchID] }))
-        .filter(l => l.watch)                            // dok se ne učita, stavka se preskače
-
-    const subtotal = lines.reduce((s, l) => s + l.watch.effectivePrice * l.quantity, 0)
+    const subtotal = lines.reduce((s, l) => s + l.effectivePrice * l.quantity, 0)
     const shipping = count >= FREE_FROM_QTY ? 0 : SHIPPING_COST
     const total = subtotal + shipping
 
     const goToCheckout = () => {
         onClose()
-        navigate(localStorage.getItem('token') ? '/checkout' : '/login')
+        navigate(isLoggedIn ? '/checkout' : '/login')
+    }
+
+    const handleClear = async () => {
+        try {
+            await clearCart()
+            showToast('Korpa je ispražnjena', 'info')
+        } catch (err) {
+            showToast(err.response?.data?.message || 'Greška pri pražnjenju korpe', 'error')
+        }
+    }
+
+    const guard = (fn) => async (...args) => {         // svaka radnja može da padne na backendu
+        try { await fn(...args) }
+        catch (err) { showToast(err.response?.data?.message || 'Greška', 'error') }
     }
 
     return (
         <Drawer anchor="right" variant="persistent" open={open}
                 slotProps={{ paper: { sx: { width: DRAWER_WIDTH, maxWidth: '100vw' } } }}>
+
             <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between',
                 px: 3, py: 2, borderBottom: 1, borderColor: 'divider' }}>
                 <Typography variant="overline" sx={{ letterSpacing: '0.15em', fontSize: 13 }}>
@@ -64,19 +58,18 @@ function CartDrawer({ open, onClose }) {
             </Box>
 
             <Box sx={{ flexGrow: 1, overflowY: 'auto', px: 3 }}>
-                {items.length === 0 && (
+                {loading && lines.length === 0 && (
+                    <Box sx={{ py: 8, textAlign: 'center' }}><CircularProgress size={28} /></Box>
+                )}
+
+                {!loading && lines.length === 0 && (
                     <Typography color="text.secondary" sx={{ py: 8, textAlign: 'center' }}>
                         Korpa je prazna.
                     </Typography>
                 )}
 
-                {loading && lines.length === 0 && items.length > 0 && (
-                    <Box sx={{ py: 8, textAlign: 'center' }}><CircularProgress size={28} /></Box>
-                )}
-
                 {lines.map(l => {
-                    const img = primaryId(l.watch)
-                    const overStock = l.quantity > l.watch.stock      // gost je mogao da doda previše
+                    const overStock = l.quantity > l.stock
 
                     return (
                         <Box key={l.watchID} sx={{ display: 'flex', gap: 2, py: 2.5,
@@ -85,44 +78,44 @@ function CartDrawer({ open, onClose }) {
                             <Box sx={{ width: 72, height: 72, flexShrink: 0, border: 1,
                                 borderColor: 'divider', display: 'flex',
                                 alignItems: 'center', justifyContent: 'center', p: 0.5 }}>
-                                {img
-                                    ? <Box component="img" src={imageUrl(img)} alt={l.watch.model}
+                                {l.primaryImageID
+                                    ? <Box component="img" src={imageUrl(l.primaryImageID)} alt={l.model}
                                            sx={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain' }} />
                                     : <Typography variant="caption" color="text.secondary">—</Typography>}
                             </Box>
 
                             <Box sx={{ flexGrow: 1, minWidth: 0 }}>
                                 <Typography variant="overline" sx={{ letterSpacing: '0.12em', fontSize: 10 }}>
-                                    {l.watch.brand}
+                                    {l.brand}
                                 </Typography>
                                 <Typography variant="body2" sx={{ fontWeight: 500 }} noWrap>
-                                    {l.watch.model}
+                                    {l.model}
                                 </Typography>
                                 <Typography variant="body2" sx={{ mt: 0.5 }}>
-                                    {fmt(l.watch.effectivePrice)} €
+                                    {fmt(l.effectivePrice)} €
                                 </Typography>
 
                                 {overStock && (
                                     <Typography variant="caption" color="error">
-                                        Na stanju samo {l.watch.stock}
+                                        Na stanju samo {l.stock}
                                     </Typography>
                                 )}
 
                                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, mt: 1 }}>
                                     <IconButton size="small" disabled={l.quantity <= 1}
-                                                onClick={() => setQuantity(l.watchID, l.quantity - 1)}>
+                                                onClick={guard(() => setQuantity(l, l.quantity - 1))}>
                                         <RemoveIcon sx={{ fontSize: 16 }} />
                                     </IconButton>
                                     <Typography variant="body2" sx={{ minWidth: 24, textAlign: 'center' }}>
                                         {l.quantity}
                                     </Typography>
-                                    <IconButton size="small" disabled={l.quantity >= l.watch.stock}
-                                                onClick={() => setQuantity(l.watchID, l.quantity + 1)}>
+                                    <IconButton size="small" disabled={l.quantity >= l.stock}
+                                                onClick={guard(() => setQuantity(l, l.quantity + 1))}>
                                         <AddIcon sx={{ fontSize: 16 }} />
                                     </IconButton>
 
                                     <IconButton size="small" sx={{ ml: 'auto' }}
-                                                onClick={() => removeFromCart(l.watchID)}>
+                                                onClick={guard(() => removeItem(l))}>
                                         <DeleteOutlineIcon sx={{ fontSize: 18 }} />
                                     </IconButton>
                                 </Box>
@@ -132,7 +125,7 @@ function CartDrawer({ open, onClose }) {
                 })}
             </Box>
 
-            {items.length > 0 && (
+            {lines.length > 0 && (
                 <Box sx={{ px: 3, py: 2.5, borderTop: 1, borderColor: 'divider' }}>
                     <Row label="Ukupno" value={`${fmt(subtotal)} €`} />
                     <Row label="Dostava"
@@ -145,10 +138,16 @@ function CartDrawer({ open, onClose }) {
                     )}
 
                     <Divider sx={{ my: 1.5 }} />
-                    <Row label="Ukupno" value={`${fmt(total)} €`} bold />
+                    <Row label="Za plaćanje" value={`${fmt(total)} €`} bold />
 
                     <Button fullWidth variant="contained" onClick={goToCheckout} sx={{ mt: 2, py: 1.2 }}>
                         Nastavi na porudžbinu
+                    </Button>
+
+                    <Button fullWidth size="small" onClick={handleClear}
+                            sx={{ mt: 1, color: 'text.secondary', fontSize: 11,
+                                '&:hover': { color: 'error.main', bgcolor: 'transparent' } }}>
+                        Isprazni korpu
                     </Button>
                 </Box>
             )}

@@ -4,13 +4,13 @@ import { useNavigate } from 'react-router-dom'
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder'
 import FavoriteIcon from '@mui/icons-material/Favorite'
 import { imageUrl } from '../api/watchApi.js'
-import { addFavorite, removeFavorite } from '../api/favoriteApi.js'
 import { useCart } from '../context/CartContext.jsx'
 import { useToast } from '../context/ToastContext.jsx'
+import { useFavorites } from '../context/FavoritesContext.jsx'
 
 const fmt = (n) => new Intl.NumberFormat('sr-RS', { maximumFractionDigits: 2 }).format(n)
 
-const norm = (s) => (s ?? '').toLowerCase()            // "Žuta" → "zuta", da mapa radi i sa našim slovima
+const norm = (s) => (s ?? '').toLowerCase()
     .replaceAll('š', 's').replaceAll('đ', 'dj')
     .replaceAll('č', 'c').replaceAll('ć', 'c').replaceAll('ž', 'z')
 
@@ -31,7 +31,8 @@ function WatchCard({ watch }) {
     const navigate = useNavigate()
     const { addToCart, items } = useCart()
     const { showToast } = useToast()
-    const [fav, setFav] = useState(false)              // privremeno — pravo stanje stiže sa prijavom
+    const { isFavorite, toggleFavorite } = useFavorites()
+    const fav = isFavorite(watch.watchID)              // stanje dolazi iz konteksta, preživi osvežavanje
     const soldOut = watch.stock === 0
 
     const toggleFav = async (e) => {
@@ -43,24 +44,18 @@ function WatchCard({ watch }) {
         }
 
         try {
-            if (fav) {
-                await removeFavorite(watch.watchID)
-                setFav(false)
-                showToast('Uklonjeno iz favorita', 'info')
-            } else {
-                await addFavorite(watch.watchID)
-                setFav(true)
-                showToast('Dodato u favorite')
-            }
+            const nowFav = await toggleFavorite(watch.watchID)
+            showToast(nowFav ? 'Sačuvano među omiljene' : 'Uklonjeno iz omiljenih',
+                nowFav ? 'success' : 'info')
         } catch (err) {
-            showToast(err.response?.data?.message || 'Greška pri izmeni favorita', 'error')
+            showToast(err.response?.data?.message || 'Greška pri izmeni', 'error')
         }
     }
 
     const handleAddToCart = () => {
         const inCart = items.find(i => i.watchID === watch.watchID)?.quantity ?? 0
 
-        if (inCart >= watch.stock) {                   // već ima maksimum u korpi
+        if (inCart >= watch.stock) {                   // vec ima maksimum u korpi
             showToast(`Na stanju je samo ${watch.stock} kom.`, 'error')
             return
         }
@@ -73,7 +68,7 @@ function WatchCard({ watch }) {
         <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column', position: 'relative' }}>
 
             <IconButton onClick={toggleFav} size="small"
-                        aria-label={fav ? 'Ukloni iz favorita' : 'Dodaj u favorite'}
+                        aria-label={fav ? 'Ukloni iz omiljenih' : 'Sačuvaj među omiljene'}
                         sx={{ position: 'absolute', top: 8, right: 8, zIndex: 2,
                             color: fav ? 'text.primary' : 'text.secondary',
                             bgcolor: 'rgba(255,255,255,0.85)',

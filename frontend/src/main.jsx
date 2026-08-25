@@ -7,17 +7,23 @@ import theme from './theme'
 import { CartProvider } from './context/CartContext'
 import App from './App.jsx'
 import { ToastProvider } from './context/ToastContext'
+import { AuthProvider } from './context/AuthContext'
+import { FavoritesProvider } from './context/FavoritesContext.jsx'
 
 createRoot(document.getElementById('root')).render(
     <StrictMode>
         <ThemeProvider theme={theme}>
             <CssBaseline />
-            <ToastProvider>                            {/* mora unutar ThemeProvider-a */}
-                <CartProvider>
-                    <BrowserRouter>
-                        <App />
-                    </BrowserRouter>
-                </CartProvider>
+            <ToastProvider>
+                <AuthProvider>
+                    <FavoritesProvider>
+                        <CartProvider>
+                            <BrowserRouter>
+                                <App />
+                            </BrowserRouter>
+                        </CartProvider>
+                    </FavoritesProvider>
+                </AuthProvider>
             </ToastProvider>
         </ThemeProvider>
     </StrictMode>,
