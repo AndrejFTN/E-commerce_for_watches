@@ -59,7 +59,8 @@ public class WatchController {
             @RequestParam(defaultValue = "0") int page,  // u servisu se pravi page a ovde se se proseldjuej svaki parametar
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(required = false) String sortBy,
-            @RequestParam(defaultValue = "asc") String sortDir) {
+            @RequestParam(defaultValue = "asc") String sortDir,
+            @RequestParam(required = false) Integer maxStock) {
 
         if(minPriceFilter != null && maxPriceFilter != null && minPriceFilter > maxPriceFilter){
             throw new IllegalArgumentException("minPrice cannot be greater than maxPrice");
@@ -67,15 +68,15 @@ public class WatchController {
 
         Page<WatchListDTO> result = service.getFilteredWatches(search, occasion, gender, color, brand, mechanism,
                                                             minPriceFilter, maxPriceFilter,
-                                                            sortBy, sortDir, page, size, onSale);
+                                                            sortBy, sortDir, page, size, onSale, maxStock);
 
         return ResponseEntity.ok(result);
     }
 
     @PreAuthorize("hasAuthority('ADMIN_ROLE')")
-    @PutMapping(path = "/editWatch", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PutMapping(path = "/editWatch")
     public ResponseEntity<WatchDTO> editWatch(
-            @Valid @ModelAttribute EditWatchDTO editWatchDTO) {
+            @Valid @RequestBody EditWatchDTO editWatchDTO) {
 
         WatchDTO newWatch = service.editWatch(editWatchDTO);
         return ResponseEntity.ok(newWatch);

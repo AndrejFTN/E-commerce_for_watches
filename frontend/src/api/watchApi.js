@@ -1,6 +1,6 @@
 import api from './axios'
 
-// ---------- javno  ----------
+
 export const getWatches = (params) =>
     api.get('/watch/filterWatches', { params })
 
@@ -13,7 +13,10 @@ export const getFilterOptions = () =>
 export const imageUrl = (imageID) =>
     `/api/watch/image/${imageID}`
 
-// ---------- admin ----------
+export const editWatch = (data) =>
+    api.put('/watch/editWatch', data)                  // JSON, posle izmene kontrolera
+
+
 export const addWatch = (data) =>
     api.post('/watch/addWatch', data)
 

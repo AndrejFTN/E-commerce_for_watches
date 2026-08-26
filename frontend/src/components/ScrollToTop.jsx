@@ -6,9 +6,9 @@ function ScrollToTop() {
 
     useEffect(() => {
         window.scrollTo({ top: 0, behavior: 'instant' })
-    }, [pathname])                                     // SAMO pathname, ne i search
+    }, [pathname])                                     // samo pathname, ne i search
 
-    return null                                        // ništa ne crta
+    return null
 }
 
 export default ScrollToTop

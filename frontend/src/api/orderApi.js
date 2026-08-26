@@ -7,7 +7,7 @@ export const getOrder = (orderID) => api.get(`/order/getOrder/${orderID}`)
 export const getAllOrders = (params) => api.get('/order/getAllOrders', { params })
 export const getOrdersByStatus = (params) => api.get('/order/getOrdersByStatus', { params })
 export const cancelOrder = (orderID) => api.put(`/order/cancelOrder/${orderID}`)
-
+export const adminGetAllOrders = (params) => api.get('/order/admin/getAllOrders', { params })
 export const checkout = (orderID) =>
     api.post(`/order/checkout/${orderID}`)
 

@@ -3,9 +3,10 @@ import { useParams, Link as RouterLink } from 'react-router-dom'
 import {
     Container, Box, Typography, Button, Divider, Paper, CircularProgress, Alert, Breadcrumbs,
 } from '@mui/material'
-import { getOrder, cancelOrder, checkout } from '../api/orderApi'
+import { getOrder, adminGetOrder, cancelOrder, checkout } from '../api/orderApi'
 import { StatusChip } from './Orders'
 import { useToast } from '../context/ToastContext'
+import { useAuth } from '../context/AuthContext'
 
 const fmt = (n) => new Intl.NumberFormat('sr-RS', { maximumFractionDigits: 2 }).format(n)
 
@@ -25,6 +26,7 @@ function Row({ label, value, bold }) {
 function OrderDetails() {
     const { orderID } = useParams()
     const { showToast } = useToast()
+    const { isAdmin } = useAuth()
 
     const [order, setOrder] = useState(null)
     const [loading, setLoading] = useState(true)
@@ -33,7 +35,8 @@ function OrderDetails() {
 
     const load = () => {
         setLoading(true)
-        getOrder(orderID)
+        const call = isAdmin ? adminGetOrder : getOrder   // admin sme da vidi svaciju
+        call(orderID)
             .then(r => setOrder(r.data))
             .catch(e => setError(e.response?.status === 404
                 ? 'Porudžbina nije pronađena.'
@@ -41,7 +44,7 @@ function OrderDetails() {
             .finally(() => setLoading(false))
     }
 
-    useEffect(load, [orderID])
+    useEffect(load, [orderID, isAdmin])
 
     const pay = async () => {
         setBusy(true)
@@ -112,11 +115,11 @@ function OrderDetails() {
                     ))}
 
                     <Box sx={{ mt: 3 }}>
-                        <Row label="Međubir" value={`${fmt(order.totalAmount)} €`} />
+                        <Row label="Ukupno" value={`${fmt(order.totalAmount)} €`} />
                         <Row label="Dostava"
                              value={order.shippingCost === 0 ? 'Besplatno' : `${fmt(order.shippingCost)} €`} />
                         <Divider sx={{ my: 1.5 }} />
-                        <Row label="Ukupno" value={`${fmt(order.grandTotal)} €`} bold />
+                        <Row label="Za plaćanje" value={`${fmt(order.grandTotal)} €`} bold />
                     </Box>
                 </Paper>
 

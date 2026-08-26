@@ -144,7 +144,8 @@ public class WatchServiceImpl implements IWatchService {
     public Page<WatchListDTO> getFilteredWatches(String search, List<String> occasions, List<String> genders,
                                                  List<String> colors, List<String> brands, List<String> mechanisms,
                                                  Float minPrice, Float maxPrice,
-                                                 String sortBy, String sortDir, int page, int size, Boolean onSale) {
+                                                 String sortBy, String sortDir, int page, int size, Boolean onSale,
+                                                 Integer maxStock) {
 
         String searchModify = (search != null && !search.isEmpty()) ? search : null;
 
@@ -160,6 +161,7 @@ public class WatchServiceImpl implements IWatchService {
 
         Specification<Watch> spec = Specification.allOf(
                 WatchSpecifications.hasBrand(brands),
+                WatchSpecifications.stockBelow(maxStock),
                 WatchSpecifications.hasMechanism(mechanisms),
                 WatchSpecifications.hasColor(colors),
                 WatchSpecifications.priceBetween(minPrice, maxPrice),

@@ -39,7 +39,7 @@ function Favorites() {
         )
     }
 
-    // sat koji upravo ukloniš iz favorita nestaje odmah, bez novog poziva
+
     const visible = data.content.filter(f => isFavorite(f.watchID))
 
     return (

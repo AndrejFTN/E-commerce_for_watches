@@ -14,6 +14,7 @@ public class UserInfoMapper {
         userInfoDTO.setPhone(user.getPhone());
         userInfoDTO.setUserName(user.getUserName());
         userInfoDTO.setVerified(user.isVerified());
+        userInfoDTO.setRegistrationDate(user.getRegistrationDate());
 
         return userInfoDTO;
     }

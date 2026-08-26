@@ -9,6 +9,7 @@ import Register from './pages/Register'
 import Orders from './pages/Orders'
 import Favorites from './pages/Favorites'
 import Profile from './pages/Profile'
+import VerifyEmail from './pages/VerifyEmail'
 import AdminDashboard from './pages/AdminDashboard'
 import ForgotPassword from './pages/ForgotPassword'
 import ResetPassword from './pages/ResetPassword'
@@ -21,6 +22,7 @@ import AdminWatches from './pages/AdminWatches'
 import AdminOrders from './pages/AdminOrders'
 import AdminUsers from './pages/AdminUsers'
 import Info from './pages/Info'
+import { RequireAuth, RequireAdmin } from './components/RouteGuards'
 
 function App() {
         return (
@@ -36,19 +38,24 @@ function App() {
                             <Route path="/forgot-password" element={<ForgotPassword />} />
                             <Route path="/reset-password" element={<ResetPassword />} />
                             <Route path="/contact" element={<Contact />} />
+                            <Route path="/verify" element={<VerifyEmail />} />
 
-                            <Route path="/checkout" element={<Checkout />} />
-                            <Route path="/order/success" element={<OrderSuccess />} />
-                            <Route path="/order/cancel" element={<OrderCancel />} />
-                            <Route path="/orders" element={<Orders />} />
-                            <Route path="/orders/:orderID" element={<OrderDetails />} />
-                            <Route path="/favorites" element={<Favorites />} />
-                            <Route path="/profile" element={<Profile />} />
+                            <Route element={<RequireAuth />}>
+                                    <Route path="/checkout" element={<Checkout />} />
+                                    <Route path="/order/success" element={<OrderSuccess />} />
+                                    <Route path="/order/cancel" element={<OrderCancel />} />
+                                    <Route path="/orders" element={<Orders />} />
+                                    <Route path="/orders/:orderID" element={<OrderDetails />} />
+                                    <Route path="/favorites" element={<Favorites />} />
+                                    <Route path="/profile" element={<Profile />} />
+                            </Route>
 
-                            <Route path="/admin" element={<AdminDashboard />} />
-                            <Route path="/admin/watches" element={<AdminWatches />} />
-                            <Route path="/admin/orders" element={<AdminOrders />} />
-                            <Route path="/admin/users" element={<AdminUsers />} />
+                            <Route element={<RequireAdmin />}>
+                                    <Route path="/admin" element={<AdminDashboard />} />
+                                    <Route path="/admin/watches" element={<AdminWatches />} />
+                                    <Route path="/admin/orders" element={<AdminOrders />} />
+                                    <Route path="/admin/users" element={<AdminUsers />} />
+                            </Route>
 
                             <Route path="*" element={<h1>404 — stranica ne postoji</h1>} />
                     </Route>

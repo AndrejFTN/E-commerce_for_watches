@@ -41,6 +41,8 @@ public class SecurityConfiguration {
                                 "/user/register",
                                 "/user/forgotPassword",
                                 "/user/resetPasswordWithToken",
+                                "/user/verify",
+                                "/user/resendEmail",
                                 "/watch/getAll",
                                 "/watch/filterWatches",
                                 "/watch/getOneWatch/**",

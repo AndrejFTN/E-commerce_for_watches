@@ -30,6 +30,11 @@ public class WatchSpecifications {
                 : root.get("occasion").in(occasions);
     }
 
+    public static Specification<Watch> stockBelow(Integer maxStock) {
+        return (root, query, cb) -> maxStock == null ? null
+                : cb.lessThan(root.get("stock"), maxStock);
+    }
+
     public static Specification<Watch> hasGender(List<GenderType> genders){
         return (root, query, cb) -> (genders == null || genders.isEmpty()) ? null
                 : root.get("gender").in(genders);

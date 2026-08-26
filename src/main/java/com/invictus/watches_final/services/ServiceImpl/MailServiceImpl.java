@@ -3,6 +3,7 @@ package com.invictus.watches_final.services.ServiceImpl;
 import com.invictus.watches_final.model.Order;
 import com.invictus.watches_final.model.OrderItem;
 import com.invictus.watches_final.services.IServices.IMailService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.stereotype.Service;
 import org.springframework.beans.factory.annotation.Value;
@@ -10,7 +11,7 @@ import org.springframework.mail.javamail.JavaMailSender;
 
 import java.util.Arrays;
 
-
+@Slf4j
 @Service
 public class MailServiceImpl implements IMailService {
 
@@ -36,29 +37,30 @@ public class MailServiceImpl implements IMailService {
         message.setText(text);
         message.setFrom(mailFrom);
 
+        log.debug("Mejl za {} — {}\n{}", Arrays.toString(to), subject, text);
 
-        //local test
-
-        System.out.println("Email to: " + Arrays.toString(to));
-        System.out.println("Subject: " + subject);
-        System.out.println("Text: " + text);
-
-
-        //pravo slanje
-        // mailSender.send(message);
+        try {
+            mailSender.send(message);
+            log.info("Mejl poslat na {}", Arrays.toString(to));
+        } catch (Exception e) {
+            log.error("Slanje mejla na {} nije uspelo", Arrays.toString(to), e);
+        }
     }
 
-    public void sendResetPassword(String to, String token){
+    @Override
+    public void sendResetPassword(String to, String userName, String token){
         String link = frontendUrl + "/reset-password?token=" + token;
-        String subject = "Reset your password";
-        String text = "Click the link to reset your password:\n" + link;
+        String subject = "Zahtev za promenu lozinke";
+        String text = "Primili smo zahtev za promenu lozinke za nalog: " + userName + "\n\n"
+                + "Klikni na link da postaviš novu lozinku:\n" + link + "\n\n"
+                + "Link važi sat vremena. Ako nisi ti tražio promenu, slobodno zanemari ovu poruku.";
         sendSimpleMessage(subject, text, to);
     }
 
     //verifikacija maila
     public void sendVerificationEmail(String to, String token) {
         // Link za lokalni test
-        String link = "http://localhost:9002/user/verify?token=" + token;
+        String link = frontendUrl + "/verify?token=" + token;
         String subject = "Verify your account";
         String text = "Please click the link to verify your account:\n" + link;
         sendSimpleMessage(subject, text, to);
@@ -66,10 +68,10 @@ public class MailServiceImpl implements IMailService {
 
     @Override
     public void sendOrderConfirmationEmail(String to, Order order) {
-        String subject = "Potvrda porudžbine #" + order.getOrderID();
+        String subject = "Plaćanje potvrđeno — porudžbina #" + order.getOrderID();
 
         StringBuilder text = new StringBuilder();
-        text.append("Hvala na porudžbini!\n\n");
+        text.append("Hvala na kupovini! Plaćanje je uspešno primljeno.\n\n");
         text.append("Broj porudžbine: ").append(order.getOrderID()).append("\n\n");
         text.append("Stavke:\n");
 

@@ -73,13 +73,21 @@ function Checkout() {
     if (lines.length === 0) {
         return (
             <Container sx={{ py: 10, textAlign: 'center' }}>
-                <Typography variant="h5" sx={{ mb: 2 }}>Korpa je prazna</Typography>
-                <Button component={RouterLink} to="/" variant="outlined"
-                        sx={{ borderRadius: '999px', px: 4,
-                            borderColor: 'text.primary', borderWidth: 1.5, color: 'text.primary',
-                            '&:hover': { borderWidth: 1.5, bgcolor: 'text.primary', color: 'background.paper' } }}>
-                    Pogledaj katalog
-                </Button>
+                <Typography variant="h4" sx={{ mb: 1 }}>Nema šta da se poruči</Typography>
+                <Typography color="text.secondary" sx={{ mb: 3 }}>
+                    Korpa je prazna. Ako si upravo napravio porudžbinu, čeka te
+                    u tvojim porudžbinama — tamo je možeš platiti.
+                </Typography>
+
+                <Box sx={{ display: 'flex', gap: 2, justifyContent: 'center', flexWrap: 'wrap' }}>
+                    <Button component={RouterLink} to="/orders" variant="contained"
+                            sx={{ borderRadius: '999px', px: 4 }}>
+                        Moje porudžbine
+                    </Button>
+                    <Button component={RouterLink} to="/" sx={{ color: 'text.secondary' }}>
+                        Pogledaj katalog
+                    </Button>
+                </Box>
             </Container>
         )
     }
@@ -98,9 +106,9 @@ function Checkout() {
                     {error && <Alert severity="error" sx={{ mb: 2, borderRadius: 0 }}>{error}</Alert>}
 
                     <Box component="form" onSubmit={submit} id="checkout-form">
-                        <TextField name="address" label="Adresa" size="small" fullWidth required sx={{ mb: 2 }}
+                        <TextField name="address" label="Adresa i grad" size="small" fullWidth required sx={{ mb: 2 }}
                                    value={form.address} onChange={change}
-                                   helperText="Ulica i broj, grad" />
+                                   helperText="npr. Knez Mihailova 42, Beograd" />
                         <TextField name="zipCode" label="Poštanski broj" size="small" fullWidth required sx={{ mb: 2 }}
                                    value={form.zipCode} onChange={change}
                                    helperText="Samo cifre, npr. 11000" />

@@ -12,6 +12,7 @@ import com.invictus.watches_final.repository.CartRepo;
 import com.invictus.watches_final.repository.UserRepo;
 import com.invictus.watches_final.security.enums.Roles;
 import com.invictus.watches_final.security.exceptions.InvalidTokenException;
+import com.invictus.watches_final.services.IServices.IMailService;
 import com.invictus.watches_final.services.IServices.IUserService;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
@@ -33,7 +34,7 @@ public class UserServiceImpl implements IUserService {
     private final UserRepo repo;
     private final CartRepo cartRepo;
     private final PasswordEncoder passwordEncoder;
-    private final MailServiceImpl mailService;
+    private final IMailService mailService;
 
 
     @Override
@@ -175,7 +176,7 @@ public class UserServiceImpl implements IUserService {
         user.setResetPasswordTokenExpiry(LocalDateTime.now().plusHours(1));
         repo.save(user);
 
-        mailService.sendResetPassword(forgotPasswordDTO.getEmail(), token);
+        mailService.sendResetPassword(forgotPasswordDTO.getEmail(), user.getUserName(), token);
     }
 
     @Override

@@ -2,6 +2,7 @@ package com.invictus.watches_final.exceptions;
 
 import com.invictus.watches_final.exceptions.CustomExceptions.*;
 import jakarta.persistence.EntityNotFoundException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
@@ -14,11 +15,14 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import java.time.LocalDateTime;
 import java.util.stream.Collectors;
 
+@Slf4j
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(RuntimeException.class)
     public ResponseEntity<ApiError> handleRuntimeException(RuntimeException e) {
+        log.warn("Neispravan zahtev: {}", e.getMessage());
+
         ApiError error = new ApiError(
                 HttpStatus.BAD_REQUEST.value(),
                 e.getMessage(),
@@ -29,6 +33,8 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiError> handleException(Exception e) {
+        log.error("Neocekivana greska", e);
+
         ApiError error = new ApiError(
                 HttpStatus.INTERNAL_SERVER_ERROR.value(),
                 e.getMessage(),

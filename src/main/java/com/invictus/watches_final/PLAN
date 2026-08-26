@@ -1,6 +1,5 @@
 
 #Dodati
--Logovanje
 (mozda)-kod banera implementirati druge putanje zbog navigaconog bara
 (mozda)-banere slike implenetirati (povezati sa novom kolekcijom ili vrstom satova konkretno)
 (mozda)-dodati status porudzbine posle PAID (poslato/u dostavi/isporuceno) sa admin akcijom za promenu statusa, i logiku za  refundaciju porudzbine
@@ -16,10 +15,12 @@
 (mozda)-Račun faktura (PDF) po porudžbini (proveri kompleksnost)
 (mozda)-dodati implementaciju za automatski refresh tokena
 (mozda)-promeniti cuvanje slike sa BLOB u bazi na disk storage umesto Base64 u JSON odgovoru (ogroman string) vraca se kratak URL putanja
+(mozda)-prosiriti detalje i stvari oko ordera(entiteti, nacin placanja)
 *-dodavnje mozda akcijskih cena za cartiem da se posebno racunaju itd i implementacija moguca u servisu tj popuste
 *-promeniti cross origin u kontrolerima jer je slab security za to
 *-dodati logiku da umesto delete watch, ako ih nema ili ako atribut bude is not available pa se ne prikazuje vise
 *-forgot/Reset Password Flow
+*-Logovanje
 *-Search mogucnost
 *-Token se gubi posle reseta ili promene lozinke zbog sigurnosnih razloga i da ne dodje do preklapanja
 *-Email verifikacija ne blokira login ali blokira order

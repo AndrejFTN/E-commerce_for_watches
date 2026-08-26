@@ -9,12 +9,12 @@ export function FavoritesProvider({ children }) {
     const [ids, setIds] = useState(new Set())          // skup watchID-jeva, brza provera
 
     useEffect(() => {
-        if (!isLoggedIn) { setIds(new Set()); return }  // odjava → prazan skup
+        if (!isLoggedIn) { setIds(new Set()); return }  // odjava  prazan skup
 
         getMyFavorites({ page: 0, size: 200 })         // dovoljno veliko da pokupi sve
             .then(r => setIds(new Set(r.data.content.map(f => f.watchID))))
             .catch(() => setIds(new Set()))
-    }, [isLoggedIn])                                   // ponovo se učita pri svakoj prijavi
+    }, [isLoggedIn])                                   // ponovo se ucita pri svakoj prijavi
 
     const isFavorite = (watchID) => ids.has(watchID)
 
@@ -26,7 +26,7 @@ export function FavoritesProvider({ children }) {
                 next.delete(watchID)
                 return next
             })
-            return false                               // vraća novo stanje, da komponenta zna šta da javi
+            return false                               // vraca novo stanje, da komponenta zna sta da javi
         }
 
         await addFavorite(watchID)

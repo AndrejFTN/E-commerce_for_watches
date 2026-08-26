@@ -44,7 +44,7 @@ function Profile() {
     const [loading, setLoading] = useState(true)
     const [busy, setBusy] = useState(false)
 
-    const [editing, setEditing] = useState(false)      // režim izmene podataka
+    const [editing, setEditing] = useState(false)      // rezim izmene podataka
     const [form, setForm] = useState({ fullName: '', phone: '' })
     const [formErr, setFormErr] = useState(null)
 
@@ -60,7 +60,7 @@ function Profile() {
             .finally(() => setLoading(false))
     }, [isLoggedIn, username])
 
-    const startEdit = () => {                          // polja se pune postojećim podacima
+    const startEdit = () => {                          // polja se pune postojecim podacima
         setForm({ fullName: info?.fullName ?? '', phone: info?.phone ?? '' })
         setFormErr(null)
         setEditing(true)
@@ -71,7 +71,7 @@ function Profile() {
         setBusy(true); setFormErr(null)
         try {
             const r = await updateMyProfile(form)
-            setInfo(r.data)                            // prikaz se osveži odgovorom backenda
+            setInfo(r.data)                            // prikaz se osvezi odgovorom backenda
             setEditing(false)
             showToast('Podaci su sačuvani')
         } catch (err) {
@@ -149,7 +149,6 @@ function Profile() {
 
             <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '1.3fr 1fr' }, gap: 3 }}>
 
-                {/* ---------- podaci ---------- */}
                 <Card title="Lični podaci">
                     {!editing ? (
                         <>

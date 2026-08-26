@@ -18,6 +18,8 @@ public interface IOrderService {
 
     void cancelExpiredOrders();
 
+    Page<OrderDTO> getAllOrders(OrderStatus status, Pageable pageable);
+
     String createCheckoutSession(UUID orderId);
 
     Page<OrderDTO> getAllOrdersForUser(Pageable pageable);

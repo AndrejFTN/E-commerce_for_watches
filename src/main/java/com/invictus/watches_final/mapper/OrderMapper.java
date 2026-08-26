@@ -18,18 +18,6 @@ public class OrderMapper {
         order.setAddress(createOrderDTO.getAddress());
         order.setZipCode(createOrderDTO.getZipCode());
         order.setPhoneNumber(createOrderDTO.getPhoneNumber());
-//        List<OrderItem> items = createOrderDTO.getOrderItems()
-//                .stream()
-//                .map(dto -> {
-//                    OrderItem item = new OrderItem();
-//                    item.setAmount(dto.getAmount());
-//                    item.setPrice(dto.getPrice());
-//                    // item.setOrder(order);  //order i sat u servisu
-//                    return item;
-//                })
-//                .collect(Collectors.toList());
-
-//        order.setOrderItems(items);
 
         return order;
     }
@@ -46,6 +34,7 @@ public class OrderMapper {
         dto.setOrderID(order.getOrderID());
         dto.setTotalAmount(order.getTotalAmount());
         dto.setShippingCost(order.getShippingCost());
+        dto.setUserName(order.getUser().getUserName());
         dto.setGrandTotal(order.getTotalAmount() + order.getShippingCost());
 
         List<OrderItemDTO> items = order.getOrderItems()

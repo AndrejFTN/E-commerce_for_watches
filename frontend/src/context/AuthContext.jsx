@@ -7,12 +7,15 @@ export function AuthProvider({ children }) {
     const [token, setToken] = useState(() => localStorage.getItem('token'))
     const [username, setUsername] = useState(() => localStorage.getItem('username'))
     const [isAdmin, setIsAdmin] = useState(false)
+    const [checking, setChecking] = useState(Boolean(localStorage.getItem('token')))
 
-    useEffect(() => {                                  // uloga se proverava pri svakoj promeni tokena
-        if (!token) { setIsAdmin(false); return }
+    useEffect(() => {
+        if (!token) { setIsAdmin(false); setChecking(false); return }
+        setChecking(true)
         checkIfAdmin()
             .then(r => setIsAdmin(r.data === true))
             .catch(() => setIsAdmin(false))
+            .finally(() => setChecking(false))
     }, [token])
 
     const login = async (userName, password) => {
@@ -25,8 +28,8 @@ export function AuthProvider({ children }) {
     }
 
     const register = async (data) => {
-        await registerApi(data)                        // registracija NE vraća token…
-        return login(data.userName, data.password)     // …pa se odmah prijavljujemo
+        await registerApi(data)                        // registracija ne vraća token
+        return login(data.userName, data.password)     //pa se odmah prijavljujemo
     }
 
     const logout = () => {
@@ -39,7 +42,7 @@ export function AuthProvider({ children }) {
 
     return (
         <AuthContext.Provider value={{
-            token, username, isAdmin,
+            token, username, isAdmin, checking,
             isLoggedIn: Boolean(token),
             login, register, logout,
         }}>

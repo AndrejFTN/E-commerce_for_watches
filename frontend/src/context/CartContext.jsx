@@ -142,7 +142,7 @@ export function CartProvider({ children }) {
 
     return (
         <CartContext.Provider value={{
-            lines, items: lines,                       // `items` zbog WatchCard/WatchDetails
+            lines, items: lines,
             count, loading,
             addToCart, setQuantity, removeItem, clearCart,
             reload: isLoggedIn ? loadServer : loadGuest,

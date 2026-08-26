@@ -1,10 +1,12 @@
 package com.invictus.watches_final.security;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import java.time.Instant;
 import java.util.concurrent.ConcurrentHashMap;
 
+@Slf4j
 @Component
 public class LoginAttemptService {
 
@@ -17,6 +19,11 @@ public class LoginAttemptService {
         AttemptInfo info = attempts.computeIfAbsent(login, k -> new AttemptInfo());
         info.count++;
         info.lastFailedAttempt = Instant.now();
+
+        if (info.count == MAX_ATTEMPTS) {
+            log.warn("Nalog '{}' privremeno blokiran posle {} neuspelih prijava",
+                    login, MAX_ATTEMPTS);
+        }
     }
 
     public void loginSucceeded(String login) {

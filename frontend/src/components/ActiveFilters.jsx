@@ -44,7 +44,7 @@ function ActiveFilters({ params, onToggle, onRemove, onClear }) {
         })
     }
 
-    if (chips.length === 0) return null            // nema aktivnih filtera → red se ne crta uopšte
+    if (chips.length === 0) return null            // nema aktivnih filtera → red se ne crta uopste
 
     return (
         <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, alignItems: 'center', mb: 3 }}>

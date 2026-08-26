@@ -13,7 +13,7 @@ api.interceptors.request.use((config) => {
     return config                                 // vrati izmenjen zahtev da se pošalje dalje
 })
 
-api.interceptors.response.use(                          // presreće SVAKI odgovor
+api.interceptors.response.use(                          // presreće svaki odgovor
     (res) => res,
     (err) => {
         if (err.response?.status === 401 && localStorage.getItem('token')) {

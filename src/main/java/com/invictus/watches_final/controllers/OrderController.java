@@ -37,6 +37,14 @@ public class OrderController {
         return ResponseEntity.ok(order);
     }
 
+    @PreAuthorize("hasAuthority('ADMIN_ROLE')")
+    @GetMapping("/admin/getAllOrders")
+    public ResponseEntity<Page<OrderDTO>> adminGetAllOrders(
+            @RequestParam(required = false) OrderStatus status,
+            Pageable pageable) {
+        return ResponseEntity.ok(service.getAllOrders(status, pageable));
+    }
+
     @PreAuthorize("hasAnyAuthority('USER_ROLE','ADMIN_ROLE')")
     @GetMapping("/getAllOrders")
     public ResponseEntity<Page<OrderDTO>> getAllOrders(Pageable pageable) {

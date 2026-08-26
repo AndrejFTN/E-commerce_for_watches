@@ -22,6 +22,7 @@ import com.stripe.model.checkout.Session;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.AccessDeniedException;
@@ -34,6 +35,7 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @AllArgsConstructor
 public class OrderServiceImpl implements IOrderService {
@@ -98,8 +100,8 @@ public class OrderServiceImpl implements IOrderService {
         order.setTotalAmount(total);
 
         repo.save(order);
-
-        mailService.sendOrderConfirmationEmail(order.getMail(), order);
+        log.info("Nova porudzbina {} korisnika {} — iznos {} EUR",
+                order.getOrderID(), user.getUserName(), order.getTotalAmount() + order.getShippingCost());
 
         //brisemo cart posle izvrsenog ordera
         cart.getItems().clear();
@@ -107,6 +109,14 @@ public class OrderServiceImpl implements IOrderService {
 
 
         return OrderMapper.entityToDTO(order);
+    }
+
+    @Override
+    public Page<OrderDTO> getAllOrders(OrderStatus status, Pageable pageable) {
+        Page<Order> orders = (status == null)
+                ? repo.findAll(pageable)
+                : repo.findByStatus(status, pageable);
+        return orders.map(OrderMapper::entityToDTO);
     }
 
     @Override
@@ -155,6 +165,8 @@ public class OrderServiceImpl implements IOrderService {
 
         order.setStatus(OrderStatus.PAID);
         repo.save(order);
+        mailService.sendOrderConfirmationEmail(order.getMail(), order);
+        log.info("Porudzbina {} placena", orderId);
     }
 
     @Transactional
@@ -168,6 +180,9 @@ public class OrderServiceImpl implements IOrderService {
                 AmountDTO amountDTO = new AmountDTO(item.getAmount(),
                         item.getWatch().getWatchID().toString());
                 watchService.addAmount(amountDTO);
+            }
+            if (!expiredOrders.isEmpty()) {
+                log.info("Otkazano {} neplacenih porudzbina", expiredOrders.size());
             }
             order.setStatus(OrderStatus.CANCELLED);
             repo.save(order);
@@ -193,10 +208,6 @@ public class OrderServiceImpl implements IOrderService {
 
 
         //zbog doslednosti koda da se vraca prazna lista
-
-//        if (orders.isEmpty()) {
-//            throw new EntityNotFoundException("No orders for this user with status: " + status);
-//        }
 
         return orders.map(OrderMapper::entityToDTO);
     }

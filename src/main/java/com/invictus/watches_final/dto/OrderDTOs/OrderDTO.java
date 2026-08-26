@@ -26,4 +26,5 @@ public class OrderDTO {
     private double totalAmount;
     private double shippingCost;
     private double grandTotal;
+    private String userName;
 }
