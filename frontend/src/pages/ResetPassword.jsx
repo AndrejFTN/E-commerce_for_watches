@@ -6,7 +6,7 @@ import { useToast } from '../context/ToastContext'
 
 function ResetPassword() {
     const [params] = useSearchParams()
-    const token = params.get('token')                  // stize iz linka u mejlu
+    const token = params.get('token')
     const navigate = useNavigate()
     const { showToast } = useToast()
 

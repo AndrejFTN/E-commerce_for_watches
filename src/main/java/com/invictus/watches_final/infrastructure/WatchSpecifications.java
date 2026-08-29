@@ -6,6 +6,7 @@ import com.invictus.watches_final.model.enums.OccasionType;
 import org.springframework.data.jpa.domain.Specification;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 public class WatchSpecifications {
@@ -79,4 +80,20 @@ public class WatchSpecifications {
         };
     }
 
+    public static Specification<Watch> newArrivalsOnly(Boolean newArrival) {
+        return (root, query, cb) -> {
+            if (newArrival == null || !newArrival) return null;
+            return cb.greaterThan(root.get("createdAt"),
+                    LocalDateTime.now().minusDays(Watch.NEW_FOR_DAYS));
+        };
+    }
+
+
+    public static Specification<Watch> visibleInShop(Boolean visibleOnly) {
+        return (root, query, cb) -> (visibleOnly == null || !visibleOnly) ? null
+                : cb.and(
+                cb.isTrue(root.get("isActive")),
+                cb.greaterThan(root.get("stock"), 0)
+        );
+    }
 }

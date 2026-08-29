@@ -24,21 +24,19 @@ public class Watch {
 
     @Id
     @GeneratedValue
-    @JdbcTypeCode(SqlTypes.CHAR) // Za pretvaranje u 36char umesto 16by kako bi lakse radili upite u bazi)
+    @JdbcTypeCode(SqlTypes.CHAR)
     private UUID watchID;
 
     @OneToMany(mappedBy = "watch")
     private List<CartItem> cartItems;
 
-    //strani kljucevi za order
-
     private String model;
     private String brand;
     private String color;
-    private String mechanism; //moguceo draditi drop meni
+    private String mechanism;
     private LocalDate manufactureDate;
     private float price;
-    private Integer stock; // promenjeno ima mozda greske
+    private Integer stock;
     private boolean isActive;
 
     @OneToMany(mappedBy = "watch", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -54,7 +52,7 @@ public class Watch {
     @Enumerated(EnumType.STRING)
     private GenderType gender;
 
-    private static final int NEW_FOR_DAYS = 10;
+    public static final int NEW_FOR_DAYS = 10;
     private LocalDateTime createdAt;
     @Column(length = 2000)
     private String description;

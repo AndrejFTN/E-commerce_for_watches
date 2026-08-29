@@ -6,22 +6,22 @@ const api = axios.create({
 })
 
 api.interceptors.request.use((config) => {
-    const token = localStorage.getItem('token')   // token koji ćemo upisati pri loginu
-    if (token) {                                  // ako korisnik nije ulogovan, tokena nema
+    const token = localStorage.getItem('token')
+    if (token) {
         config.headers.Authorization = `Bearer ${token}`
     }
-    return config                                 // vrati izmenjen zahtev da se pošalje dalje
+    return config
 })
 
-api.interceptors.response.use(                          // presreće svaki odgovor
+api.interceptors.response.use(
     (res) => res,
     (err) => {
         if (err.response?.status === 401 && localStorage.getItem('token')) {
-            localStorage.removeItem('token')            // token istekao ili poništen promenom lozinke
+            localStorage.removeItem('token')
             localStorage.removeItem('username')
             window.location.href = '/login'
         }
-        return Promise.reject(err)                      // greška ide dalje, da je komponenta vidi
+        return Promise.reject(err)
     }
 )
 

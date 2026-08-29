@@ -20,22 +20,8 @@ import java.util.UUID;
 public interface WatchRepo extends JpaRepository<Watch, UUID>, JpaSpecificationExecutor<Watch> {
 
 
-//    @Query("SELECT w FROM Watch w " +
-//            "WHERE (:color IS NULL OR w.color LIKE :color) " +
-//            "AND (:brand IS NULL OR w.brand LIKE :brand) " +
-//            "AND (:mechanism IS NULL OR w.mechanism LIKE :mechanism) "+
-//            "AND (:minPrice IS NULL OR w.price >= :minPrice) " +
-//            "AND (:maxPrice IS NULL OR w.price <= :maxPrice) ")
-//    Page<Watch> filteredWatches(@Param("color") String color,
-//                                @Param("brand") String brand,
-//                                @Param("mechanism") String mechanism,
-//                                @Param("minPrice") Float minPrice,
-//                                @Param("maxPrice") Float maxPrice,
-//                                Pageable pageable);
-
-
     @Query("SELECT w FROM Watch  w where w.watchID = :watchID")
-    Optional<Watch> findByWatchID(@Param("watchID") UUID watchID); // moze i bez
+    Optional<Watch> findByWatchID(@Param("watchID") UUID watchID);
 
     Optional<Watch> findByBrandAndModelAndMechanismAndColor(@NotBlank String brand, @NotBlank String model, @NotBlank String mechanism, @NotBlank String color);
 
@@ -66,6 +52,7 @@ public interface WatchRepo extends JpaRepository<Watch, UUID>, JpaSpecificationE
             "WHERE w.discountPercentage IS NOT NULL " +
             "AND w.saleStartDate <= CURRENT_DATE " +
             "AND w.saleEndDate >= CURRENT_DATE " +
+            "AND w.isActive = true AND w.stock > 0 " +
             "ORDER BY w.discountPercentage DESC")
     List<Object[]> findActiveSales(Pageable pageable);
 

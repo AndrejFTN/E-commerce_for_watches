@@ -43,3 +43,5 @@ export const setWatchStatus = (watchID, status) =>
 
 export const addAmount = (data) =>
     api.put('/watch/addAmount', data)
+export const adminGetWatches = (params) =>
+    api.get('/watch/admin/filterWatches', { params })

@@ -8,7 +8,7 @@ export const register = (data) =>
 
 export const forgotPassword = (data) => api.post('/user/forgotPassword', data)
 export const resetPasswordWithToken = (data) => api.put('/user/resetPasswordWithToken', data)
-export const resetPassword = (data) => api.put('/user/resetPassword', data)   // promena lozinke ulogovanog
+export const resetPassword = (data) => api.put('/user/resetPassword', data)
 export const resendEmail = (email) =>
     api.post('/user/resendEmail', null, { params: { email } })
 export const getUserId = (userName) => api.get(`/user/getUserId/${userName}`)

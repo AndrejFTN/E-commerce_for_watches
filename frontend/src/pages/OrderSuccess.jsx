@@ -7,7 +7,7 @@ import { useCart } from '../context/CartContext'
 function OrderSuccess() {
     const { reload } = useCart()
 
-    useEffect(() => { reload() }, [])                  // korpa je ispražnjena na backendu
+    useEffect(() => { reload() }, [])
 
     return (
         <Container maxWidth="sm" sx={{ py: 10, textAlign: 'center' }}>

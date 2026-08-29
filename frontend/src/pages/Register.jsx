@@ -24,7 +24,7 @@ function Register() {
     const submit = async (e) => {
         e.preventDefault()
 
-        if (form.password !== form.confirm) {          // provera koju backend ne radi
+        if (form.password !== form.confirm) {
             setError('Lozinke se ne poklapaju')
             return
         }
@@ -32,8 +32,8 @@ function Register() {
         setBusy(true)
         setError(null)
         try {
-            const { confirm, ...payload } = form        // 'confirm' se ne šalje backendu
-            await register(payload)                     // registruje pa odmah prijavljuje
+            const { confirm, ...payload } = form
+            await register(payload)
             showToast('Nalog je napravljen — proveri mejl za verifikaciju')
             navigate('/')
         } catch (err) {

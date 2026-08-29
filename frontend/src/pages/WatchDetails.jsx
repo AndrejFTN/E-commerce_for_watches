@@ -20,7 +20,7 @@ import ChevronRightIcon from '@mui/icons-material/ChevronRight'
 const fmt = (n) => new Intl.NumberFormat('sr-RS', { maximumFractionDigits: 2 }).format(n)
 
 function WatchDetails() {
-    const { watchID } = useParams()                    // dolazi iz rute /watch/:watchID
+    const { watchID } = useParams()
     const navigate = useNavigate()
     const { addToCart, items } = useCart()
     const { showToast } = useToast()
@@ -28,7 +28,7 @@ function WatchDetails() {
     const [watch, setWatch] = useState(null)
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState(null)
-    const [activeImg, setActiveImg] = useState(null)   // koja je slika trenutno velika
+    const [activeImg, setActiveImg] = useState(null)
     const { isFavorite, toggleFavorite } = useFavorites()
     const [qty, setQty] = useState(1)
 
@@ -46,7 +46,7 @@ function WatchDetails() {
                 ? 'Sat nije pronađen.'
                 : e.message))
             .finally(() => setLoading(false))
-    }, [watchID])                                      // ponovo se učita ako se promeni ID u adresi
+    }, [watchID])
 
     if (loading) return <Box sx={{ py: 12, textAlign: 'center' }}><CircularProgress /></Box>
     if (error)   return <Container sx={{ py: 8 }}><Alert severity="error">{error}</Alert></Container>
@@ -60,11 +60,11 @@ function WatchDetails() {
 
     const goImg = (dir) => {
         if (images.length < 2) return
-        const next = (activeIndex + dir + images.length) % images.length   // kruži u oba smera
+        const next = (activeIndex + dir + images.length) % images.length
         setActiveImg(images[next].imageID)
     }
     const inCart = items.find(i => i.watchID === watch.watchID)?.quantity ?? 0
-    const canAdd = Math.max(0, watch.stock - inCart)   // koliko još sme da se doda
+    const canAdd = Math.max(0, watch.stock - inCart)   
 
     const handleAdd = () => {
         if (canAdd === 0) {

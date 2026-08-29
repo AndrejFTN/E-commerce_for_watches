@@ -32,13 +32,13 @@ function WatchCard({ watch }) {
     const { addToCart, items } = useCart()
     const { showToast } = useToast()
     const { isFavorite, toggleFavorite } = useFavorites()
-    const fav = isFavorite(watch.watchID)              // stanje dolazi iz konteksta, preživi osvežavanje
+    const fav = isFavorite(watch.watchID)
     const soldOut = watch.stock === 0
 
     const toggleFav = async (e) => {
-        e.stopPropagation()                            // da klik na srce ne otvori i detalje sata
+        e.stopPropagation()
 
-        if (!localStorage.getItem('token')) {          // favoriti traže prijavu
+        if (!localStorage.getItem('token')) {
             navigate('/login')
             return
         }

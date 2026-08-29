@@ -9,6 +9,7 @@
 (mozda)-Spring Actuator /actuator/health
 (mozda)-Dockerfile
 (mozda)-Soft delete za Watch
+(mozda)-ubaciti korpu da se isprazni automatski posle 48h
 (mozda)-Idempotentnost createOrder-a, ako klijent slučajno pošalje isti zahtev dvaput, trenutno bi mogao napraviti dve porudžbine
 (mozda)-Flyway/Liquibase migracije umesto ddl-auto=update
 (mozda)-AI chat assitent(opciono integracija osnovnog api-a)
@@ -47,15 +48,6 @@ API se dosta promenio izmedju verzija (builder pattern, signing key handling), t
 kad budem imao vremena, ne sad usred testiranja
 
 
-
-#Proveriti
-*-Leakovani mail password, JWT secret u application properties
--Proveriti da se svi erori hendluju u servisima a u kontroler da ide cist kod (kod watcha ima brljotine)
-*-PROVERITI na koji nacin cemo logiku out of stock implementirati, da li ce backend slati sve satove a kada nema stock
-onda ce front do obraditii da pise out of stock i tako nesto ili backend nece slati satove(praviti nove pozive)
-koji imaju stock 0 (filtriranje po isActive)
-
-
 #Napomene
 -postavljen localdate tip umesto string za datum za watch, moguci problem, y-m-d je format
 -posto sam dodao addwatchdto treba obratiti paznju na mogucu gresku jer ce se slika posebno prihvatiti u kontroleru, json + slika
@@ -80,6 +72,7 @@ koji imaju stock 0 (filtriranje po isActive)
 -Podseti se detaljnije oko spring security
 -Update user menja samo 2 polja jer su ona manje vazna(posle se mogu lako dodati takva polja za izmenu)
 -Ponoviti veze kljuceva
+-Srediti admin panel prikaze oko porudzbina i search sa novim metodama
 
 #Trenutno implementirano stanje projekta
 1. Autentifikacija i korisnici

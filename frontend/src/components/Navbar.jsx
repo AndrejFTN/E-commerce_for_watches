@@ -14,9 +14,9 @@ import { useToast } from '../context/ToastContext'
 
 
 function Navbar() {
-    const { count } = useCart()                                   // broj stavki iz konteksta
+    const { count } = useCart()
     const navigate = useNavigate()
-    const [params] = useSearchParams()                            // trenutna pretraga iz URL-a
+    const [params] = useSearchParams()
     const [term, setTerm] = useState(params.get('search') ?? '')
     const [anchor, setAnchor] = useState(null)
 

@@ -21,7 +21,7 @@ public class AddWatchDTO {
     @NotBlank
     private String color;
     @NotBlank
-    private String mechanism; //moguceo draditi drop meni
+    private String mechanism;
     @NotNull
     @PastOrPresent(message = "Manufacture date cannot be in the future, date must be in yyyy-MM-dd format")
     private LocalDate manufactureDate;

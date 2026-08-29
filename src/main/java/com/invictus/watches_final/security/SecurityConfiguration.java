@@ -27,7 +27,7 @@ public class SecurityConfiguration {
     private final JwtRequestFilter jwtRequestFilter;
     private final AuthenticationEntryPoint authenticationEntryPoint;
 
-    // Glavna konfiguracija
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
@@ -55,20 +55,16 @@ public class SecurityConfiguration {
                                 "/watch/activeSales",
                                 "/webhook/stripe"
                         ).permitAll()
-                        // Sve ostalo zahteva autentifikaciju
                         .anyRequest().authenticated()
                 )
-                // Obrada zahteva
                 .exceptionHandling(ex -> ex
                         .authenticationEntryPoint(authenticationEntryPoint)
                 )
-                // Dodavanje JWT filtera
                 .addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
 
-    // CORS konfiguracija
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();

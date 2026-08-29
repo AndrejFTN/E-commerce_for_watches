@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Container, Box, Typography, Paper, CircularProgress, Alert } from '@mui/material'
-import { getDashboard } from '../api/adminApi'
+import { getDashboard } from '../api/adminApi.js'
 import AdminNav from '../components/AdminNav'
 import { Link as RouterLink } from 'react-router-dom'
 

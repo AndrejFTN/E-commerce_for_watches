@@ -7,7 +7,7 @@ import LocationOnOutlinedIcon from '@mui/icons-material/LocationOnOutlined'
 import PhoneOutlinedIcon from '@mui/icons-material/PhoneOutlined'
 import EmailOutlinedIcon from '@mui/icons-material/EmailOutlined'
 
-function FooterLink({ to, children }) {                    // interni link, isti stil svuda
+function FooterLink({ to, children }) {
     return (
         <Typography component={RouterLink} to={to} variant="body2"
                     sx={{ display: 'block', mb: 1.2, textDecoration: 'none',
@@ -27,7 +27,7 @@ function ColumnTitle({ children }) {
     )
 }
 
-function ContactRow({ icon, children }) {                  // ikonica + tekst u istom redu
+function ContactRow({ icon, children }) {
     return (
         <Box sx={{ display: 'flex', gap: 1.5, alignItems: 'flex-start', mb: 1.5 }}>
             <Box sx={{ color: 'rgba(255,255,255,0.4)', display: 'flex', mt: '2px' }}>{icon}</Box>

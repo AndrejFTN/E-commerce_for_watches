@@ -11,9 +11,9 @@ function VerifyEmail() {
     const { isLoggedIn } = useAuth()
     const token = params.get('token')
 
-    const [state, setState] = useState('loading')      // loading | ok | error
+    const [state, setState] = useState('loading')
     const [message, setMessage] = useState('')
-    const done = useRef(false)                         // StrictMode pokrece efekat dvaput u razvoju
+    const done = useRef(false)
 
     useEffect(() => {
         if (done.current) return

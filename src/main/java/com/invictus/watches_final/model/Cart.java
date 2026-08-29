@@ -20,7 +20,7 @@ public class Cart {
 
     @Id
     @GeneratedValue
-    @JdbcTypeCode(SqlTypes.CHAR) //moguci problemi i ispravke
+    @JdbcTypeCode(SqlTypes.CHAR)
     private UUID cartID;
 
     @OneToOne

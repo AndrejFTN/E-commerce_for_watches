@@ -11,7 +11,7 @@ function Section({ title, values, selected, onToggle, paramKey, defaultOpen = fa
 
     return (
         <Accordion
-            defaultExpanded={defaultOpen || selected.length > 0}   // ako je filter aktivan, otvori ga
+            defaultExpanded={defaultOpen || selected.length > 0}
             disableGutters
             elevation={0}
             square
@@ -67,7 +67,7 @@ function Filters({ options, params, onToggle, onPrice }) {
 
     return (
         <Box sx={{
-            position: 'sticky',                            // filteri ostaju
+            position: 'sticky',
             top: 130,
             maxHeight: 'calc(100vh - 150px)',
             overflowX: 'hidden',

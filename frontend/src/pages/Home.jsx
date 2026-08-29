@@ -28,8 +28,8 @@ function Home() {
         const query = {
             page: Number(params.get('page') ?? 0),
             size: PAGE_SIZE,
-            sortBy: params.get('sortBy') || 'price',
-            sortDir: params.get('sortDir') || 'asc',
+            sortBy: params.get('sortBy') || 'createdAt',
+            sortDir: params.get('sortDir') || 'desc',
         }
         const search = params.get('search')
         if (search) query.search = search
@@ -38,6 +38,7 @@ function Home() {
         const max = params.get('maxPrice')
         if (max) query.maxPriceFilter = max
         if (params.get('onSale') === 'true') query.onSale = true
+        if (params.get('newArrival') === 'true') query.newArrival = true
 
         for (const key of ['brand', 'color', 'mechanism', 'gender', 'occasion']) {
             const values = params.getAll(key)
@@ -123,7 +124,7 @@ function Home() {
                         </Typography>
                         <Select
                             size="small"
-                            value={`${params.get('sortBy') || 'price'}:${params.get('sortDir') || 'asc'}`}
+                            value={`${params.get('sortBy') || 'createdAt'}:${params.get('sortDir') || 'desc'}`}
                             onChange={(e) => onSort(e.target.value)}
                             MenuProps={{
                                 PaperProps: { sx: { borderRadius: 2, mt: 0.5, border: 1, borderColor: 'divider' } },
@@ -139,6 +140,7 @@ function Home() {
                                 '&.Mui-focused .MuiOutlinedInput-notchedOutline': { borderWidth: 1, borderColor: 'text.primary' },
                             }}
                         >
+                            <MenuItem sx={{ fontSize: 13 }} value="createdAt:desc">Najnovije</MenuItem>
                             <MenuItem sx={{ fontSize: 13 }} value="price:asc">Cena — rastuće</MenuItem>
                             <MenuItem sx={{ fontSize: 13 }} value="price:desc">Cena — opadajuće</MenuItem>
                             <MenuItem sx={{ fontSize: 13 }} value="brand:asc">Brend — A do Ž</MenuItem>

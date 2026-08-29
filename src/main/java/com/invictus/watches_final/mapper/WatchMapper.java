@@ -75,7 +75,6 @@ public class WatchMapper {
         existingWatch.setOccasion(editDTO.getOccasion());
         existingWatch.setStock(editDTO.getStock());
         existingWatch.setGender(editDTO.getGender());
-        // slika se postavlja u servisu
 
         existingWatch.setDescription(editDTO.getDescription());
 

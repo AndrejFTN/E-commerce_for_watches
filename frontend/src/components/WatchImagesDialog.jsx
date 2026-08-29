@@ -31,8 +31,8 @@ function WatchImagesDialog({ watch, onClose, onChanged }) {
         setBusy(true)
         try {
             await fn(...args)
-            load()                                     // spisak se cita ponovo sa backenda
-            onChanged()                                // i tabela iza dijaloga
+            load()
+            onChanged()
         } catch (err) {
             showToast(err.response?.data?.message || 'Greška', 'error')
         } finally {
@@ -43,9 +43,9 @@ function WatchImagesDialog({ watch, onClose, onChanged }) {
     const onUpload = guard(async (e) => {
         const files = Array.from(e.target.files).slice(0, MAX_IMAGES - images.length)
         for (const file of files) {
-            await addWatchImage(watch.watchID, file)   // opet jedna po jedna
+            await addWatchImage(watch.watchID, file)
         }
-        e.target.value = ''                            // da isti fajl moze ponovo da se izabere
+        e.target.value = ''
         showToast(`Dodato ${files.length} slika`)
     })
 

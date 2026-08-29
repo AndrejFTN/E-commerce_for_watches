@@ -16,11 +16,9 @@ import java.util.UUID;
 @Data
 public class EditWatchDTO {
 
-    //mozda mi i ne treba ovaj watchdto ali sam hteo da izdvojim zbog id-a
-
     private UUID watchID;
     @NotBlank
-    private String model; //odraditi validaciju polja
+    private String model;
     @NotBlank
     private String color;
     @NotBlank

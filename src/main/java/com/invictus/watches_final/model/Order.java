@@ -29,7 +29,7 @@ public class Order {
 
     private LocalDateTime dateOfOrder;
     private String phoneNumber;
-    private OrderStatus status = OrderStatus.PENDING; //mozda u servisu odraditi
+    private OrderStatus status = OrderStatus.PENDING;
     private String address;
     private String zipCode;
     private String mail;

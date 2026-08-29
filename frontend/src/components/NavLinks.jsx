@@ -9,7 +9,7 @@ const LINKS = [
     { label: 'Muški',    to: '/?gender=muski' },
     { label: 'Ženski',   to: '/?gender=zenski' },
     { label: 'Sniženja', to: '/?onSale=true' },
-    { label: 'Novo',     to: '/?sortBy=createdAt&sortDir=desc' },
+    { label: 'Novo',     to: '/?newArrival=true&sortBy=createdAt&sortDir=desc' },
     { label: 'Kontakt',  to: '/contact' },
 ]
 
@@ -19,7 +19,7 @@ function NavLinks() {
     const [brands, setBrands] = useState([])
     const [anchor, setAnchor] = useState(null)
 
-    useEffect(() => {                                  // brendovi se pune sami iz baze
+    useEffect(() => {
         getFilterOptions().then(r => setBrands(r.data.brands ?? [])).catch(() => {})
     }, [])
 
@@ -41,7 +41,7 @@ function NavLinks() {
         whiteSpace: 'nowrap',
         pb: 0.5,
         borderBottom: 2,
-        borderColor: active ? 'secondary.main' : 'transparent',//borderColor: active ? 'text.primary' : 'transparent',
+        borderColor: active ? 'secondary.main' : 'transparent',
         '&:hover': { color: 'text.primary' },
     })
 

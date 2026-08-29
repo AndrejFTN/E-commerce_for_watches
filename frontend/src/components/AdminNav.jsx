@@ -13,7 +13,7 @@ function AdminNav() {
         <Box sx={{ display: 'flex', gap: 3, mb: 4, borderBottom: 1, borderColor: 'divider' }}>
             {LINKS.map(l => (
                 <NavLink key={l.to} to={l.to} end={l.end} style={{ textDecoration: 'none' }}>
-                    {({ isActive }) => (                // NavLink sam zna koja je ruta aktivna
+                    {({ isActive }) => (
                         <Typography variant="overline"
                                     sx={{ fontSize: 12, letterSpacing: '0.12em', pb: 1.2,
                                         display: 'block',

@@ -25,7 +25,7 @@ const PAGE_SIZE = 15
 function AdminOrders() {
     const [data, setData] = useState({ content: [], totalPages: 0, number: 0, totalElements: 0 })
     const [status, setStatus] = useState('')
-    const [user, setUser] = useState('')               // filtriranje po korisniku, na frontu
+    const [user, setUser] = useState('')
     const [page, setPage] = useState(0)
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState(null)
@@ -83,7 +83,7 @@ function AdminOrders() {
                         </TableHead>
 
                         <TableBody>
-                            {visible.map(o => (
+                            {data.content.map(o => (
                                 <TableRow key={o.orderID} hover
                                           component={RouterLink} to={`/orders/${o.orderID}`}
                                           sx={{ textDecoration: 'none', cursor: 'pointer' }}>

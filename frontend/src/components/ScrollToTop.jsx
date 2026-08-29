@@ -6,7 +6,7 @@ function ScrollToTop() {
 
     useEffect(() => {
         window.scrollTo({ top: 0, behavior: 'instant' })
-    }, [pathname])                                     // samo pathname, ne i search
+    }, [pathname])
 
     return null
 }

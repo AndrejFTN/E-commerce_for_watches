@@ -19,4 +19,3 @@ public class CartDTO {
     private List<CartItemDTO> cartItems;
 }
 
-    //private BigDecimal totalPrice;  racuna se na frontu

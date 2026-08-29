@@ -15,6 +15,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -45,6 +46,7 @@ public class WatchController {
         return ResponseEntity.ok(service.getFilterOptions());
     }
 
+
     @GetMapping("/filterWatches")
     public ResponseEntity<Page<WatchListDTO>> getFilteredWatches(
             @RequestParam(required = false) String search,
@@ -56,19 +58,39 @@ public class WatchController {
             @RequestParam(required = false) Float minPriceFilter,
             @RequestParam(required = false) Float maxPriceFilter,
             @RequestParam(required = false) Boolean onSale,
-            @RequestParam(defaultValue = "0") int page,  // u servisu se pravi page a ovde se se proseldjuej svaki parametar
+            @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(required = false) String sortBy,
             @RequestParam(defaultValue = "asc") String sortDir,
-            @RequestParam(required = false) Integer maxStock) {
+            @RequestParam(required = false) Integer maxStock,
+            @RequestParam(required = false) Boolean newArrival) {
 
         if(minPriceFilter != null && maxPriceFilter != null && minPriceFilter > maxPriceFilter){
             throw new IllegalArgumentException("minPrice cannot be greater than maxPrice");
         }
 
         Page<WatchListDTO> result = service.getFilteredWatches(search, occasion, gender, color, brand, mechanism,
-                                                            minPriceFilter, maxPriceFilter,
-                                                            sortBy, sortDir, page, size, onSale, maxStock);
+                minPriceFilter, maxPriceFilter,
+                sortBy, sortDir, page, size, onSale, maxStock, newArrival,
+                true);
+
+        return ResponseEntity.ok(result);
+    }
+
+    @PreAuthorize("hasAuthority('ADMIN_ROLE')")
+    @GetMapping("/admin/filterWatches")
+    public ResponseEntity<Page<WatchListDTO>> adminFilterWatches(
+            @RequestParam(required = false) String search,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(required = false) String sortBy,
+            @RequestParam(defaultValue = "asc") String sortDir,
+            @RequestParam(required = false) Integer maxStock) {
+
+        Page<WatchListDTO> result = service.getFilteredWatches(search, null, null, null, null, null,
+                null, null,
+                sortBy, sortDir, page, size, null, maxStock, null,
+                false);
 
         return ResponseEntity.ok(result);
     }
@@ -96,7 +118,7 @@ public class WatchController {
     }
 
     @PreAuthorize("hasAuthority('ADMIN_ROLE')")
-    @PutMapping("/addAmount")  // da li je ovo da se doda kolicina prilikom dodavanja sata
+    @PutMapping("/addAmount")
     public ResponseEntity<String> addAmount(@Valid @RequestBody AmountDTO amountDTO){
         service.addAmount(amountDTO);
         return ResponseEntity.ok("Amount added successfully");
@@ -105,7 +127,7 @@ public class WatchController {
     @PreAuthorize("hasAuthority('ADMIN_ROLE')")
     @DeleteMapping("/deleteWatch/{watchID}")
     public ResponseEntity<String> deleteWatch(@PathVariable UUID watchID){
-        service.deleteWatch(watchID); // baca EntityNotFoundException ako ne postoji
+        service.deleteWatch(watchID);
         return ResponseEntity.ok("Watch deleted successfully");
     }
 

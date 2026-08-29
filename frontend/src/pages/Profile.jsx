@@ -9,7 +9,7 @@ import { getMyInfo, updateMyProfile, resetPassword, resendEmail } from '../api/u
 import CheckIcon from '@mui/icons-material/Check'
 import CloseIcon from '@mui/icons-material/Close'
 
-function Field({ label, value }) {                     // oznaka iznad, vrednost ispod
+function Field({ label, value }) {
     return (
         <Box sx={{ py: 1.5, borderBottom: 1, borderColor: 'divider' }}>
             <Typography variant="caption" color="text.secondary"
@@ -44,11 +44,11 @@ function Profile() {
     const [loading, setLoading] = useState(true)
     const [busy, setBusy] = useState(false)
 
-    const [editing, setEditing] = useState(false)      // rezim izmene podataka
+    const [editing, setEditing] = useState(false)
     const [form, setForm] = useState({ fullName: '', phone: '' })
     const [formErr, setFormErr] = useState(null)
 
-    const [changing, setChanging] = useState(false)    // forma za lozinku je skrivena dok ne zatreba
+    const [changing, setChanging] = useState(false)
     const [pass, setPass] = useState(EMPTY_PASS)
     const [passErr, setPassErr] = useState(null)
 
@@ -60,7 +60,7 @@ function Profile() {
             .finally(() => setLoading(false))
     }, [isLoggedIn, username])
 
-    const startEdit = () => {                          // polja se pune postojecim podacima
+    const startEdit = () => {
         setForm({ fullName: info?.fullName ?? '', phone: info?.phone ?? '' })
         setFormErr(null)
         setEditing(true)
@@ -71,7 +71,7 @@ function Profile() {
         setBusy(true); setFormErr(null)
         try {
             const r = await updateMyProfile(form)
-            setInfo(r.data)                            // prikaz se osvezi odgovorom backenda
+            setInfo(r.data)
             setEditing(false)
             showToast('Podaci su sačuvani')
         } catch (err) {
@@ -118,7 +118,7 @@ function Profile() {
 
     if (loading) return <Box sx={{ py: 12, textAlign: 'center' }}><CircularProgress /></Box>
 
-    const outlined = {                                 // isti stil kao ostala sporedna dugmad
+    const outlined = {
         borderRadius: '999px', px: 3, py: 0.8, fontSize: 11,
         borderColor: 'text.primary', borderWidth: 1.5, color: 'text.primary',
         '&:hover': { borderWidth: 1.5, bgcolor: 'text.primary', color: 'background.paper' },
@@ -190,7 +190,6 @@ function Profile() {
                     )}
                 </Card>
 
-                {/* ---------- lozinka ---------- */}
                 <Card title="Bezbednost">
                     {!changing ? (
                         <>

@@ -27,8 +27,6 @@ public class MailServiceImpl implements IMailService {
         this.frontendUrl = frontendUrl;
     }
 
-    // slanje prostog maila tj slanje maila podrsci
-
     @Override
     public void sendSimpleMessage(String subject, String text, String... to) {
         SimpleMailMessage message = new SimpleMailMessage();

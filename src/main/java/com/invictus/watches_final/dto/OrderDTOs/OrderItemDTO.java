@@ -20,6 +20,5 @@ public class OrderItemDTO {
     private String color;
     private String brand;
     private String mechanism;
-    //mzoemo jos dodati atributa u zavisnosti cart item-a
 
 }

@@ -35,6 +35,4 @@ public class CartItemDTO {
     private Integer stock;
     private float effectivePrice;
     private boolean onSale;
-
-    //dodavanje moguce akcijskih cena
 }

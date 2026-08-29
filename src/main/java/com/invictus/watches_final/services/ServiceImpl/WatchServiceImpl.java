@@ -145,20 +145,25 @@ public class WatchServiceImpl implements IWatchService {
                                                  List<String> colors, List<String> brands, List<String> mechanisms,
                                                  Float minPrice, Float maxPrice,
                                                  String sortBy, String sortDir, int page, int size, Boolean onSale,
-                                                 Integer maxStock) {
+                                                 Integer maxStock, Boolean newArrival, Boolean visibleOnly) {
 
         String searchModify = (search != null && !search.isEmpty()) ? search : null;
 
         List<OccasionType> occasionFilter = (occasions == null || occasions.isEmpty()) ? null
-                : occasions.stream().map(OccasionType::fromString).toList();   // baca 400 ako je vrednost pogrešna
+                : occasions.stream().map(OccasionType::fromString).toList();
 
         List<GenderType> genderFilter = (genders == null || genders.isEmpty()) ? null
                 : genders.stream().map(GenderType::fromString).toList();
 
-        Sort.Direction direction = "desc".equalsIgnoreCase(sortDir) ? Sort.Direction.DESC : Sort.Direction.ASC;
-        String sortField = (sortBy != null && !sortBy.isEmpty()) ? sortBy : "price";
-        Pageable pageable = PageRequest.of(page, size, Sort.by(direction, sortField));
-
+        Sort sort;
+        if (sortBy != null && !sortBy.isEmpty()) {
+            Sort.Direction direction = "desc".equalsIgnoreCase(sortDir)
+                    ? Sort.Direction.DESC : Sort.Direction.ASC;
+            sort = Sort.by(direction, sortBy);
+        } else {
+            sort = Sort.by(Sort.Direction.DESC, "createdAt");
+        }
+        Pageable pageable = PageRequest.of(page, size, sort);
         Specification<Watch> spec = Specification.allOf(
                 WatchSpecifications.hasBrand(brands),
                 WatchSpecifications.stockBelow(maxStock),
@@ -168,7 +173,9 @@ public class WatchServiceImpl implements IWatchService {
                 WatchSpecifications.searchTerm(searchModify),
                 WatchSpecifications.hasOccasion(occasionFilter),
                 WatchSpecifications.hasGender(genderFilter),
-                WatchSpecifications.onSaleOnly(onSale)
+                WatchSpecifications.onSaleOnly(onSale),
+                WatchSpecifications.newArrivalsOnly(newArrival),
+                WatchSpecifications.visibleInShop(visibleOnly)
         );
 
         return toListPage(repo.findAll(spec, pageable));
@@ -204,7 +211,9 @@ public class WatchServiceImpl implements IWatchService {
         }
 
         watch.setStock(newAmount);
-        watch.setActive(newAmount > 0);
+        if (newAmount == 0) {
+            watch.setActive(false);
+        }
 
         repo.save(watch);
     }
@@ -228,8 +237,10 @@ public class WatchServiceImpl implements IWatchService {
         if (optionalWatch.isPresent()) {
             Watch watch = optionalWatch.get();
             int newAmount = watch.getStock() + amountDTO.getAmount();
+            if (watch.getStock() == 0 && newAmount > 0) {
+                watch.setActive(true);
+            }
             watch.setStock(newAmount);
-            watch.setActive(newAmount > 0);
             repo.save(watch);
         } else {
             throw new EntityNotFoundException("Watch not found");
@@ -350,7 +361,7 @@ public class WatchServiceImpl implements IWatchService {
                 .collect(Collectors.toMap(
                         r -> (UUID) r[0],
                         r -> (UUID) r[1],
-                        (a, b) -> a));      // zastita ako sat greskom ima 2 primarne
+                        (a, b) -> a));
 
         return watches.map(w -> WatchMapper.entityToListDTO(w, primaryByWatch.get(w.getWatchID())));
     }

@@ -8,7 +8,7 @@ import EditIcon from '@mui/icons-material/EditOutlined'
 import DeleteIcon from '@mui/icons-material/DeleteOutlined'
 import ImageIcon from '@mui/icons-material/ImageOutlined'
 import AddIcon from '@mui/icons-material/Add'
-import { getWatches, imageUrl, deleteWatch, setWatchStatus, addAmount } from '../api/watchApi'
+import { adminGetWatches, imageUrl, deleteWatch, setWatchStatus, addAmount } from '../api/watchApi'
 import { useToast } from '../context/ToastContext'
 import AdminNav from '../components/AdminNav'
 import WatchFormDialog from '../components/WatchFormDialog'
@@ -29,19 +29,19 @@ function AdminWatches() {
 
   const [stockFor, setStockFor] = useState(null)
   const [params] = useSearchParams()
-  const lowStock = params.get('sort') === 'stock'    // dolazak sa dashboard-a
+  const lowStock = params.get('sort') === 'stock'
 
   const [formOpen, setFormOpen] = useState(false)
-  const [editing, setEditing] = useState(null)       // null = dodavanje, objekat = izmena
+  const [editing, setEditing] = useState(null)
   const [imagesFor, setImagesFor] = useState(null)
 
   const load = useCallback(() => {
     setLoading(true)
     const query = { page, size: PAGE_SIZE, sortBy: lowStock ? 'stock' : 'brand', sortDir: 'asc' }
     if (search) query.search = search
-    if (lowStock) query.maxStock = 5                   // isti prag kao na dashboard-u
+    if (lowStock) query.maxStock = 5
 
-    getWatches(query)
+    adminGetWatches(query)
         .then(r => setData(r.data))
         .catch(e => setError(e.response?.data?.message || e.message))
         .finally(() => setLoading(false))
@@ -54,7 +54,7 @@ function AdminWatches() {
       await fn(...args)
       load()                                     // tabela se osvezava sa backenda, ne rucno
     } catch (err) {
-      showToast(err.response?.data?.message || 'Greška', 'error')
+      showToast(err.response?.data?.message || err.message || 'Greška', 'error')
     }
   }
 
@@ -65,7 +65,7 @@ function AdminWatches() {
   })
 
   const onToggle = guard(async (w) => {
-    await setWatchStatus(w.watchID, !w.active)     // Jackson salje "active", ne "isActive"
+    await setWatchStatus(w.watchID, !w.active)
     showToast(w.active ? 'Sat je sakriven' : 'Sat je vidljiv')
   })
 
@@ -164,7 +164,7 @@ function AdminWatches() {
 
                         <TableCell align="right" sx={{ whiteSpace: 'nowrap' }}>
                           <Tooltip title="Dopuni stanje">
-                            <IconButton size="small" onClick={() => onAddStock(w)}>
+                            <IconButton size="small" onClick={() => setStockFor(w)}>
                               <AddIcon sx={{ fontSize: 18 }} />
                             </IconButton>
                           </Tooltip>

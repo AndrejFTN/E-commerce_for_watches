@@ -115,7 +115,6 @@ public class UserServiceImpl implements IUserService {
         user.setRole(Roles.USER_ROLE);
         user.setRegistrationDate(LocalDateTime.now());
 
-        //generisanje tokena za verifikaciju mail-a
         String token = UUID.randomUUID().toString();
         user.setVerificationToken(token);
         user.setVerificationTokenExpiry(LocalDateTime.now().plusHours(24));
@@ -157,7 +156,6 @@ public class UserServiceImpl implements IUserService {
             throw new IllegalStateException("User is already verified");
         }
 
-        // Novi token i novo vreme isteka
         String token = UUID.randomUUID().toString();
         user.setVerificationToken(token);
         user.setVerificationTokenExpiry(LocalDateTime.now().plusHours(24));
@@ -227,7 +225,6 @@ public class UserServiceImpl implements IUserService {
         user.setPasswordChangedAt(LocalDateTime.now());
         repo.save(user);
 
-        //slanje poruke na mail
         String subject = "Password Changed Successfully";
         String text = "Hello " + user.getFullName() + ",\n\n" +
                 "Your password has been successfully changed.\n";
@@ -239,7 +236,7 @@ public class UserServiceImpl implements IUserService {
     @Override
     public boolean checkIfAdmin(String username) {
         return repo.findByUserName(username)
-                .map(user -> user.getRole() == Roles.ADMIN_ROLE)// trena prvoeriti jer security dodaje role automatski kao prefiks
+                .map(user -> user.getRole() == Roles.ADMIN_ROLE)
                 .orElse(false);
     }
 }

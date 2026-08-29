@@ -11,7 +11,7 @@ export const adminGetAllOrders = (params) => api.get('/order/admin/getAllOrders'
 export const checkout = (orderID) =>
     api.post(`/order/checkout/${orderID}`)
 
-// ---------- admin ----------
+
 export const adminGetOrder = (orderID) => api.get(`/order/admin/getOrder/${orderID}`)
 export const adminGetUserOrders = (username, params) => api.get(`/order/admin/getAllOrders/${username}`, { params })
 export const adminGetUserOrdersByStatus = (username, params) => api.get(`/order/admin/getOrdersByStatus/${username}`, { params })

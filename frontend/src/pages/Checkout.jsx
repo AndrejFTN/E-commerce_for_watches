@@ -26,7 +26,7 @@ function Checkout() {
     const [busy, setBusy] = useState(false)
     const [loadingInfo, setLoadingInfo] = useState(true)
 
-    useEffect(() => {                                  // mejl i telefon se popune iz profila
+    useEffect(() => {
         if (!isLoggedIn) { setLoadingInfo(false); return }
         getMyInfo()
             .then(r => setForm(f => ({ ...f, mail: r.data.email ?? '', phoneNumber: r.data.phone ?? '' })))
@@ -45,10 +45,10 @@ function Checkout() {
         setBusy(true)
         setError(null)
         try {
-            const order = await createOrder(form)      // skida robu sa lagera i prazni korpu
+            const order = await createOrder(form)
             await reload()
-            const url = await checkout(order.data.orderID)   // vraća Stripe adresu
-            window.location.href = url.data            // odlazak sa sajta na Stripe stranicu
+            const url = await checkout(order.data.orderID)
+            window.location.href = url.data
         } catch (err) {
             setError(err.response?.data?.message || 'Porudžbina nije uspela')
             setBusy(false)

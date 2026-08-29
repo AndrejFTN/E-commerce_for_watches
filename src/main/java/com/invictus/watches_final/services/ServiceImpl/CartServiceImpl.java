@@ -32,13 +32,13 @@ public class CartServiceImpl implements ICartService {
     private final CartItemRepo cartItemRepo;
 
     @Override
-    public CartDTO getCart(UUID userID) { //mozda greska
+    public CartDTO getCart(UUID userID) {
 
         User user = userRepo.findById(userID)
                 .orElseThrow(()-> new EntityNotFoundException("User not found ID:" +  userID));
 
         Cart cart = cartRepo.findByUser(user)
-                .orElseThrow(()-> new EntityNotFoundException("Cart not found with userID:" +  userID));//mozda greska
+                .orElseThrow(()-> new EntityNotFoundException("Cart not found with userID:" +  userID));
 
 
         List<CartItem> cartItems = cartItemRepo.findByCart(cart);

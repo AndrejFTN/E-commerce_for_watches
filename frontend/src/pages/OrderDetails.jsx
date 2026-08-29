@@ -35,7 +35,7 @@ function OrderDetails() {
 
     const load = () => {
         setLoading(true)
-        const call = isAdmin ? adminGetOrder : getOrder   // admin sme da vidi svaciju
+        const call = isAdmin ? adminGetOrder : getOrder
         call(orderID)
             .then(r => setOrder(r.data))
             .catch(e => setError(e.response?.status === 404
@@ -50,7 +50,7 @@ function OrderDetails() {
         setBusy(true)
         try {
             const url = await checkout(orderID)
-            window.location.href = url.data            // nastavak plaćanja na Stripe stranici
+            window.location.href = url.data
         } catch (err) {
             showToast(err.response?.data?.message || 'Plaćanje nije moguće', 'error')
             setBusy(false)
@@ -62,7 +62,7 @@ function OrderDetails() {
         try {
             await cancelOrder(orderID)
             showToast('Porudžbina je otkazana', 'info')
-            load()                                     // status se osveži sa backenda
+            load()
         } catch (err) {
             showToast(err.response?.data?.message || 'Otkazivanje nije uspelo', 'error')
         } finally { setBusy(false) }
@@ -73,7 +73,7 @@ function OrderDetails() {
     if (!order)  return null
 
     const canPay = order.status === 'PENDING'
-    const canCancel = order.status === 'PENDING'       // backend odbija otkazivanje plaćene
+    const canCancel = order.status === 'PENDING'
 
     return (
         <Container maxWidth="md" sx={{ py: 5 }}>

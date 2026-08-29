@@ -28,7 +28,7 @@ public class CustomCredentialsService implements UserDetailsService {
 
         SimpleGrantedAuthority authority = new SimpleGrantedAuthority(role.name());
 
-        return new org.springframework.security.core.userdetails.User( // nesto baguje i samo ovako prihvata rezultat
+        return new org.springframework.security.core.userdetails.User(
             userCredentials.getUserName(),
             userCredentials.getPassword(),
                 Collections.singleton(authority)

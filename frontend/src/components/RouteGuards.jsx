@@ -9,7 +9,7 @@ export function RequireAuth() {
     if (!isLoggedIn) {
         return <Navigate to="/login" state={{ from: location }} replace />
     }
-    return <Outlet />                                  // pusta ugnjezdene rute dalje
+    return <Outlet />
 }
 
 export function RequireAdmin() {
@@ -17,7 +17,7 @@ export function RequireAdmin() {
 
     if (!isLoggedIn) return <Navigate to="/login" replace />
 
-    if (checking) {                                    // uloga se jos proverava — ne odlucuj prerano
+    if (checking) {
         return <Box sx={{ py: 12, textAlign: 'center' }}><CircularProgress /></Box>
     }
 

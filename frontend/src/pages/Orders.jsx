@@ -12,7 +12,7 @@ const fmtDate = (d) => new Date(d).toLocaleString('sr-RS', {
     day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit',
 })
 
-export const STATUS = {                                // deli se sa stranicom detalja
+export const STATUS = {
     PENDING:   { label: 'Čeka plaćanje', filled: false },
     APPROVED:  { label: 'Odobrena',      filled: true },
     PAID:      { label: 'Plaćena',       filled: true },
@@ -55,7 +55,7 @@ function Orders() {
 
         const params = { page, size: PAGE_SIZE, sort: 'dateOfOrder,desc' }
         const call = status
-            ? getOrdersByStatus({ ...params, status })  // najnovije prvo
+            ? getOrdersByStatus({ ...params, status })
             : getAllOrders(params)
 
         call

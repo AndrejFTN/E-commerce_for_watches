@@ -3,7 +3,7 @@ import {
     Container, Box, Typography, Paper, Table, TableBody, TableCell, TableHead, TableRow,
     Chip, Pagination, CircularProgress, Alert, TextField, MenuItem,
 } from '@mui/material'
-import { getUsersPage } from '../api/adminApi'
+import { getUsersPage } from '../api/adminApi.js'
 import AdminNav from '../components/AdminNav'
 import { useSearchParams } from 'react-router-dom'
 

@@ -13,8 +13,6 @@ import java.util.UUID;
 @NoArgsConstructor
 public class CreateCartItemDTO {
 
-    //private UUID cartItemID;
-
     private UUID watchID;
 
     @NotNull

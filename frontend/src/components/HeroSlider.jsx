@@ -35,10 +35,10 @@ function HeroSlider() {
     const [index, setIndex] = useState(0)
     const [paused, setPaused] = useState(false)
 
-    useEffect(() => {                                  // automatsko smenjivanje
-        if (paused) return                             // stoji dok je mis na baneru
+    useEffect(() => {
+        if (paused) return
         const id = setInterval(() => {
-            setIndex(i => (i + 1) % SLIDES.length)     // posle poslednjeg ide na prvi
+            setIndex(i => (i + 1) % SLIDES.length)
         }, INTERVAL)
         return () => clearInterval(id)
     }, [paused])
@@ -52,14 +52,14 @@ function HeroSlider() {
     }
 
     const handleCta = (link) => {
-        if (link.startsWith('#')) {                     // samo skrol, bez promene adrese
+        if (link.startsWith('#')) {
             scrollToCatalog()
             return
         }
 
         navigate(link)
 
-        if (link.startsWith('/?')) {                    // ostajem na katalogu, samo sa filterom
+        if (link.startsWith('/?')) {
             setTimeout(scrollToCatalog, 100)
         }
     }
@@ -75,7 +75,7 @@ function HeroSlider() {
             {SLIDES.map((slide, i) => (
                 <Box key={i} sx={{
                     position: 'absolute', inset: 0,
-                    opacity: i === index ? 1 : 0,          // prelaz pretapanjem
+                    opacity: i === index ? 1 : 0,
                     transition: 'opacity 700ms ease',
                     pointerEvents: i === index ? 'auto' : 'none',
                     backgroundImage: `url(${slide.image})`,

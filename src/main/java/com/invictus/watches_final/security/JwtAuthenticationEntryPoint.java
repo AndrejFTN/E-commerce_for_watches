@@ -17,10 +17,9 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
                          HttpServletResponse response,
                          AuthenticationException authException) throws IOException, ServletException {
 
-        //  status 401 Unauthorized
+
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
 
-        //vraćamo jednostavnu poruku u plain text
         response.setContentType("text/plain");
         response.getWriter().write("Unauthorized: " + authException.getMessage());
         response.getWriter().flush();

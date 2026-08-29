@@ -94,7 +94,7 @@ public class UserController {
     @PreAuthorize("hasAuthority('ADMIN_ROLE')")
     @GetMapping(path="/getAll")
     public ResponseEntity<?> getAll(){
-        return ResponseEntity.ok(service.getAllUsersList()); // u servisu smo radili proveru
+        return ResponseEntity.ok(service.getAllUsersList());
     }
 
     @PreAuthorize("hasAuthority('ADMIN_ROLE')")

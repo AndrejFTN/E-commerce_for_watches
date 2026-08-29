@@ -47,11 +47,10 @@ public class OrderServiceImpl implements IOrderService {
     private final IStripeService stripeService;
     private final MailServiceImpl mailService;
 
-    @Transactional// ako nesto ne uspe u ovoj metodi onda se nece odraditi odraditi ostale promene ako negde zpane
+    @Transactional
     @Override
     public OrderDTO createOrder(CreateOrderDTO createOrderDTO) {
 
-        // proveriti da li dohvatam username ili full name ako dodje do greske
         User user = getCurrentUser();
 
         if(!user.isVerified()){
@@ -65,13 +64,12 @@ public class OrderServiceImpl implements IOrderService {
             throw new EntityNotFoundException("Cart is empty, cannot create order");
         }
 
-        Order order = OrderMapper.dtoToEntity(createOrderDTO); // mozda greska ili staviti na staticku
+        Order order = OrderMapper.dtoToEntity(createOrderDTO);
 
         order.setStatus(OrderStatus.PENDING);
         order.setDateOfOrder(LocalDateTime.now());
         order.setUser(user);
 
-        //treba voditi racuna oko orderItem i orderItemDTO tipa, mozda posle dodje do problema
         List<OrderItem>  orderItems = cart.getItems()
                 .stream()
                 .map(cartItem -> {
@@ -95,7 +93,7 @@ public class OrderServiceImpl implements IOrderService {
 
         double total = orderItems
                 .stream().mapToDouble(i -> i.getPrice() * i.getAmount())
-                .sum();  // ubacili smo racunanje konacnog ordera a za cart ce se racunati na frontu on fly
+                .sum();
 
         order.setTotalAmount(total);
 
@@ -103,7 +101,6 @@ public class OrderServiceImpl implements IOrderService {
         log.info("Nova porudzbina {} korisnika {} — iznos {} EUR",
                 order.getOrderID(), user.getUserName(), order.getTotalAmount() + order.getShippingCost());
 
-        //brisemo cart posle izvrsenog ordera
         cart.getItems().clear();
         cartRepo.save(cart);
 
@@ -124,7 +121,7 @@ public class OrderServiceImpl implements IOrderService {
 
         User user = getCurrentUser();
 
-        Order order = repo.findByOrderIDAndUser(orderID, user)//ovde prosledjujemo ceo user objekat i njegov poseban order id sto on pretrazuje
+        Order order = repo.findByOrderIDAndUser(orderID, user)
                 .orElseThrow(() -> new EntityNotFoundException("Order not found"));
 
         return OrderMapper.entityToDTO(order);
@@ -160,7 +157,7 @@ public class OrderServiceImpl implements IOrderService {
                 .orElseThrow(() -> new EntityNotFoundException("Order not found"));
 
         if (order.getStatus() == OrderStatus.PAID) {
-            return; // vec obradjeno, Stripe  da ponovi isti webhook
+            return;
         }
 
         order.setStatus(OrderStatus.PAID);
@@ -206,9 +203,6 @@ public class OrderServiceImpl implements IOrderService {
 
         Page<Order> orders = repo.findByStatusAndUserOrderByDateOfOrderDesc(status, user, pageable);
 
-
-        //zbog doslednosti koda da se vraca prazna lista
-
         return orders.map(OrderMapper::entityToDTO);
     }
 
@@ -216,7 +210,7 @@ public class OrderServiceImpl implements IOrderService {
     public OrderDTO getOrderByAdmin(UUID orderID) {
 
         Order order = repo.findByOrderID(orderID)
-                .orElseThrow(() -> new EntityNotFoundException("Order not found")); //nema potree nista vise, dovoljno preko id a permision cemo srediit u security
+                .orElseThrow(() -> new EntityNotFoundException("Order not found"));
 
         return OrderMapper.entityToDTO(order);
     }
@@ -238,7 +232,7 @@ public class OrderServiceImpl implements IOrderService {
                 .orElseThrow(() -> new EntityNotFoundException("User not found"));
 
         Page<Order> orders = repo.findByUserUserNameAndStatusOrderByDateOfOrderDesc(username, status, pageable);
-        return orders.map(OrderMapper::entityToDTO); // u slucaju praznih page on ce vratiti praznu listu koja se moze obraditi na frontu
+        return orders.map(OrderMapper::entityToDTO);
     }
 
     @Transactional
@@ -260,15 +254,7 @@ public class OrderServiceImpl implements IOrderService {
 
         order.setStatus(OrderStatus.CANCELLED);
         repo.save(order);
-        //dodati eventualno razlog
-
-//    Vracanje proizvoda nazad u korpu
-
     }
-
-    //Kada korisnik popunjava podatke (pre createOrder())
-    //ovde jos nema kreiranog ordera, pa nema šta da se brise, dovoljno je samo da se prekine frontend flow / korpa ostaje netaknuta
-
     private User getCurrentUser(){
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         return userRepo.findByUserName(auth.getName())

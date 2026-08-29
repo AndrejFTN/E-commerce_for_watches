@@ -14,7 +14,7 @@ function AnnouncementBar() {
     const [index, setIndex] = useState(0)
 
     useEffect(() => {
-        const base = [{                                // stalna poruka, ne zavisi od baze
+        const base = [{
             text: 'Besplatna dostava za porudžbine od dva ili više komada',
             link: null,
         }]
@@ -27,7 +27,7 @@ function AnnouncementBar() {
                 }))
                 setMessages([...base, ...sales])
             })
-            .catch(() => setMessages(base))            // backend pao  bar ostane poruka o dostavi
+            .catch(() => setMessages(base))
     }, [])
 
     useEffect(() => {
@@ -38,12 +38,12 @@ function AnnouncementBar() {
         return () => clearInterval(id)
     }, [messages])
 
-    if (messages.length === 0) return null              // dok se ucitava, trake nema
+    if (messages.length === 0) return null
 
     const current = messages[index]
 
     return (
-        <Box sx={{ bgcolor: '#141416', height: 38, display: 'flex', //<Box sx={{ bgcolor: '#7A6B52', height: 38, display: 'flex',
+        <Box sx={{ bgcolor: '#141416', height: 38, display: 'flex',
             alignItems: 'center', justifyContent: 'center', px: 2, overflow: 'hidden' }}>
             {messages.map((m, i) => (
                 <Typography
@@ -59,7 +59,7 @@ function AnnouncementBar() {
                         letterSpacing: '0.15em', fontSize: 11, fontWeight: 500,
                         whiteSpace: 'nowrap',
                         cursor: m.link ? 'pointer' : 'default',
-                        '&:hover': { color: m.link ? '#E3CDA6' : undefined },//'&:hover': { color: m.link ? '#fff' : undefined },
+                        '&:hover': { color: m.link ? '#E3CDA6' : undefined },
                     }}>
                     {m.text}
                 </Typography>

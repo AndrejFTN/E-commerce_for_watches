@@ -21,7 +21,7 @@ function ActiveFilters({ params, onToggle, onRemove, onClear }) {
             chips.push({
                 id: `${key}-${value}`,
                 label: LABELS[value] ?? value,
-                onDelete: () => onToggle(key, value),   // isti toggle kao checkbox  skida ga
+                onDelete: () => onToggle(key, value),
             })
         }
     }
@@ -44,7 +44,7 @@ function ActiveFilters({ params, onToggle, onRemove, onClear }) {
         })
     }
 
-    if (chips.length === 0) return null            // nema aktivnih filtera → red se ne crta uopste
+    if (chips.length === 0) return null
 
     return (
         <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, alignItems: 'center', mb: 3 }}>

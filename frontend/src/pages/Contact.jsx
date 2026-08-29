@@ -31,7 +31,7 @@ function Contact() {
         setError(null)
         try {
             await sendRequest(form)
-            setForm(EMPTY)                             // isprazni formu posle slanja
+            setForm(EMPTY)
             showToast('Poruka je poslata — javićemo se uskoro')
         } catch (err) {
             setError(err.response?.data?.message || 'Slanje nije uspelo')

@@ -40,7 +40,7 @@ function CartDrawer({ open, onClose }) {
         }
     }
 
-    const guard = (fn) => async (...args) => {         // svaka radnja može da padne na backendu
+    const guard = (fn) => async (...args) => {
         try { await fn(...args) }
         catch (err) { showToast(err.response?.data?.message || 'Greška', 'error') }
     }
